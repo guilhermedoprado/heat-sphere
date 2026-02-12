@@ -30,17 +30,12 @@ builder.Services.AddCors(options =>
 
 // Infrastructure (PostgreSQL + DbContext)
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CalculateCylinderFlowHandler).Assembly));
 
-
-// 
-builder.Services.AddScoped<RateShellAndTubeHandler>();
-// Registra o Repositório
+// Register repositories and services
 builder.Services.AddScoped<IFluidRepository, FluidRepository>();
-
-// O Serviço já estava lá, só confirma
 builder.Services.AddScoped<FluidInterpolationService>();
-
+builder.Services.AddScoped<RateShellAndTubeHandler>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CalculateCylinderFlowHandler).Assembly));
 
 var app = builder.Build();
 

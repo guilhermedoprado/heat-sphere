@@ -24,7 +24,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=heat_sphere_db;Username=postgres;Password=cguib00m." # connection string for PostgreSQL
+      ConnectionStrings:DefaultConnection: "Host=db;Port=5432;Database=heat_sphere_db;Username=postgres;Password=cguib00m." # connection string for PostgreSQL
     ports:
       - "8080:8080"
     depends_on:
