@@ -117,7 +117,7 @@ const MODULE_DATA: Record<string, ModuleInfo> = {
 
 const RESOURCES = [
   { key: "notes", label: "Notes", path: "notes" },
-  { key: "tool", label: "Tools", path: "tool" },
+  { key: "tools", label: "Tools", path: "tools" },
 ];
 
 export default function ModuleHub() {

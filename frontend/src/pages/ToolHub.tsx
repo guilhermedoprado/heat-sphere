@@ -60,22 +60,22 @@ const ToolHub = () => {
 
         <h1 className={styles.title}>Tools</h1>
 
-        <p className={styles.subtitle}>
+        {/* <p className={styles.subtitle}>
           {loading ? 'Loading module…' : error ? error : `Interactive resources for `}
           {!loading && !error && <strong>{moduleName}</strong>}
-        </p>
+        </p> */}
       </header>
 
       <div className={styles.diamond}>
-        {tools.map((tool, idx) => (
+        {tools.map((tools, idx) => (
           <Link
-            key={tool.id}
-            to={`./${tool.id}`}
+            key={tools.id}
+            to={`./${tools.id}`}
             className={`${styles.card} ${styles[`card${idx + 1}`]}`}
           >
-            <div className={styles.icon}>{tool.icon}</div>
-            <h3 className={styles.cardTitle}>{tool.name}</h3>
-            <p className={styles.cardDesc}>{tool.desc}</p>
+            <div className={styles.icon}>{tools.icon}</div>
+            <h3 className={styles.cardTitle}>{tools.name}</h3>
+            <p className={styles.cardDesc}>{tools.desc}</p>
           </Link>
         ))}
       </div>

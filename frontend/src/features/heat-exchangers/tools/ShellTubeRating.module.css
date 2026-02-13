@@ -1,72 +1,162 @@
-.shellTubeRating {
+/* Container Principal: Mais largo e centralizado */
+.container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  color: #37352f;
-}
-
-.results {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
-  padding: 1.25rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.chartContainer {
-  height: 320px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  background: #f9fafb;
-}
-
-.button {
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.65rem 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-  align-self: flex-start;
-}
-
-.button:hover {
-  background: #333;
-}
-
-.inputs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.75rem;
-}
-
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  gap: 2.5rem; /* Mais respiro vertical */
   color: #374151;
+  max-width: 1200px; /* Aumentei de 1000px */
+  width: 95%; /* Garante margem em telas menores */
+  margin: 2rem auto 4rem; /* Margem topo/baixo maiores */
 }
 
-.inputGroup input {
-  padding: 0.5rem 0.65rem;
-  border-radius: 6px;
+body {
+  background-color: #f3f4f6; /* Off-white premium */
+}
+
+
+/* Intro: Mais destaque e espaçamento */
+.intro {
+  background: #ffffff;
+  padding: 2rem 2.5rem; /* Padding maior */
+  border-radius: 16px;
   border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #37352f;
-  font-size: 0.9rem;
-  transition: border-color 0.15s;
+  border-left: 6px solid #667eea;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-.inputGroup input:focus {
-  outline: none;
-  border-color: #111;
+.intro h2 { 
+  margin: 0 0 0.75rem; 
+  color: #111; 
+  font-size: 1.8rem; /* Título maior */
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.intro p { 
+  font-size: 1.05rem; /* Texto maior */
+  line-height: 1.7; 
+  color: #4b5563; 
+  max-width: 800px;
+}
+
+/* Workspace: Layout 2 colunas */
+.workspace {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Coluna de inputs um pouco mais larga */
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Control Panel (Esquerda) */
+.controlPanel {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  position: sticky; /* Fica fixo ao scrollar */
+  top: 2rem;
+}
+
+.controlPanel h3 { 
+  margin: 0 0 1.5rem; 
+  font-size: 1.25rem; 
+  color: #111; 
+  font-weight: 700;
+}
+
+.inputs { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 2rem; 
+}
+
+.fluidLabel { 
+  font-size: 0.85rem; 
+  text-transform: uppercase; 
+  font-weight: 800; 
+  letter-spacing: 0.05em; 
+  padding-bottom: 0.5rem; 
+  display: block;
+}
+
+.fluidBlock label { 
+  font-size: 0.95rem; 
+}
+
+.fluidBlock input { 
+  padding: 0.75rem; /* Inputs mais altos */
+  font-size: 1rem; 
+  border-radius: 8px;
+  background: #f9fafb; /* Fundo input sutil */
+}
+
+/* Analysis Panel (Direita) */
+.analysisPanel {
+  background: #ffffff;
+  padding: 2.5rem; /* Mais espaço interno */
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  min-height: 500px; /* Altura mínima maior */
+}
+
+/* KPIs Gigantes */
+.kpis { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsivo */
+  gap: 1.5rem; 
+  margin-bottom: 3rem; 
+}
+
+.kpiCard { 
+  padding: 1.5rem; 
+  border-radius: 12px; 
+  background: #f8fafc; /* Fundo KPI bem claro */
+  border: 1px solid #e2e8f0;
+}
+
+.kpiLabel { 
+  font-size: 1.5rem; /* Números bem grandes */
+  margin: 0.5rem 0; 
+}
+
+.kpiValue { 
+  font-size: 2rem; /* Números bem grandes */
+  margin: 0.5rem 0; 
+}
+
+/* Gráfico */
+.chartWrapper {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.chartWrapper h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Botão Run */
+.runBtn {
+  margin-top: 2rem;
+  padding: 1rem;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #000000 0%, #000000 100%);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.runBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: -15px 15px 15px -2px rgba(213, 247, 78, 0.2);
+}
+
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; }
+  .controlPanel { position: relative; top: 0; }
 }

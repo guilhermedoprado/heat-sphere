@@ -2,87 +2,99 @@ import { Link, useParams } from 'react-router-dom';
 import styles from './ToolPage.module.css';
 
 const ToolPage = () => {
-  const { slug, toolSlug } = useParams();
+  const { slug, toolsSlug } = useParams<{ slug: string; toolsSlug: string }>();
 
-  // Database de recursos por ferramenta
-  const toolData: Record<string, any> = {
-    'calculation-sheets': {
-      title: 'Calculation Sheets',
-      tagline: 'Pre-structured templates for common problems',
-      items: [
-        { id: 'pipe-flow-pressure-drop', name: 'Pipe Flow - Pressure Drop', status: 'available' },
-        { id: 'heat-exchanger-lmtd', name: 'Heat Exchanger - LMTD Method', status: 'available' },
-        { id: 'natural-convection-plate', name: 'Natural Convection - Vertical Plate', status: 'soon' },
-        { id: 'forced-convection-tube', name: 'Forced Convection - Internal Tube', status: 'soon' },
+  // 1. Defina o conteúdo específico por Módulo e por Ferramenta
+  const moduleContent: Record<string, any> = {
+    // --- Módulo: Internal Flow ---
+    'external-flow': {
+      'solvers': [
+        { id: 'pipe-flow-solver', name: 'Internal Pipe Flow', status: 'soon' },
+        { id: 'cilinder-flow-solver', name: 'Cylinder Flow', status: 'available' }
+      ],
+      'case-studies': [
+        { id: 'cilinder-cross-flow', name: 'Cylinder Cross Flow', status: 'available' },
+        { id: 'hvac-duct-sizing', name: 'HVAC Duct Sizing', status: 'soon' }
+      ]
+      // Adicione outros tipos se necessário (formulary, sheets)
+    },
+
+    // --- Módulo: Heat Exchangers ---
+    'heat-exchangers': {
+      'solvers': [
+        { id: 'lmtd-calculator', name: 'LMTD Calculator', status: 'soon' }
+      ],
+      'case-studies': [
+        { id: 'shell-tube-rating', name: 'Shell & Tube Rating', status: 'available' },
+        { id: 'steam-condenser-design', name: 'Steam Condenser Design', status: 'soon' },
       ]
     },
-    'formulary': {
-      title: 'Formulary',
-      tagline: 'All correlations and equations, organized by topic',
-      items: [
-        { id: 'nusselt-correlations', name: 'Nusselt Number Correlations', status: 'available' },
-        { id: 'friction-factors', name: 'Friction Factors (Moody, Churchill)', status: 'available' },
-        { id: 'dimensionless-numbers', name: 'Dimensionless Numbers Reference', status: 'available' },
-        { id: 'film-temperature', name: 'Film Temperature Calculations', status: 'soon' },
-      ]
-    },
-    'solvers': {
-      title: 'Solvers',
-      tagline: 'Interactive calculators for design and analysis',
-      items: [
-        { id: 'cylinder-flow', name: 'Flow Over Cylinder', status: 'available' },
-        { id: 'pipe-flow-solver', name: 'Internal Pipe Flow Solver', status: 'available' },
-        { id: 'shell-tube-rating', name: 'Shell & Tube Heat Exchanger Rating', status: 'available' },
-        { id: 'fin-effectiveness', name: 'Fin Effectiveness Calculator', status: 'soon' },
-        { id: 'natural-convection-enclosure', name: 'Natural Convection in Enclosures', status: 'soon' },
-      ]
-    },
-    'case-studies': {
-      title: 'Case Studies',
-      tagline: 'Real-world scenarios with annotated solutions',
-      items: [
-        { id: 'cooling-electronic-enclosure', name: 'Cooling Electronic Enclosure', status: 'available' },
-        { id: 'steam-condenser-design', name: 'Steam Condenser Design Optimization', status: 'soon' },
-        { id: 'hvac-duct-sizing', name: 'HVAC Duct Sizing & Pressure Drop', status: 'soon' },
-        { id: 'heat-sink-thermal-analysis', name: 'Heat Sink Thermal Analysis', status: 'soon' },
+
+    // --- Módulo: Condensation ---
+    'condensation': {
+      'solvers': [
+        { id: 'vertical-plate-condensation', name: 'Vertical Plate Film Condensation', status: 'soon' }
+      ],
+      'case-studies': [
+        { id: 'power-plant-condenser', name: 'Power Plant Surface Condenser', status: 'soon' }
       ]
     }
   };
 
-  const data = toolData[toolSlug || ''] || { title: 'Tool', items: [] };
+  // 2. Metadados GENÉRICOS das ferramentas (Título, Tagline)
+  const toolMeta: Record<string, any> = {
+    'calculation-sheets': { title: 'Calculation Sheets', tagline: 'Structured templates' },
+    'formulary': { title: 'Formulary', tagline: 'Correlations & Equations' },
+    'solvers': { title: 'Solvers', tagline: 'Interactive calculators' },
+    'case-studies': { title: 'Case Studies', tagline: 'Real-world scenarios' }
+  };
+
+  // 3. Lógica de Resolução
+  // Pega itens específicos do módulo OU array vazio se não existir
+  const items = moduleContent[slug || '']?.[toolsSlug || ''] || [];
+  
+  // Pega títulos genéricos
+  const meta = toolMeta[toolsSlug || ''] || { title: 'Tools', tagline: '' };
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <header className={styles.header}>
-        <Link to={`/modules/${slug}/tool`} className={styles.backLink}>
+        <Link to={`/modules/${slug}/tools`} className={styles.backLink}>
           ← Tools
         </Link>
-        <h1 className={styles.title}>{data.title}</h1>
-        <p className={styles.tagline}>{data.tagline}</p>
+        <h1 className={styles.title}>{meta.title}</h1>
+        <p className={styles.tagline}>{meta.tagline}</p>
+        
+        {/* Debug (Opcional: remova depois) */}
+        {/* <p style={{fontSize: 12, color: '#999'}}>Module: {slug} | Tool: {toolsSlug}</p> */}
       </header>
 
-      {/* Catalog Grid */}
       <section className={styles.catalog}>
-        <div className={styles.grid}>
-          {data.items.map((item: any) => (
-            <Link
-              key={item.id}
-              to={`./${item.id}`}
-              className={`${styles.card} ${item.status === 'soon' ? styles.cardDisabled : ''}`}
-            >
-              <div className={styles.cardHeader}>
-                <h3 className={styles.cardTitle}>{item.name}</h3>
-                {item.status === 'soon' && (
-                  <span className={styles.badge}>Coming Soon</span>
-                )}
-              </div>
-              <div className={styles.cardFooter}>
-                <span className={styles.arrow}>→</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {items.length > 0 ? (
+          <div className={styles.grid}>
+            {items.map((item: any) => (
+              <Link
+                key={item.id}
+                to={`./${item.id}`}
+                className={`${styles.card} ${item.status === 'soon' ? styles.cardDisabled : ''}`}
+              >
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>{item.name}</h3>
+                  {item.status === 'soon' && <span className={styles.badge}>Coming Soon</span>}
+                </div>
+                <div className={styles.cardFooter}>
+                  <span className={styles.arrow}>→</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          // Estado Vazio Elegante
+          <div className={styles.emptyState}>
+            <p>No {meta.title.toLowerCase()} available for this module yet.</p>
+            <Link to={`/modules/${slug}/tools`} className={styles.linkButton}>Check other tools</Link>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -23,12 +23,12 @@ function App() {
       <Route path="/modules/:slug" element={<ModuleHub />} />
 
       {/* --- SPECIFIC TOOLS --- */}
-      <Route path="/modules/heat-exchangers/tool/case-study/shell-tube-rating" element={<ShellTubeRating />} />
-      <Route path="/modules/external-flow/tool/solver/cylinder" element={<CylinderFlowCalculator />} />
+      <Route path="/modules/heat-exchangers/tools/case-studies/shell-tube-rating" element={<ShellTubeRating />} />
+      <Route path="/modules/external-flow/tools/case-studies/cilinder-cross-flow" element={<CylinderFlowCalculator />} />
 
       {/* --- TOOL HUB (NEW: /internal-flow/tool) --- */}
-      <Route path="/modules/:slug/tool" element={<ToolHub />} />
-      <Route path="/modules/:slug/tool/:toolSlug" element={<ToolPage />} /> 
+      <Route path="/modules/:slug/tools" element={<ToolHub />} />
+      <Route path="/modules/:slug/tools/:toolsSlug" element={<ToolPage />} /> 
 
       {/* --- NOTES --- */}
       <Route path="/modules/:slug/:category" element={<NoteView />} />

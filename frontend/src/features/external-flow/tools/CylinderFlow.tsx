@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import styles from "./CylinderFlow.module.css"; // Importe o CSS Module
+import styles from "./CylinderFlow.module.css";
 
 type ResponseDto = {
     id: string;
@@ -20,12 +20,11 @@ type ResponseDto = {
 };
 
 export function CylinderFlowCalculator() {
-    // Inputs (valores iniciais de exemplo)
-    const [name, setName] = useState("Cilindro 1");
-    const [diameter, setDiameter] = useState(0.05);         // metros
-    const [velocity, setVelocity] = useState(10);           // m/s
-    const [fluidTemp, setFluidTemp] = useState(300);        // Kelvin
-    const [surfaceTemp, setSurfaceTemp] = useState(350);    // Kelvin
+    const [name, setName] = useState("Cilindro");
+    const [diameter, setDiameter] = useState(0.05);         
+    const [velocity, setVelocity] = useState(10);           
+    const [fluidTemp, setFluidTemp] = useState(300);        
+    const [surfaceTemp, setSurfaceTemp] = useState(350);    
 
     // Resultado da API
     const [res, setRes] = useState<ResponseDto | null>(null);
@@ -38,11 +37,11 @@ export function CylinderFlowCalculator() {
             name: name,
             diameter: diameter,
             velocity: velocity,
-            fluidTemperature: fluidTemp,       // ⚠️ Ajuste os nomes conforme o C# Request
+            fluidTemperature: fluidTemp,       
             surfaceTemperature: surfaceTemp
         });
         setRes(data);
-        setShowInputs(true); // Esconde inputs após calcular
+        setShowInputs(true); 
     }
 
     return (
@@ -54,26 +53,25 @@ export function CylinderFlowCalculator() {
                 </p>
             </div>
 
-            {/* Inputs sempre visíveis ou controlados por showInputs, como preferir */}
             <div className={styles.inputsContainer}>
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>Identifier</label>
                     <input className={styles.input} value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className={styles.inputGroup}>
-                    <label className={styles.label}>Diameter (D)</label>
+                    <label className={styles.label}>Diameter - D (m)</label>
                     <input type="number" className={styles.input} value={diameter} onChange={(e) => setDiameter(+e.target.value)} placeholder="m" />
                 </div>
                 <div className={styles.inputGroup}>
-                    <label className={styles.label}>Velocity (V)</label>
+                    <label className={styles.label}>Velocity - V (m/s)</label>
                     <input type="number" className={styles.input} value={velocity} onChange={(e) => setVelocity(+e.target.value)} placeholder="m/s" />
                 </div>
                 <div className={styles.inputGroup}>
-                    <label className={styles.label}>Fluid Temp (T∞)</label>
+                    <label className={styles.label}>Fluid Temperature - T∞ (K)</label>
                     <input type="number" className={styles.input} value={fluidTemp} onChange={(e) => setFluidTemp(+e.target.value)} placeholder="K" />
                 </div>
                 <div className={styles.inputGroup}>
-                    <label className={styles.label}>Surface Temp (Ts)</label>
+                    <label className={styles.label}>Surface Temperature - Ts (K)</label>
                     <input type="number" className={styles.input} value={surfaceTemp} onChange={(e) => setSurfaceTemp(+e.target.value)} placeholder="K" />
                 </div>
             </div>
@@ -85,7 +83,6 @@ export function CylinderFlowCalculator() {
 
             {res && (
                 <div className={styles.resultsContainer}>
-                    {/* Card de Resultado Principal */}
                     <div className={styles.resultCard}>
                         <span className={styles.resultLabel}>Heat Transfer Coeff. (h)</span>
                         <div className={styles.resultValue}>
