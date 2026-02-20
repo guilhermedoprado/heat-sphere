@@ -1,7 +1,7 @@
 // src/pages/NotesPage.tsx
 import React, { useState } from "react";
-import { MarkdownEditor } from "../components/MarkdownEditor";
-import { MarkdownPreview } from "../components/MarkdownPreview";
+import MarkdownEditor from "../components/markdown/MarkdownEditor";
+import MarkdownPreview from "../components//markdown/MarkdownPreview";
 
 export function NotesPage() {
   const [content, setContent] = useState<string>("Escreva aqui...");
