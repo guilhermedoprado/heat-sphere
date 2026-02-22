@@ -1,8 +1,7 @@
-﻿using HeatSphere.Application.Features.HeatExchangers.RateShellAndTube;
+﻿using HeatSphere.Application.Common.Interfaces;
+using HeatSphere.Application.Features.HeatExchangers.RateShellAndTube;
 using HeatSphere.Application.Features.ExternalFlow.CalculateCylinder;
-using HeatSphere.Application.Interfaces;
 using HeatSphere.Application.Services;
-using HeatSphere.Domain.Common;
 using HeatSphere.Domain.Entities;
 using HeatSphere.Domain.Interfaces;
 using HeatSphere.Infrastructure;
@@ -19,10 +18,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 // CORS (para React em http://localhost:5173)
-const string CorsPolicy = "FrontendDev";
+const string corsPolicy = "FrontendDev";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(CorsPolicy, policy =>
+    options.AddPolicy(corsPolicy, policy =>
         policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod());
@@ -39,7 +38,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Calcu
 
 var app = builder.Build();
 
-app.UseCors(CorsPolicy); // allow CORS globally
+app.UseCors(corsPolicy); // allow CORS globally
 
 app.UseSwagger();
 app.UseSwaggerUI();

@@ -1,4 +1,3 @@
-using HeatSphere.Domain.Entities;
 using HeatSphere.Domain.Interfaces;
 using HeatSphere.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

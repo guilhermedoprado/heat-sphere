@@ -8,8 +8,6 @@ public class FluidPropertyPointConfiguration : IEntityTypeConfiguration<FluidPro
 {
     public void Configure(EntityTypeBuilder<FluidPropertyPoint> builder)
     {
-        // Configurações da entidade (se houver)
-
         // Seed data
         builder.HasData(GetAirProperties());
     }

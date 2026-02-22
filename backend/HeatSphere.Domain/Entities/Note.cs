@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace HeatSphere.Domain.Entities;
+﻿namespace HeatSphere.Domain.Entities;
 
 public sealed class Note
 {

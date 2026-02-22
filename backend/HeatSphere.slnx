@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/HeatSphere.ArchitectureTests/HeatSphere.ArchitectureTests.csproj" />
+    <Project Path="tests/HeatSphere.IntegrationTests/HeatSphere.IntegrationTests.csproj" />
+    <Project Path="tests/HeatSphere.UnitTests/HeatSphere.UnitTests.csproj" />
+  </Folder>
   <Project Path="HeatSphere.Api/HeatSphere.Api.csproj" />
   <Project Path="HeatSphere.Application/HeatSphere.Application.csproj" />
   <Project Path="HeatSphere.Domain/HeatSphere.Domain.csproj" />

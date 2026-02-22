@@ -1,23 +1,14 @@
 using HeatSphere.Domain.Entities;
-using HeatSphere.Application.Interfaces; // Use a interface
+using HeatSphere.Application.Common.Interfaces;
 
 namespace HeatSphere.Application.Services;
 
-public class FluidInterpolationService
+public class FluidInterpolationService(IFluidRepository fluidRepository)
 {
-    private readonly IFluidRepository _fluidRepository; // Dependência da Interface
-
-    public FluidInterpolationService(IFluidRepository fluidRepository)
-    {
-        _fluidRepository = fluidRepository;
-    }
-
     public async Task<FluidPropertyPoint> GetPropertiesForTemperatureAsync(Guid fluidId, double targetTempK)
     {
-        // 1. Busca todos os pontos usando o repositório (ABSTRAÇÃO)
-        var allPoints = await _fluidRepository.GetPropertyPointsByFluidIdAsync(fluidId);
 
-        // O resto da lógica de negócio continua IDÊNTICA...
+        var allPoints = await fluidRepository.GetPropertyPointsByFluidIdAsync(fluidId);
 
         if (allPoints.Count == 0)
             throw new InvalidOperationException($"No property data found for fluid {fluidId}");

@@ -1,5 +1,3 @@
-using HeatSphere.Domain.Entities;
-
 namespace HeatSphere.Application.Features.HeatExchangers.RateShellAndTube;
 
 public sealed record RateShellAndTubeOutput(

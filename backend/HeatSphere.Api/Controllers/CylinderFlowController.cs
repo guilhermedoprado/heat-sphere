@@ -6,15 +6,8 @@ namespace HeatSphere.Api.Controllers;
 
 [ApiController]
 [Route("api/cylinder")]
-public class CylinderFlowController : ControllerBase
+public class CylinderFlowController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public CylinderFlowController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpPost("calculate")]
     [ProducesResponseType(typeof(CalculateCylinderFlowResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -22,12 +15,11 @@ public class CylinderFlowController : ControllerBase
     {
         try
         {
-            var result = await _mediator.Send(request);
+            var result = await mediator.Send(request);
             return Ok(result);
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            // Retorna erro amigável se a temperatura sair da tabela (ex: > 3000K)
             return BadRequest(new { error = ex.Message });
         }
         catch (Exception ex)

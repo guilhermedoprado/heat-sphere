@@ -8,7 +8,7 @@ public class FluidConfiguration : IEntityTypeConfiguration<Fluid>
 {
     public void Configure(EntityTypeBuilder<Fluid> builder)
     {
-        // Configurações da entidade
+        // Entity configuration
         builder.HasKey(f => f.Id);
         builder.Property(f => f.Name).IsRequired();
 
@@ -18,7 +18,7 @@ public class FluidConfiguration : IEntityTypeConfiguration<Fluid>
 
     private static Fluid GetAirFluid()
     {
-        var airId = Guid.Parse("11111111-1111-1111-1111-111111111111"); // Guid fixo para seed
+        var airId = Guid.Parse("11111111-1111-1111-1111-111111111111"); // Fixed Guid for seed
 
         return new Fluid(airId, "Air");
     }
