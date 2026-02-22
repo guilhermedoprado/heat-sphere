@@ -5,7 +5,7 @@ using HeatSphere.Application.Features.ExternalFlow.CalculateCylinder;
 namespace HeatSphere.Api.Controllers;
 
 [ApiController]
-[Route("api/cylinder")]
+[Route("api/cylinder-flow")]
 public class CylinderFlowController(IMediator mediator) : ControllerBase
 {
     [HttpPost("calculate")]
