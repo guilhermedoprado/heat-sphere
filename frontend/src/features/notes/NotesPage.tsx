@@ -1,10 +1,9 @@
-// src/pages/NotesPage.tsx
-import React, { useState } from "react";
-import MarkdownEditor from "../components/markdown/MarkdownEditor";
-import MarkdownPreview from "../components//markdown/MarkdownPreview";
+import { useState } from 'react';
+import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
+import { MarkdownPreview } from "../../components//markdown/MarkdownPreview";
 
 export function NotesPage() {
-  const [content, setContent] = useState<string>("Escreva aqui...");
+  const [content, setContent] = useState<string>("Write here...");
 
   return (
     <div style={{ display: "flex", gap: "1rem" }}>
@@ -13,7 +12,7 @@ export function NotesPage() {
         <MarkdownEditor value={content} onChange={setContent} />
       </div>
       <div style={{ flex: 1 }}>
-        <h2>Pré-visualização</h2>
+        <h2>Preview</h2>
         <MarkdownPreview content={content} />
       </div>
     </div>

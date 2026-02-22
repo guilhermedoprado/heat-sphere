@@ -1,4 +1,4 @@
-import { MarkdownEditor } from "../MarkdownEditor";
+import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 
 export function IntroductionToConvectionText() {
   const markdown = `# Introduction to Convection

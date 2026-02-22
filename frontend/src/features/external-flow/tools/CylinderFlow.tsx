@@ -26,11 +26,7 @@ export function CylinderFlowCalculator() {
     const [fluidTemp, setFluidTemp] = useState(300);        
     const [surfaceTemp, setSurfaceTemp] = useState(350);    
 
-    // Resultado da API
     const [res, setRes] = useState<ResponseDto | null>(null);
-    
-    // Controla visibilidade dos inputs
-    const [showInputs, setShowInputs] = useState(true);
 
     async function run() {
         const { data } = await axios.post<ResponseDto>("/api/cylinder-flow/calculate", {
@@ -41,7 +37,6 @@ export function CylinderFlowCalculator() {
             surfaceTemperature: surfaceTemp
         });
         setRes(data);
-        setShowInputs(true); 
     }
 
     return (

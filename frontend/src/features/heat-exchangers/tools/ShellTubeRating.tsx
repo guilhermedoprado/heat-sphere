@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, Legend, ReferenceLine
+  CartesianGrid, Legend
 } from "recharts";
 import styles from "./ShellTubeRating.module.css";
 

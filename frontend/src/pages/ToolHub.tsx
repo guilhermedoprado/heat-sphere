@@ -8,8 +8,6 @@ const ToolHub = () => {
   const { slug } = useParams<{ slug: string }>();
 
   const [moduleName, setModuleName] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
 
     const formatSlug = (str: string) => {
     return str
@@ -23,20 +21,12 @@ const ToolHub = () => {
     const controller = new AbortController();
 
     (async () => {
-      try {
-        setLoading(true);
-        setError('');
 
         const res = await fetch(`/api/modules/${slug}`, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = (await res.json()) as ModuleDto;
         setModuleName(data.name);
-      } catch (e: any) {
-        if (e?.name !== 'AbortError') setError('Failed to load module name');
-      } finally {
-        setLoading(false);
-      }
     })();
 
     return () => controller.abort();
@@ -59,11 +49,6 @@ const ToolHub = () => {
         </Link>
 
         <h1 className={styles.title}>Tools</h1>
-
-        {/* <p className={styles.subtitle}>
-          {loading ? 'Loading module…' : error ? error : `Interactive resources for `}
-          {!loading && !error && <strong>{moduleName}</strong>}
-        </p> */}
       </header>
 
       <div className={styles.diamond}>
