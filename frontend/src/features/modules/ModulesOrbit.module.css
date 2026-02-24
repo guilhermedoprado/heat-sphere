@@ -1,0 +1,208 @@
+/* Wrapper (era .container) */
+.container {
+    min-height: 100vh;
+    width: 100vw;
+    background: #0a0a0a;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* <-- Adicione isto para centralizar verticalmente */
+    position: relative;
+    overflow: hidden; /* overflow-x e y hidden para matar scroll fantasma e margin collapse */
+}
+
+
+/* Fundo Estelar Sutil */
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image:
+            radial-gradient(circle at 20% 30%, rgba(255, 140, 0, 0.05) 0%, transparent 20%),
+            radial-gradient(circle at 80% 70%, rgba(255, 0, 128, 0.05) 0%, transparent 20%);
+    pointer-events: none;
+}
+
+/* ── Sistema Solar ── */
+.orbitContainer {
+    position: relative;
+    width: 1000px;
+    height: 1000px;
+    margin: 0 auto; /* Remova o calc(50vh - 450px) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Sol Central */
+.sun {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow:
+            0 0 80px rgba(255, 100, 0, 0.2),
+            inset 0 0 60px rgba(0, 0, 0, 0.5);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.sunImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.3));
+}
+
+/* Texto central */
+.coreText {
+    position: absolute;
+    z-index: 2;
+    text-align: center;
+    pointer-events: none;
+}
+
+.coreTitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    margin: 0;
+    line-height: 1;
+}
+
+.coreSubtitle {
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    text-shadow: 0 2px 10px rgba(0,0,0,1);
+}
+
+/* Anel */
+.orbitRing {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+/* Planetas */
+.planetWrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 260px;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-380px) rotate(calc(var(--angle) * -1));
+    z-index: 2;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.planetWrapper:hover {
+    z-index: 10;
+}
+
+.planet {
+    display: block;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(16px);
+    padding: 1.25rem 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+.planet:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    transform: scale(1.15);
+    box-shadow: 0 10px 40px rgba(255, 140, 0, 0.3);
+    border-color: #fff;
+}
+
+.planetContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.planetModule {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.planet:hover .planetModule {
+    color: rgba(0,0,0,0.5);
+}
+
+.planetLabel {
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.2;
+}
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+    .container {
+        height: auto;
+        overflow-y: auto;
+        padding: 4rem 1.5rem;
+    }
+
+    .orbitContainer {
+        width: 100%;
+        height: auto;
+        margin: 0;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .sun { position: relative; width: 200px; height: 200px; margin-bottom: 1rem; }
+    .coreText { display: none; }
+
+    .orbitRing {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .planetWrapper {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        transform: none !important;
+    }
+
+    .planet {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        padding: 1.5rem;
+    }
+}

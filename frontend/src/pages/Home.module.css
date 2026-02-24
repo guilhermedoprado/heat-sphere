@@ -71,12 +71,22 @@
 
 .brandTagline {
   font-size: 1.875rem;
+  color: #ffc8a5;
   font-weight: 425;
   opacity: 0.9;
   margin: 0;
 }
 
-/* Botões CTA */
+.homeSub{
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #ffc8a5;
+  font-weight: 400;
+}
+
 .ctaGroup {
   display: flex;
   gap: 1rem;
@@ -84,9 +94,9 @@
   margin-top: 1rem;
 }
 
-.btnPrimary, .btnSecondary {
+.btnPrimary {
   padding: 0.8rem 2rem;
-  border-radius: 50px; /* Botões arredondados modernos */
+  border-radius: 50px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -101,20 +111,9 @@
 .btnPrimary:hover {
   background: #f0f0f0;
   transform: translateY(-2px);
+  color: #6b0909;
 }
 
-.btnSecondary {
-  background: transparent;
-  color: #fff;
-  border: 2px solid rgba(255,255,255,0.8);
-}
-
-.btnSecondary:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: #fff;
-}
-
-/* Scroll Hint */
 .scrollHint {
   position: absolute;
   bottom: 2rem;
@@ -131,12 +130,11 @@
   60% {transform: translateY(-5px);}
 }
 
-/* Main Content */
 .main {
   position: relative;
   z-index: 2;
-  background: #fff; /* Fundo branco para o conteúdo de texto */
-  min-height: 50vh; /* Garante que tenha algum tamanho */
+  background: #fff;
+  min-height: 50vh;
 }
 
 .features {

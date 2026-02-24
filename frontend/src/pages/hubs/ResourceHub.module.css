@@ -1,0 +1,295 @@
+/* src/pages/hubs/ResourceHub.module.css */
+
+/* Wrapper que pega a tela toda e dá o fundo preto */
+.pageWrapper {
+    min-height: 100vh;
+    width: 100%;
+    background-color: #0a0a0a;
+    color: #e5e5e5;
+    /* O padding-top deve ser igual ou maior que a altura da sua Navbar */
+    padding-top: 80px;
+    padding-bottom: 4rem;
+    position: relative;
+    overflow-x: hidden; /* Impede scroll horizontal causado pelo elemento decorativo */
+}
+
+/* Container que centraliza o conteúdo e limita a largura */
+.contentContainer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2; /* Garante que o conteúdo fique acima do elemento decorativo */
+}
+
+/* Elemento Decorativo "HeatSphere" */
+.decorativeLogo {
+    position: absolute;
+    top: 40px;
+    left: 0px;         /* "Vazando" um pouco da tela dá um efeito legal */
+    font-size: clamp(4rem, 8vw, 8rem); /* Bem grande */
+    font-weight: 900;
+    font-style: normal;
+    color: rgba(193, 90, 1, 0.05); /* Bem apagado (5%), textura premium */
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    user-select: none;
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+
+.hubHeader {
+    margin-bottom: 3rem;
+    position: relative;
+    padding-left: 1rem;
+    border-left: 4px solid #c15a01; /* Detalhe laranja */
+}
+
+.hubHeader h1 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.hubHeader p {
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+/* Sidebar Dark */
+.sidebar {
+    background: #171717; /* Cinza muito escuro, não preto total */
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+    position: sticky;
+    top: 100px; /* Ajuste conforme a altura da sua navbar */
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    color: #fff;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #c15a01;
+}
+
+.filterGroup h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.filterBtn, .activeFilter {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.filterBtn {
+    color: #aaa;
+}
+
+.filterBtn:focus-visible,
+.activeFilter:focus-visible {
+    outline: 2px solid rgba(255,255,255,0.9);
+    outline-offset: 2px;
+}
+
+
+.filterBtn:hover {
+    background: #222;
+    color: #fff;
+}
+
+.activeFilter {
+    background: rgba(193, 90, 1, 0.15); /* Laranja transparente */
+    color: #c15a01;
+    font-weight: 600;
+}
+
+/* Grid de Cards */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Card Dark */
+.card {
+    background: #171717;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Tira o azul do browser no clique */
+.card:focus {
+    outline: none;
+}
+
+/* Mantém acessibilidade por teclado, mas branco */
+.card:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 3px;
+}
+
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: #c15a01;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.cardModule {
+    color: #c15a01;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    background: #262626;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    color: #aaa;
+    font-size: 0.75rem;
+    border: 1px solid #333;
+}
+
+.badgeType {
+    background: rgba(193, 90, 1, 0.15); /* Fundo laranjinha */
+    color: #c15a01;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    border: 1px solid rgba(193, 90, 1, 0.3);
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    margin: 0;
+    color: #fff;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.cardTime {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.emptyState {
+    color: #666;
+    text-align: center;
+    padding: 4rem;
+    grid-column: 1 / -1;
+    border: 1px dashed #333;
+    border-radius: 12px;
+}
+
+/* Tabs de navegação superior */
+.typeTabs {
+    display: flex;
+    justify-content: flex-start; /* Alinhado à esquerda com o conteúdo */
+    gap: 0.5rem;
+    margin-bottom: 2.5rem; /* Respiro antes do grid */
+    border-bottom: 1px solid #222; /* Linha sutil separando do grid */
+    padding-bottom: 0;
+    position: relative;
+    z-index: 2; /* Fica acima da marca d'água */
+}
+
+.tab, .activeTab {
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px; /* Sobrepõe a borda da linha base */
+}
+
+.tab {
+    color: #888;
+}
+
+.tab:hover {
+    color: #e5e5e5;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px 8px 0 0;
+}
+
+.activeTab {
+    color: #c15a01; /* Laranja da sua paleta */
+    border-bottom-color: #c15a01;
+    background: rgba(193, 90, 1, 0.05); /* Fundo levíssimo na aba ativa */
+    border-radius: 8px 8px 0 0;
+}
+
+/* Garante que o layout comece embaixo das abas certinho */
+.layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 3rem;
+    align-items: start;
+    position: relative;
+    z-index: 2;
+}
+
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+        position: static;
+        margin-bottom: 2rem;
+    }
+    .decorativeLogo {
+        display: none; /* Esconde no mobile para não quebrar layout */
+    }
+}

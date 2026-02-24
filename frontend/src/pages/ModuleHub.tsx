@@ -116,9 +116,13 @@ const MODULE_DATA: Record<string, ModuleInfo> = {
 };
 
 const RESOURCES = [
-  { key: "notes", label: "Notes", path: "notes" },
-  { key: "tools", label: "Tools", path: "tools" },
+  { key: "notes",        label: "Notes",        path: "notes",        isLocal: true  },
+  { key: "formularies",  label: "Formularies",  path: "formularies",  isLocal: false },
+  { key: "solvers",      label: "Solvers",      path: "solvers",      isLocal: false },
+  { key: "calculations", label: "Calculations", path: "calculations", isLocal: false },
+  { key: "case-studies", label: "Case Studies", path: "case-studies", isLocal: false },
 ];
+
 
 export default function ModuleHub() {
   const { slug } = useParams<{ slug: string }>();
@@ -156,16 +160,18 @@ export default function ModuleHub() {
           </div>
         </header>
 
-        {/* Resource navigation */}
         <nav className={styles.resourceNav}>
-          {RESOURCES.map((r) => (
-            <Link
-              key={r.key}
-              to={`/modules/${slug}/${r.path}`}
-              className={styles.resourceCard}
-            >
-              <span>{r.label}</span>
-            </Link>
+          {RESOURCES.map(r => (
+              <Link
+                  key={r.key}
+                  to={r.isLocal
+                      ? `/modules/${slug}/${r.key}`          // notes: ainda local
+                      : `/${r.key}?module=${slug}`            // resto: Hub filtrado
+                  }
+                  className={styles.resourceCard}
+              >
+                {r.label}
+              </Link>
           ))}
         </nav>
 

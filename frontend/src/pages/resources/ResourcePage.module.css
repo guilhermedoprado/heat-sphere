@@ -1,0 +1,113 @@
+/* src/pages/resources/ResourcePage.module.css */
+.pageWrapper {
+    min-height: 100vh;
+    background: #0a0a0a;
+    color: #d4d4d4; /* Um pouco mais claro que e5e5e5 */
+    padding-top: 100px; /* Mais respiro do topo */
+    padding-bottom: 5rem;
+}
+
+.container {
+    max-width: 1024px; /* Mais largo pra caber as contas */
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 2rem; /* Mais distância do header */
+}
+
+.crumb { color: #aaa; text-decoration: none; }
+.crumb:hover { color: #fff; text-decoration: underline; }
+.sep { color: #444; }
+.current { color: #fff; }
+
+.header {
+    margin-bottom: 2.5rem; /* Mais breath pro BodyCard */
+}
+
+.titleRow {
+    display: flex;
+    gap: 1.5rem; /* Mais gap horizontal */
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-size: clamp(2rem, 4vw, 2.75rem); /* Título um pouco maior */
+    margin: 0;
+    color: #f1f1f1; /* Off-white pra não "gritar" */
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    margin: 0;
+    color: #a3a3a3;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 80ch;
+}
+
+/* Badges mais legíveis */
+.badges {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.badge, .badgeAccent, .badgeMuted {
+    border: 1px solid #333;
+    background: #171717;
+    border-radius: 6px; /* Menos redondo, mais técnico */
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    color: #e0e0e0; /* Texto mais claro */
+}
+
+.badgeAccent {
+    border-color: rgba(193, 90, 1, 0.5);
+    background: rgba(193, 90, 1, 0.15);
+    color: #e67d23; /* Laranja mais claro pra fundo escuro */
+    font-weight: 600;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.tag {
+    background: #111;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    border-radius: 8px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.bodyCard {
+    background: #121212; /* Um tiquinho mais claro que o fundo */
+    border: 1px solid #2a2a2a;
+    border-radius: 16px; /* Mais arredondado */
+    padding: 2.5rem; /* Muito mais breath interno */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.backLink {
+    display: flex;
+    color: #e67d23;
+    padding-bottom: 25px;
+}

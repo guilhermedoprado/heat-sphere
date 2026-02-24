@@ -1,0 +1,173 @@
+.shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    z-index: 100;
+}
+
+.nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 0.75rem 1.75rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.nav a {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav a:hover {
+    color: #c15a01;
+    transform: translateY(-1px);
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Container do Dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* O botão invisível que ativa o hover/focus */
+.dropdownToggle {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dropdownToggle:hover {
+    color: #c15a01; /* Laranja no hover */
+}
+
+/* O Menu escondido */
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff; /* Fundo branco pra combinar com nav */
+    min-width: 220px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+
+    /* Esconde com animação */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+/* MOSTRA o menu no hover ou quando alguém focar via Tab */
+.dropdown:hover .dropdownMenu,
+.dropdown:focus-within .dropdownMenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Links internos do dropdown */
+.dropdownMenu a {
+    display: block;
+    padding: 0.6rem 1rem;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.dropdownMenu a:hover,
+.dropdownMenu a:focus {
+    background: #fdfafa;
+    color: #c15a01;
+}
+
+
+.footer {
+    background: linear-gradient(180deg, #0a0a0a 10%, #c15a01 100%);
+    color: rgba(255, 255, 255, 1);
+    text-align: center;
+    /* Reduzido de 3rem para 1.5rem em cima/baixo para ficar mais estreito */
+    padding: 1.5rem 2rem;
+    font-size: 0.9rem; /* Um tiquinho menor para ficar mais sutil */
+    font-family: 'Inter', system-ui, sans-serif;
+    border-top: none;
+    margin-top: -1px;
+
+    /* Flexbox */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    /* Reduzido de 0.5rem para 0.25rem (as linhas ficam mais juntas) */
+    gap: 0.25rem;
+}
+
+.footer p {
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.techStack {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.footerLink {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+}
+
+.footerLink:hover {
+    color: #ffd8a8;
+    border-bottom-color: #ffd8a8;
+}
+
+.credits {
+    font-size: 0.75rem; /* Menorzinho pra sumir um pouco */
+    color: rgba(255, 255, 255, 0.4) !important; /* Mais apagado */
+    /* Subiu! Antes era 1rem, agora gruda mais com o bloco de cima */
+    margin-top: 0.25rem !important;
+}
+
+
+

@@ -19,7 +19,7 @@ type ResponseDto = {
     heatFlux: number;
 };
 
-export function CylinderFlowCalculator() {
+export function CylinderFlow() {
     const [name, setName] = useState("Cilindro");
     const [diameter, setDiameter] = useState(0.05);         
     const [velocity, setVelocity] = useState(10);           

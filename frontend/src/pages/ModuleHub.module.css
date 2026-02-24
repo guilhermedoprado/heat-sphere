@@ -1,10 +1,29 @@
+/* no final do .container do ModuleHub */
 .container {
-  min-height: 100vh;
-  background: #ffffff;
-  color: #37352f;
-  padding: 0;
+  background: #fff;
+  color: #111;
   position: relative;
+  /* espaço para o gradiente não engolir o conteúdo */
+  padding-bottom: 160px;
 }
+
+/* Fade branco → preto (#0a0a0a) */
+.container::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
+  background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0) 0%,
+          #0a0a0a 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
 
 /* ── Notion-like Banner ── */
 .banner {
@@ -99,6 +118,7 @@
 
 .resourceCard:hover {
   background: #f9fafb;
+  color: #c15a01;
   border-color: #d1d5db;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
