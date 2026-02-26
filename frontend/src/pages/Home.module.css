@@ -1,33 +1,28 @@
-/* Container principal ocupa a tela toda */
 .container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Landing Section (Tela Cheia) */
 .landing {
   position: relative;
-  height: 100vh; /* Ocupa 100% da altura da viewport */
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: #fff; /* Texto branco sobre imagem escura */
+  color: #fff;
 }
 
-/* Header Flutuante */
 .absoluteHeader {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 20; /* Fica acima da imagem e overlay */
-  /* Dica: Seu componente Header deve ter background transparente ou rgba(0,0,0,0.5) */
+  z-index: 20;
 }
 
-/* Imagem de Fundo */
 .bgImage {
   position: absolute;
   top: 0;
@@ -38,18 +33,16 @@
   z-index: 0;
 }
 
-/* Overlay Escuro (para ler o texto) */
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Ajuste a opacidade conforme necessário */
+  background: rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
 
-/* Conteúdo Centralizado */
 .brandCenter {
   position: relative;
   z-index: 10;

@@ -1,36 +1,30 @@
-/* src/pages/hubs/ResourceHub.module.css */
-
-/* Wrapper que pega a tela toda e dá o fundo preto */
 .pageWrapper {
     min-height: 100vh;
     width: 100%;
     background-color: #0a0a0a;
     color: #e5e5e5;
-    /* O padding-top deve ser igual ou maior que a altura da sua Navbar */
     padding-top: 80px;
     padding-bottom: 4rem;
     position: relative;
-    overflow-x: hidden; /* Impede scroll horizontal causado pelo elemento decorativo */
+    overflow-x: hidden;
 }
 
-/* Container que centraliza o conteúdo e limita a largura */
 .contentContainer {
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 2rem;
     position: relative;
-    z-index: 2; /* Garante que o conteúdo fique acima do elemento decorativo */
+    z-index: 2;
 }
 
-/* Elemento Decorativo "HeatSphere" */
 .decorativeLogo {
     position: absolute;
     top: 40px;
-    left: 0px;         /* "Vazando" um pouco da tela dá um efeito legal */
-    font-size: clamp(4rem, 8vw, 8rem); /* Bem grande */
+    left: 0px;
+    font-size: clamp(4rem, 8vw, 8rem);
     font-weight: 900;
     font-style: normal;
-    color: rgba(193, 90, 1, 0.05); /* Bem apagado (5%), textura premium */
+    color: rgba(193, 90, 1, 0.05);
     z-index: 0;
     pointer-events: none;
     white-space: nowrap;
@@ -43,7 +37,7 @@
     margin-bottom: 3rem;
     position: relative;
     padding-left: 1rem;
-    border-left: 4px solid #c15a01; /* Detalhe laranja */
+    border-left: 4px solid #c15a01;
 }
 
 .hubHeader h1 {
@@ -58,14 +52,13 @@
     margin-top: 0.5rem;
 }
 
-/* Sidebar Dark */
 .sidebar {
-    background: #171717; /* Cinza muito escuro, não preto total */
+    background: #171717;
     padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid #333;
     position: sticky;
-    top: 100px; /* Ajuste conforme a altura da sua navbar */
+    top: 100px;
 }
 
 .searchInput {
@@ -124,19 +117,17 @@
 }
 
 .activeFilter {
-    background: rgba(193, 90, 1, 0.15); /* Laranja transparente */
+    background: rgba(193, 90, 1, 0.15);
     color: #c15a01;
     font-weight: 600;
 }
 
-/* Grid de Cards */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-/* Card Dark */
 .card {
     background: #171717;
     border: 1px solid #333;
@@ -152,12 +143,10 @@
     overflow: hidden;
 }
 
-/* Tira o azul do browser no clique */
 .card:focus {
     outline: none;
 }
 
-/* Mantém acessibilidade por teclado, mas branco */
 .card:focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.35);
     outline-offset: 3px;
@@ -231,16 +220,15 @@
     border-radius: 12px;
 }
 
-/* Tabs de navegação superior */
 .typeTabs {
     display: flex;
-    justify-content: flex-start; /* Alinhado à esquerda com o conteúdo */
+    justify-content: flex-start;
     gap: 0.5rem;
-    margin-bottom: 2.5rem; /* Respiro antes do grid */
-    border-bottom: 1px solid #222; /* Linha sutil separando do grid */
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #222;
     padding-bottom: 0;
     position: relative;
-    z-index: 2; /* Fica acima da marca d'água */
+    z-index: 2;
 }
 
 .tab, .activeTab {
@@ -250,7 +238,7 @@
     font-weight: 500;
     transition: all 0.2s;
     border-bottom: 2px solid transparent;
-    margin-bottom: -1px; /* Sobrepõe a borda da linha base */
+    margin-bottom: -1px;
 }
 
 .tab {
@@ -264,13 +252,12 @@
 }
 
 .activeTab {
-    color: #c15a01; /* Laranja da sua paleta */
+    color: #c15a01;
     border-bottom-color: #c15a01;
-    background: rgba(193, 90, 1, 0.05); /* Fundo levíssimo na aba ativa */
+    background: rgba(193, 90, 1, 0.05);
     border-radius: 8px 8px 0 0;
 }
 
-/* Garante que o layout comece embaixo das abas certinho */
 .layout {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -290,6 +277,6 @@
         margin-bottom: 2rem;
     }
     .decorativeLogo {
-        display: none; /* Esconde no mobile para não quebrar layout */
+        display: none;
     }
 }

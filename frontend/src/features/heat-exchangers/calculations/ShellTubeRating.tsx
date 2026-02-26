@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios from "../../../lib/axios";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Legend
@@ -17,7 +17,7 @@ type ResponseDto = {
 };
 
 export function ShellTubeRating() {
-  // Valores default para um cenário realista (ex: Resfriamento de óleo)
+
   const [thInC, setThInC] = useState(150);
   const [thOutC, setThOutC] = useState(85);
   const [tcInC, setTcInC] = useState(30);
@@ -42,7 +42,7 @@ export function ShellTubeRating() {
 
   return (
     <div className={styles.container}>
-      {/* 1. Contexto do Problema */}
+
       <section className={styles.intro}>
         <h2>Case Study: Oil Cooler Performance</h2>
         <p>
@@ -56,7 +56,7 @@ export function ShellTubeRating() {
       </section>
 
       <div className={styles.workspace}>
-        {/* 2. Painel de Controle (Inputs) */}
+
         <div className={styles.controlPanel}>
           <h3>Operating Conditions</h3>
           <div className={styles.inputs}>
@@ -90,7 +90,7 @@ export function ShellTubeRating() {
           </button>
         </div>
 
-        {/* 3. Visualização e Resultados */}
+
         <div className={styles.analysisPanel}>
           {res ? (
             <>

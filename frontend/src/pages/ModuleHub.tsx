@@ -175,7 +175,6 @@ export default function ModuleHub() {
           ))}
         </nav>
 
-        {/* Briefing */}
         <section className={styles.briefing}>
         <h2>Module Overview</h2>
         <p>{mod.briefing}</p>

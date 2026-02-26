@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState, useCallback, useMemo } from "react";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import styles from "./Notes.module.css";
@@ -261,7 +261,6 @@ export default function Notes() {
     confirmMove(noteId, folder);
   }
 
-  // Group notes by subject (folder)
   const grouped = new Map<string, Note[]>();
   const ungrouped: Note[] = [];
   for (const note of notes) {
@@ -274,7 +273,6 @@ export default function Notes() {
     }
   }
 
-  // Wiki-link helpers
   const wikiNotes: WikiNoteInfo[] = useMemo(
     () => notes.map((n) => ({ id: n.id, title: n.title, briefDefinition: n.briefDefinition ?? "" })),
     [notes]
@@ -288,7 +286,6 @@ export default function Notes() {
     [notes]
   );
 
-  // Close context menu on outside click
   useEffect(() => {
     if (!contextMenu) return;
     const handler = () => closeContextMenu();
@@ -311,7 +308,6 @@ export default function Notes() {
           </button>
         </div>
 
-        {/* Folder actions */}
         <div className={styles.folderActions}>
           {showNewFolder && (
             <div className={styles.newFolderRow}>
@@ -329,7 +325,6 @@ export default function Notes() {
           )}
         </div>
 
-        {/* Folder tree */}
         <div className={styles.tree}>
           {folders.map((folder) => (
             <div key={folder} className={styles.folderGroup}>
@@ -396,7 +391,6 @@ export default function Notes() {
             </div>
           ))}
 
-          {/* Ungrouped notes */}
           {ungrouped.length > 0 && (
             <div className={styles.folderGroup}>
               <div className={styles.folderHeader}>
@@ -451,7 +445,6 @@ export default function Notes() {
         </div>
       </aside>
 
-      {/* Editor */}
       <main className={styles.editor}>
         {error && <div className={styles.error}>{error}</div>}
 
@@ -506,7 +499,6 @@ export default function Notes() {
         </div>
       </main>
 
-      {/* Context menu */}
       {contextMenu && (
         <div
           className={styles.contextMenu}
@@ -514,13 +506,13 @@ export default function Notes() {
           onClick={(e) => e.stopPropagation()}
         >
           <button className={styles.contextMenuItem} onClick={() => startRename(contextMenu.noteId)}>
-            Renomear
+            Rename
           </button>
           <button className={styles.contextMenuItem} onClick={() => startMove(contextMenu.noteId)}>
-            Mover para pasta
+            Move to folder
           </button>
           <button className={`${styles.contextMenuItem} ${styles.contextMenuDanger}`} onClick={() => confirmDeleteFromMenu(contextMenu.noteId)}>
-            Deletar
+            Delete
           </button>
         </div>
       )}

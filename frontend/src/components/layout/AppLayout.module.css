@@ -47,13 +47,11 @@
     width: 100%;
 }
 
-/* Container do Dropdown */
 .dropdown {
     position: relative;
     display: inline-block;
 }
 
-/* O botão invisível que ativa o hover/focus */
 .dropdownToggle {
     background: none;
     border: none;
@@ -67,23 +65,20 @@
 }
 
 .dropdownToggle:hover {
-    color: #c15a01; /* Laranja no hover */
+    color: #c15a01;
 }
 
-/* O Menu escondido */
 .dropdownMenu {
     position: absolute;
     top: 100%;
     left: 0;
-    background: #fff; /* Fundo branco pra combinar com nav */
+    background: #fff;
     min-width: 220px;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     border: 1px solid #eee;
     padding: 0.5rem 0;
     margin-top: 0.5rem;
-
-    /* Esconde com animação */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
@@ -91,7 +86,7 @@
     z-index: 100;
 }
 
-/* MOSTRA o menu no hover ou quando alguém focar via Tab */
+
 .dropdown:hover .dropdownMenu,
 .dropdown:focus-within .dropdownMenu {
     opacity: 1;
@@ -99,7 +94,7 @@
     transform: translateY(0);
 }
 
-/* Links internos do dropdown */
+
 .dropdownMenu a {
     display: block;
     padding: 0.6rem 1rem;
@@ -120,21 +115,17 @@
     background: linear-gradient(180deg, #0a0a0a 10%, #c15a01 100%);
     color: rgba(255, 255, 255, 1);
     text-align: center;
-    /* Reduzido de 3rem para 1.5rem em cima/baixo para ficar mais estreito */
     padding: 1.5rem 2rem;
-    font-size: 0.9rem; /* Um tiquinho menor para ficar mais sutil */
+    font-size: 0.9rem;
     font-family: 'Inter', system-ui, sans-serif;
     border-top: none;
     margin-top: -1px;
-
-    /* Flexbox */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
     box-sizing: border-box;
-    /* Reduzido de 0.5rem para 0.25rem (as linhas ficam mais juntas) */
     gap: 0.25rem;
 }
 
@@ -163,9 +154,8 @@
 }
 
 .credits {
-    font-size: 0.75rem; /* Menorzinho pra sumir um pouco */
-    color: rgba(255, 255, 255, 0.4) !important; /* Mais apagado */
-    /* Subiu! Antes era 1rem, agora gruda mais com o bloco de cima */
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4) !important;
     margin-top: 0.25rem !important;
 }
 

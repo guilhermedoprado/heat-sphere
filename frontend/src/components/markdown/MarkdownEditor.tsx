@@ -15,7 +15,6 @@ type Props = {
 };
 
 export function MarkdownEditor({ value, onChange, readOnly, notes = [], onNavigate }: Props) {
-  // Build a custom component map that renders wiki-link spans
   const components = useMemo(() => ({
     span: (props: React.HTMLAttributes<HTMLSpanElement> & { "data-wiki-target"?: string; children?: React.ReactNode }) => {
       const target = props["data-wiki-target"];

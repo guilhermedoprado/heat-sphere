@@ -5,8 +5,8 @@ import ScrollToAnchor from "../ScrollToAnchor.tsx";
 export default function AppLayout() {
     const location = useLocation();
 
-    // Esconde a navbar e o footer na página de anotações
     const isNotesPage = location.pathname.startsWith('/my-notes');
+
     return (
         <div className={styles.shell}>
             <ScrollToAnchor />

@@ -1,13 +1,10 @@
-/* no final do .container do ModuleHub */
 .container {
   background: #fff;
   color: #111;
   position: relative;
-  /* espaço para o gradiente não engolir o conteúdo */
   padding-bottom: 160px;
 }
 
-/* Fade branco → preto (#0a0a0a) */
 .container::after {
   content: "";
   position: absolute;
@@ -24,8 +21,6 @@
   z-index: 0;
 }
 
-
-/* ── Notion-like Banner ── */
 .banner {
   position: relative;
   width: 100%;
@@ -46,14 +41,12 @@
   background: linear-gradient(180deg, transparent 60%, rgba(255, 255, 255, 0.85) 100%);
 }
 
-/* ── Content area ── */
 .content {
   max-width: 900px;
   margin: 0 auto;
   padding: 3rem 2.5rem 4rem;
 }
 
-/* ── Header ── */
 .header {
   margin-bottom: 2.5rem;
 }
@@ -92,7 +85,6 @@
   line-height: 1.2;
 }
 
-/* ── Resource navigation (DESTACADO) ── */
 .resourceNav {
   display: flex;
   gap: 1rem;
@@ -124,7 +116,6 @@
   transform: translateY(-2px);
 }
 
-/* ── Briefing ── */
 .briefing {
   line-height: 1.8;
 }
@@ -154,7 +145,6 @@
   line-height: 1.75;
 }
 
-/* ── Custom Bullets (Modernos) ── */
 .briefing ul {
   padding-left: 0;
   margin: 0;
@@ -182,7 +172,6 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
   .content {
     padding: 2rem 1.5rem;

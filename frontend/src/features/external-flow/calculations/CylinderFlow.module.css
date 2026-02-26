@@ -5,9 +5,9 @@
 }
 
 .container {
-  background-color: #ffffff; /* Fundo branco para o conteúdo destacar */
+  background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -35,7 +35,6 @@
   line-height: 1.5;
 }
 
-/* Área de Inputs */
 .inputsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -78,7 +77,6 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Botões */
 .actions {
   display: flex;
   gap: 1rem;
@@ -123,7 +121,6 @@
   border-color: #9ca3af;
 }
 
-/* Resultados */
 .resultsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -168,16 +165,15 @@
 }
 
 .highlight {
-  color: #2563eb; /* Azul para destaque */
+  color: #c15a01;
 }
 
-/* CylinderFlow.module.css */
 .pageWrapper {
-  min-height: 100vh; /* Ocupa toda a altura da tela */
-  background-color: #f8fafc; /* O cinza elegante */
+  min-height: 100vh;
+  background-color: #f8fafc;
   width: 100%;
   display: flex;
-  justify-content: center; /* Centraliza o conteúdo se quiser */
+  justify-content: center;
   padding-top: 2rem;
 }
 

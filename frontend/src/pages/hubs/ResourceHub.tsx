@@ -30,30 +30,26 @@ const TABS = [
 ];
 
 export default function ResourceHub({ type }: { type: ResourceType | "all" }) {
+
     const [searchParams, setSearchParams] = useSearchParams();
     const location = useLocation();
 
-    // Filtros atuais (lidos da URL)
     const activeModule = searchParams.get("module") || "all";
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Lógica de filtragem
     const filteredItems = useMemo(() => {
         return RESOURCES.filter(item => {
-            // 1. Filtra pelo tipo (se não for "all")
+
             if (type !== "all" && item.type !== type) return false;
 
-            // 2. Filtra por Módulo (se selecionado)
             if (activeModule !== "all" && item.module !== activeModule) return false;
 
-            // 3. Filtra pela busca de texto
             if (searchQuery && !item.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
 
             return true;
         });
     }, [type, activeModule, searchQuery]);
 
-    // Atualiza a URL quando clica num filtro de módulo
     const handleModuleFilter = (modSlug: string) => {
         if (modSlug === "all") {
             searchParams.delete("module");
@@ -65,7 +61,6 @@ export default function ResourceHub({ type }: { type: ResourceType | "all" }) {
 
     return (
         <div className={styles.pageWrapper}>
-            {/* Elemento Decorativo Visual "HeatSphere" no fundo */}
             <div className={styles.decorativeLogo}>HeatSphere</div>
 
             <div className={styles.contentContainer}>
@@ -75,7 +70,6 @@ export default function ResourceHub({ type }: { type: ResourceType | "all" }) {
                     <p>Browse, filter, and search {type === "all" ? "everything we have." : `all available ${TYPE_LABEL_PLURAL[type]}.`}</p>
                 </header>
 
-                {/* 🔥 Type Tabs 🔥 */}
                 <div className={styles.typeTabs}>
                     {TABS.map(tab => {
                         const targetUrl = activeModule === "all"
@@ -92,7 +86,6 @@ export default function ResourceHub({ type }: { type: ResourceType | "all" }) {
                 </div>
 
                 <div className={styles.layout}>
-                    {/* ── Sidebar de Filtros ── */}
                     <aside className={styles.sidebar}>
                         <div className={styles.searchBox}>
                             <input
@@ -124,13 +117,12 @@ export default function ResourceHub({ type }: { type: ResourceType | "all" }) {
                         </div>
                     </aside>
 
-                    {/* ── Grid de Resultados ── */}
                     <main className={styles.grid}>
                         {filteredItems.length === 0 ? (
                             <div className={styles.emptyState}>No results found for your filters.</div>
                         ) : (
                             filteredItems.map(item => {
-                                // CORREÇÃO: Descobre a URL base correta mesmo se a aba atual for "All"
+
                                 const typePlural = item.type === "case-study" ? "case-studies" :
                                     item.type === "formulary" ? "formularies" :
                                         `${item.type}s`;

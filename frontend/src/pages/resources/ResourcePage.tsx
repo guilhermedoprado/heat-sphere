@@ -1,4 +1,3 @@
-// src/pages/resources/ResourcePage.tsx
 import { Link, useParams } from "react-router-dom";
 import { Suspense } from "react";
 import { RESOURCE_BY_SLUG, MODULES, type ResourceType } from "../../data/resources.ts";
@@ -36,7 +35,6 @@ export default function ResourcePage({ type }: { type: ResourceType }) {
         ? (MODULES.find(m => m.slug === item.module)?.label ?? item.module)
         : "";
 
-    // Hub filtrado — volta mantendo contexto do módulo
     const backTo = item
         ? `/${TYPE_PLURAL[type]}?module=${item.module}`
         : `/${TYPE_PLURAL[type]}`;
@@ -56,7 +54,6 @@ export default function ResourcePage({ type }: { type: ResourceType }) {
         <div className={styles.pageWrapper}>
             <div className={styles.container}>
 
-                {/* Breadcrumb */}
                 <nav className={styles.breadcrumb} aria-label="breadcrumb">
                     <Link to="/modules"              className={styles.crumb}>Modules</Link>
                     <span className={styles.sep}>/</span>
@@ -67,7 +64,6 @@ export default function ResourcePage({ type }: { type: ResourceType }) {
                     <span className={styles.current}>{item.title}</span>
                 </nav>
 
-                {/* Header */}
                 <header className={styles.header}>
                     <Link to={backTo} className={styles.backLink}>← Back to {TYPE_PLURAL_UPPER[type]}</Link>
 
@@ -90,7 +86,6 @@ export default function ResourcePage({ type }: { type: ResourceType }) {
                     ) : null}
                 </header>
 
-                {/* Conteúdo */}
                 <section className={styles.bodyCard}>
                     <Suspense fallback={<div className={styles.muted}>Loading...</div>}>
                     {Content

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios from "../../../lib/axios";
 import styles from "./CylinderFlow.module.css";
 
 type ResponseDto = {
@@ -20,7 +20,7 @@ type ResponseDto = {
 };
 
 export function CylinderFlow() {
-    const [name, setName] = useState("Cilindro");
+    const [name, setName] = useState("Cylinder");
     const [diameter, setDiameter] = useState(0.05);         
     const [velocity, setVelocity] = useState(10);           
     const [fluidTemp, setFluidTemp] = useState(300);        

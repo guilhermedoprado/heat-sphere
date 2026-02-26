@@ -1,14 +1,13 @@
-/* src/pages/resources/ResourcePage.module.css */
 .pageWrapper {
     min-height: 100vh;
     background: #0a0a0a;
-    color: #d4d4d4; /* Um pouco mais claro que e5e5e5 */
-    padding-top: 100px; /* Mais respiro do topo */
+    color: #d4d4d4;
+    padding-top: 100px;
     padding-bottom: 5rem;
 }
 
 .container {
-    max-width: 1024px; /* Mais largo pra caber as contas */
+    max-width: 1024px;
     margin: 0 auto;
     padding: 0 2rem;
 }
@@ -20,7 +19,7 @@
     align-items: center;
     font-size: 0.85rem;
     color: #777;
-    margin-bottom: 2rem; /* Mais distância do header */
+    margin-bottom: 2rem;
 }
 
 .crumb { color: #aaa; text-decoration: none; }
@@ -29,12 +28,12 @@
 .current { color: #fff; }
 
 .header {
-    margin-bottom: 2.5rem; /* Mais breath pro BodyCard */
+    margin-bottom: 2.5rem;
 }
 
 .titleRow {
     display: flex;
-    gap: 1.5rem; /* Mais gap horizontal */
+    gap: 1.5rem;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -42,9 +41,9 @@
 }
 
 .title {
-    font-size: clamp(2rem, 4vw, 2.75rem); /* Título um pouco maior */
+    font-size: clamp(2rem, 4vw, 2.75rem);
     margin: 0;
-    color: #f1f1f1; /* Off-white pra não "gritar" */
+    color: #f1f1f1;
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -58,7 +57,6 @@
     max-width: 80ch;
 }
 
-/* Badges mais legíveis */
 .badges {
     display: flex;
     gap: 0.75rem;
@@ -69,16 +67,16 @@
 .badge, .badgeAccent, .badgeMuted {
     border: 1px solid #333;
     background: #171717;
-    border-radius: 6px; /* Menos redondo, mais técnico */
+    border-radius: 6px;
     padding: 0.35rem 0.75rem;
     font-size: 0.85rem;
-    color: #e0e0e0; /* Texto mais claro */
+    color: #e0e0e0;
 }
 
 .badgeAccent {
     border-color: rgba(193, 90, 1, 0.5);
     background: rgba(193, 90, 1, 0.15);
-    color: #e67d23; /* Laranja mais claro pra fundo escuro */
+    color: #e67d23;
     font-weight: 600;
 }
 
@@ -99,10 +97,10 @@
 }
 
 .bodyCard {
-    background: #121212; /* Um tiquinho mais claro que o fundo */
+    background: #121212;
     border: 1px solid #2a2a2a;
-    border-radius: 16px; /* Mais arredondado */
-    padding: 2.5rem; /* Muito mais breath interno */
+    border-radius: 16px;
+    padding: 2.5rem;
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 

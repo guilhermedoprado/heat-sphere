@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { MarkdownPreview } from "../../components/markdown/MarkdownPreview";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import styles from "./NoteView.module.css";
@@ -178,7 +178,6 @@ export default function NoteView() {
         </p>
       </header>
 
-      {/* Table of contents when multiple notes */}
       {matchedNotes.length > 1 && (
         <div className={styles.toc}>
           <p className={styles.tocTitle}>Contents</p>
@@ -192,7 +191,6 @@ export default function NoteView() {
         </div>
       )}
 
-      {/* Render all matching notes */}
       {matchedNotes.map((note, i) => (
         <article key={note.id} id={`note-${i}`} className={styles.content}>
           {matchedNotes.length > 1 && (
