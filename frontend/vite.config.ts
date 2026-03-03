@@ -9,6 +9,9 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    allowedHosts: true
+    allowedHosts: [
+      'heatsphere-frontend.whitefield-dc96e279.brazilsouth.azurecontainerapps.io',
+      'heatsphere.guilhermedoprado.com'
+    ]
   }
 });
