@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import axios from "../../lib/axios";
+import { api } from "../../lib/axios";
 import { MarkdownPreview } from "../../components/markdown/MarkdownPreview";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import styles from "./NoteView.module.css";
@@ -60,7 +60,7 @@ export default function NoteView() {
 
     async function fetchNote() { // async function to fetch all notes and find the one matching the slug + category
       try {
-        const { data } = await axios.get<Note[]>("/api/notes"); // await the API response with all notes
+        const { data } = await api.get<Note[]>("/api/notes"); // await the API response with all notes
         const categoryTag = CATEGORY_TAG_MAP[category ?? ""] ?? category; // map URL category to backend tag (e.g. "formulary" -> "equation-sheet")
 
         const matches = data

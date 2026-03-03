@@ -1,0 +1,40 @@
+name: Build and Push Docker Images to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Docker Login to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and Push Core API (C#)
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-csharp:latest -f backend/HeatSphere.Api/Dockerfile ./backend
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-csharp:latest
+
+      - name: Build and Push Math Service (Python)
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-python:latest -f py_service/Dockerfile ./py_service
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-python:latest
+
+      - name: Build and Push API Gateway (Nginx)
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-gateway:latest -f nginx.Dockerfile .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-gateway:latest
+
+      - name: Build and Push Frontend (React)
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-frontend:latest -f frontend/Dockerfile ./frontend
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-frontend:latest

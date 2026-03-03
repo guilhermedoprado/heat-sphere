@@ -1,42 +1,52 @@
 import { useState } from "react";
-import axios from "../../../lib/axios";
+import { AxiosError } from "axios";
+import { api } from "../../../lib/axios";
 import styles from "./CylinderFlow.module.css";
 
+// Atualizado para bater com as chaves snake_case do Pydantic (Python)
 type ResponseDto = {
     id: string;
     name: string;
     diameter: number;
     velocity: number;
-    fluidTemperatureK: number;
-    surfaceTemperatureK: number;
-    filmTemperature: number;
-    kinematicViscosity: number;
+    fluid_temperature: number;
+    surface_temperature: number;
+    film_temperature: number;
+    kinematic_viscosity: number;
     prandtl: number;
-    thermalConductivity: number;
+    thermal_conductivity: number;
     reynolds: number;
     nusselt: number;
-    heatTransferCoefficient: number;
-    heatFlux: number;
+    heat_transfer_coefficient: number;
+    heat_flux: number;
 };
 
 export function CylinderFlow() {
     const [name, setName] = useState("Cylinder");
-    const [diameter, setDiameter] = useState(0.05);         
-    const [velocity, setVelocity] = useState(10);           
-    const [fluidTemp, setFluidTemp] = useState(300);        
-    const [surfaceTemp, setSurfaceTemp] = useState(350);    
+    const [diameter, setDiameter] = useState(0.05);
+    const [velocity, setVelocity] = useState(10);
+    const [fluidTemp, setFluidTemp] = useState(300);
+    const [surfaceTemp, setSurfaceTemp] = useState(350);
 
     const [res, setRes] = useState<ResponseDto | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     async function run() {
-        const { data } = await axios.post<ResponseDto>("/api/cylinder-flow/calculate", {
-            name: name,
-            diameter: diameter,
-            velocity: velocity,
-            fluidTemperature: fluidTemp,       
-            surfaceTemperature: surfaceTemp
-        });
-        setRes(data);
+        try {
+            setErrorMsg(null);
+            const { data } = await api.post<ResponseDto>("/api/external-flow/cylinder/calculate", {
+                name: name,
+                diameter: diameter,
+                velocity: velocity,
+                fluid_temperature: fluidTemp,
+                surface_temperature: surfaceTemp
+            });
+            setRes(data);
+        } catch (err) {
+            const axiosError = err as AxiosError<{message: string}>;
+            setErrorMsg(axiosError.response?.data?.message || "Temperature out of range or calculation failed.");
+            setRes(null);
+        }
     }
 
     return (
@@ -44,7 +54,7 @@ export function CylinderFlow() {
             <div className={styles.container}>
                 <h1 className={styles.title}>Cylinder Flow Solver</h1>
                 <p className={styles.description}>
-                    Calculate heat transfer coefficients for cross-flow over a circular cylinder using Churchill-Bernstein correlation.
+                    Calculate heat transfer coefficients for cross-flow over a circular cylinder.
                 </p>
             </div>
 
@@ -55,33 +65,39 @@ export function CylinderFlow() {
                 </div>
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>Diameter - D (m)</label>
-                    <input type="number" className={styles.input} value={diameter} onChange={(e) => setDiameter(+e.target.value)} placeholder="m" />
+                    <input type="number" className={styles.input} value={diameter} onChange={(e) => setDiameter(+e.target.value)} />
                 </div>
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>Velocity - V (m/s)</label>
-                    <input type="number" className={styles.input} value={velocity} onChange={(e) => setVelocity(+e.target.value)} placeholder="m/s" />
+                    <input type="number" className={styles.input} value={velocity} onChange={(e) => setVelocity(+e.target.value)} />
                 </div>
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>Fluid Temperature - T∞ (K)</label>
-                    <input type="number" className={styles.input} value={fluidTemp} onChange={(e) => setFluidTemp(+e.target.value)} placeholder="K" />
+                    <input type="number" className={styles.input} value={fluidTemp} onChange={(e) => setFluidTemp(+e.target.value)} />
                 </div>
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>Surface Temperature - Ts (K)</label>
-                    <input type="number" className={styles.input} value={surfaceTemp} onChange={(e) => setSurfaceTemp(+e.target.value)} placeholder="K" />
+                    <input type="number" className={styles.input} value={surfaceTemp} onChange={(e) => setSurfaceTemp(+e.target.value)} />
                 </div>
             </div>
 
             <div className={styles.actions}>
                 <button className={styles.primaryButton} onClick={run}>Calculate</button>
-                {res && <button className={styles.secondaryButton} onClick={() => setRes(null)}>Clear Results</button>}
+                {res && <button className={styles.secondaryButton} onClick={() => setRes(null)}>Clear</button>}
             </div>
+
+            {errorMsg && (
+                <div style={{color: 'red', marginTop: '10px', fontSize: '14px', textAlign: 'center'}}>
+                    {errorMsg}
+                </div>
+            )}
 
             {res && (
                 <div className={styles.resultsContainer}>
                     <div className={styles.resultCard}>
                         <span className={styles.resultLabel}>Heat Transfer Coeff. (h)</span>
                         <div className={styles.resultValue}>
-                            <span className={styles.highlight}>{res.heatTransferCoefficient.toFixed(2)}</span>
+                            <span className={styles.highlight}>{res.heat_transfer_coefficient.toFixed(2)}</span>
                             <span className={styles.resultUnit}>W/(m²·K)</span>
                         </div>
                     </div>
@@ -89,7 +105,7 @@ export function CylinderFlow() {
                     <div className={styles.resultCard}>
                         <span className={styles.resultLabel}>Heat Flux (q")</span>
                         <div className={styles.resultValue}>
-                            {res.heatFlux.toFixed(2)}
+                            {res.heat_flux.toFixed(2)}
                             <span className={styles.resultUnit}>W/m²</span>
                         </div>
                     </div>

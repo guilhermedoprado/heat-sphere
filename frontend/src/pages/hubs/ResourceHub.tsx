@@ -9,7 +9,6 @@ const HUB_TITLES: Record<string, string> = {
     "formulary": "Formularies & Equations",
     "solver": "Solvers & Tools",
     "calculation": "Step-by-step Calculations",
-    "case-study": "Engineering Case Studies",
 };
 
 // Modifiquei para aceitar "all" (como string vazia para não quebrar) ou use direto no JSX
@@ -18,7 +17,6 @@ const TYPE_LABEL_PLURAL: Record<string, string> = {
     "formulary": "formularies",
     "solver": "solvers",
     "calculation": "calculations",
-    "case-study": "case studies",
 };
 
 const TABS = [
@@ -26,7 +24,6 @@ const TABS = [
     { label: "Formularies", path: "/formularies" },
     { label: "Solvers", path: "/solvers" },
     { label: "Calculations", path: "/calculations" },
-    { label: "Case Studies", path: "/case-studies" },
 ];
 
 export default function ResourceHub({ type }: { type: ResourceType | "all" }) {
