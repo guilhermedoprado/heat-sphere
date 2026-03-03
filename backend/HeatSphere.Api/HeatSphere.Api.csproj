@@ -20,4 +20,8 @@
     <ProjectReference Include="..\HeatSphere.Infrastructure\HeatSphere.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

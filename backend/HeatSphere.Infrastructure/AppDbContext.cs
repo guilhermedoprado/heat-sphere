@@ -1,13 +1,12 @@
 using HeatSphere.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace HeatSphere.Infrastructure.Persistence;
+namespace HeatSphere.Infrastructure;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Note> Notes => Set<Note>();
-    public DbSet<Fluid> Fluids => Set<Fluid>();
-    public DbSet<FluidPropertyPoint> FluidPropertyPoints => Set<FluidPropertyPoint>();
+    public DbSet<WorkSession> WorkSessions => Set<WorkSession>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

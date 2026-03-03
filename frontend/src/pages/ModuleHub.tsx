@@ -120,7 +120,6 @@ const RESOURCES = [
   { key: "formularies",  label: "Formularies",  path: "formularies",  isLocal: false },
   { key: "solvers",      label: "Solvers",      path: "solvers",      isLocal: false },
   { key: "calculations", label: "Calculations", path: "calculations", isLocal: false },
-  { key: "case-studies", label: "Case Studies", path: "case-studies", isLocal: false },
 ];
 
 

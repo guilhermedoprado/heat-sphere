@@ -1,23 +1,17 @@
-﻿using HeatSphere.Application.Common.Interfaces;
-using HeatSphere.Application.Features.HeatExchangers.RateShellAndTube;
-using HeatSphere.Application.Features.ExternalFlow.CalculateCylinder;
-using HeatSphere.Application.Services;
+﻿
 using HeatSphere.Domain.Entities;
 using HeatSphere.Domain.Interfaces;
 using HeatSphere.Infrastructure;
-using HeatSphere.Infrastructure.Repositories;
-using HeatSphere.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Swagger / OpenAPI
-builder.Services.AddEndpointsApiExplorer(); // allow Swagger to find endpoints
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-// CORS (para React em http://localhost:5173)
 const string corsPolicy = "FrontendDev";
 builder.Services.AddCors(options =>
 {
@@ -27,24 +21,16 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// Infrastructure (PostgreSQL + DbContext)
 builder.Services.AddInfrastructure(builder.Configuration);
-
-// Register repositories and services
-builder.Services.AddScoped<IFluidRepository, FluidRepository>();
-builder.Services.AddScoped<FluidInterpolationService>();
-builder.Services.AddScoped<RateShellAndTubeHandler>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CalculateCylinderFlowHandler).Assembly));
 
 var app = builder.Build();
 
-app.UseCors(corsPolicy); // allow CORS globally
+app.UseCors(corsPolicy);
 
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
 
-// ── Auto-apply migrations on startup (dev only) ─────────────
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -52,9 +38,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 var api = app.MapGroup("/api");
-
-// ── Notes CRUD ──────────────────────────────────────────────
 var notes = api.MapGroup("/notes");
+var productivity = api.MapGroup("/productivity");
+
+// ------------------------------------------
+// ENDPOINTS PADRÕES DE NOTAS
+// ------------------------------------------
 
 notes.MapGet("/", async (INoteRepository repo, CancellationToken ct) =>
     TypedResults.Ok(await repo.GetAllAsync(ct)));
@@ -99,4 +88,113 @@ notes.MapDelete("/{id:guid}", async Task<Results<NoContent, NotFound>> (Guid id,
     return TypedResults.NoContent();
 });
 
+// ------------------------------------------
+// NOVOS ENDPOINTS DE PASTAS (BATCH OPERATIONS)
+// ------------------------------------------
+
+// DELETE: api/notes/folder?folderPath=...
+notes.MapDelete("/folder", async Task<Results<NoContent, NotFound, BadRequest<string>>> (
+    [FromQuery] string folderPath, 
+    INoteRepository repo, 
+    CancellationToken ct) =>
+{
+    if (string.IsNullOrWhiteSpace(folderPath)) return TypedResults.BadRequest("Folder path required");
+
+    var allNotes = await repo.GetAllAsync(ct);
+    var notesToDelete = allNotes.Where(n => n.Subject == folderPath || n.Subject?.StartsWith(folderPath + "/") == true).ToList();
+
+    if (!notesToDelete.Any()) return TypedResults.NotFound();
+
+    foreach(var note in notesToDelete)
+    {
+        repo.Delete(note);
+    }
+    
+    await repo.SaveChangesAsync(ct);
+    return TypedResults.NoContent();
+});
+
+// PUT: api/notes/folder/rename?oldPath=...&newPath=...
+notes.MapPut("/folder/rename", async Task<Results<NoContent, BadRequest<string>>> (
+    [FromQuery] string oldPath, 
+    [FromQuery] string newPath, 
+    INoteRepository repo, 
+    CancellationToken ct) =>
+{
+    if (string.IsNullOrWhiteSpace(oldPath) || string.IsNullOrWhiteSpace(newPath)) 
+        return TypedResults.BadRequest("Paths required");
+
+    var allNotes = await repo.GetAllAsync(ct);
+    var notesToUpdate = allNotes.Where(n => n.Subject == oldPath || n.Subject?.StartsWith(oldPath + "/") == true).ToList();
+
+    foreach (var note in notesToUpdate)
+    {
+        if (note.Subject == oldPath)
+        {
+            note.Subject = newPath;
+        }
+        else if (note.Subject != null && note.Subject.StartsWith(oldPath + "/"))
+        {
+            // Substitui "OldFolder/SubFolder" por "NewFolder/SubFolder"
+            note.Subject = newPath + note.Subject.Substring(oldPath.Length);
+        }
+        
+        note.UpdatedAt = DateTime.UtcNow;
+        repo.Update(note);
+    }
+
+    await repo.SaveChangesAsync(ct);
+    return TypedResults.NoContent();
+});
+
+// ------------------------------------------
+// ENDPOINTS DE PRODUTIVIDADE (POMODORO)
+// ------------------------------------------
+
+// GET: Retorna o Dashboard de estatísticas
+productivity.MapGet("/stats", async (AppDbContext db, CancellationToken ct) =>
+{
+    // Agrupa por tarefa e soma os segundos de todas as sessões salvas
+    var stats = await db.WorkSessions
+        .GroupBy(w => w.TaskName)
+        .Select(g => new {
+            TaskName = g.Key,
+            TotalSeconds = g.Sum(w => w.DurationSeconds)
+        })
+        .OrderByDescending(x => x.TotalSeconds)
+        .ToListAsync(ct);
+
+    var totalOverall = stats.Sum(s => s.TotalSeconds);
+
+    return TypedResults.Ok(new {
+        Tasks = stats,
+        TotalOverall = totalOverall
+    });
+});
+
+// POST: Salva uma sessão (seja ela completa de 25m ou parcial)
+productivity.MapPost("/session", async Task<Results<Ok, BadRequest<string>>> (
+    [FromBody] WorkSessionDto dto, 
+    AppDbContext db, 
+    CancellationToken ct) =>
+{
+    if(dto.DurationSeconds <= 0 || string.IsNullOrWhiteSpace(dto.TaskName)) 
+        return TypedResults.BadRequest("Invalid session data");
+
+    var session = new WorkSession
+    {
+        TaskName = dto.TaskName,
+        DurationSeconds = dto.DurationSeconds,
+        CreatedAt = DateTime.UtcNow
+    };
+
+    db.WorkSessions.Add(session);
+    await db.SaveChangesAsync(ct);
+    
+    return TypedResults.Ok();
+});
+
 app.Run();
+// Coloque este record no final do seu Program.cs
+public record WorkSessionDto(string TaskName, int DurationSeconds);
+

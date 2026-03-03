@@ -1,50 +1,75 @@
 services:
-  db:
-    image: postgres:17-alpine
-    container_name: heatsphere-db
+  # 1. O SEU NOVO API GATEWAY
+  gateway:
+    image: nginx:alpine
+    container_name: heatsphere_gateway
+    ports:
+      - "8080:80" # O Frontend vai chamar localhost:8080
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - py_service
+      - csharp_api
+
+  # 2. O MICROSSERVIÇO PYTHON (Matemática)
+  py_service:
+    build:
+      context: ./py_service
+      dockerfile: Dockerfile
+    container_name: heatsphere_math_service
+    # Removido o 'ports:' daqui! O frontend não acessa ele direto mais.
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # 3. O SEU BACKEND C# (Banco, Regras de Negócio, Autenticação)
+  csharp_api:
+    image: ${DOCKER_REGISTRY-}heatsphereapi
+    build:
+      context: ./backend
+      dockerfile: HeatSphere.Api/Dockerfile
+    container_name: heatsphere_core_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Mantive o Host=postgres_db aqui
+      - ConnectionStrings__DefaultConnection=Host=postgres_db;Database=heatspheredb;Username=postgres;Password=cguib00m.
+      - DOTNET_EnableGCRegions=0
+    depends_on:
+      # O C# só vai iniciar QUANDO o PostgreSQL passar no teste de saúde
+      postgres_db:
+        condition: service_healthy
+
+  # 4. O BANCO DE DADOS
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: heatsphere_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: cguib00m.
-      POSTGRES_DB: heat_sphere_db
+      POSTGRES_DB: heatspheredb
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    # Adicionamos um "Teste de Saúde" para o banco
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
-      retries: 7
+      retries: 5
 
-  api:
-    build:
-      context: .
-      dockerfile: backend/HeatSphere.Api/Dockerfile
-    container_name: heatsphere-api
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings:DefaultConnection: "Host=db;Port=5432;Database=heat_sphere_db;Username=postgres;Password=cguib00m." # connection string for PostgreSQL
-    ports:
-      - "8080:8080"
-    depends_on:
-      db:
-        condition: service_healthy
-
+  # 5. O SEU FRONTEND REACT
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    container_name: heatsphere-frontend
-    environment:
-      VITE_API_PROXY_TARGET: http://api:8080
+    container_name: heatsphere_frontend
     ports:
       - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+      - CHOKIDAR_USEPOLLING=true
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/index.html:/app/index.html
-    depends_on:
-      - api
+      - ./frontend:/app
+      - /app/node_modules # Adicione de volta para criar um volume isolado pro Linux
+    # Agora o comando é simples, pois o --host está no package.json
+    command: npm run dev
 
-volumes:
-  pgdata: # persistent volume for PostgreSQL data
+
+

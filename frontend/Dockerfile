@@ -1,10 +1,12 @@
 FROM node:20-alpine
+
 WORKDIR /app
 
-COPY package*.json ./
+# Copia os arquivos de dependência primeiro
+COPY package.json package-lock.json* ./
+
+# Instala as dependências dentro do container
 RUN npm install
 
-COPY . .
-
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+# O comando final que vai manter o container de pé
+CMD ["npm", "run", "dev"]
