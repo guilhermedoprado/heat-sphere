@@ -67,9 +67,10 @@ services:
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Adicione de volta para criar um volume isolado pro Linux
-    # Agora o comando é simples, pois o --host está no package.json
-    command: npm run dev
+      - /app/node_modules
+    # MUDANÇA AQUI: Forçando a flag direto no NPM/Vite CLI
+    command: npm run dev -- --host 0.0.0.0 --allowedHosts
+
 
 
 
