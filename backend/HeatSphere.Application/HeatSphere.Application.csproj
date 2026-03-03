@@ -9,8 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Interfaces\" />
-    <Folder Include="Services\" />
+    <Folder Include="Common\Behaviors" />
+    <Folder Include="Common\Exceptions" />
+    <Folder Include="UseCases" />
   </ItemGroup>
 
   <PropertyGroup>
