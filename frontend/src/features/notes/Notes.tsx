@@ -1,5 +1,10 @@
 ﻿import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { api } from "../../lib/axios"; // Usando a sua instância base que aponta pro Nginx
+import type {
+  MouseEvent as ReactMouseEvent,
+  DragEvent as ReactDragEvent,
+  ChangeEvent,
+} from "react";
+import { api } from "../../lib/axios";
 import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import styles from "./Notes.module.css";
@@ -24,6 +29,11 @@ type FolderNode = {
   notes: Note[];
 };
 
+type ProductivityStats = {
+  tasks: { taskName: string; totalSeconds: number }[];
+  totalOverall: number;
+};
+
 export default function Notes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selected, setSelected] = useState<Note | null>(null);
@@ -41,11 +51,16 @@ export default function Notes() {
   const [openFolders, setOpenFolders] = useState<Set<string>>(new Set());
 
   const [newFolderName, setNewFolderName] = useState("");
-  const [showNewFolder, setShowNewFolder] = useState<{ visible: boolean; parentPath: string | null }>({ visible: false, parentPath: null });
+  const [showNewFolder, setShowNewFolder] = useState<{
+    visible: boolean;
+    parentPath: string | null;
+  }>({ visible: false, parentPath: null });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isEditingMd, setIsEditingMd] = useState(false);
-  const editorAreaRef = useRef<HTMLElement>(null);
+
+  // Tipar como HTMLDivElement evita o erro de ref no <div> [web:335].
+  const editorAreaRef = useRef<HTMLDivElement | null>(null);
 
   const [tasks, setTasks] = useState<string[]>(() => {
     const saved = localStorage.getItem("deepWorkTasks");
@@ -59,16 +74,12 @@ export default function Notes() {
   const [timeLeft, setTimeLeft] = useState(POMODORO_TIME);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
-  type ProductivityStats = {
-    tasks: { taskName: string, totalSeconds: number }[];
-    totalOverall: number;
-  };
   const [stats, setStats] = useState<ProductivityStats | null>(null);
 
   const [contextMenu, setContextMenu] = useState<{ noteId: string; x: number; y: number } | null>(null);
   const [renamingNoteId, setRenamingNoteId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
-  const [movingNoteId, setMovingNoteId] = useState<string | null>(null);
+
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
 
   const [folderContextMenu, setFolderContextMenu] = useState<{ path: string; x: number; y: number } | null>(null);
@@ -90,6 +101,7 @@ export default function Notes() {
 
   useEffect(() => {
     let cancelled = false;
+
     async function fetchNotes() {
       try {
         const { data } = await api.get<Note[]>("/api/notes");
@@ -104,8 +116,11 @@ export default function Notes() {
         console.error(err);
       }
     }
+
     fetchNotes();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const fetchStats = useCallback(async () => {
@@ -121,34 +136,43 @@ export default function Notes() {
     fetchStats();
   }, [fetchStats]);
 
-  const saveWorkSession = async (durationSecs: number) => {
-    if (!selectedTask || durationSecs <= 0) return;
-    try {
-      await api.post("/api/productivity/session", {
-        taskName: selectedTask,
-        durationSeconds: durationSecs
-      });
-      fetchStats();
-    } catch (err) {
-      console.error("Failed to save session", err);
-    }
-  };
+  const saveWorkSession = useCallback(
+      async (durationSecs: number) => {
+        if (!selectedTask || durationSecs <= 0) return;
+        try {
+          await api.post("/api/productivity/session", {
+            taskName: selectedTask,
+            durationSeconds: durationSecs,
+          });
+          fetchStats();
+        } catch (err) {
+          console.error("Failed to save session", err);
+        }
+      },
+      [selectedTask, fetchStats]
+  );
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    // setInterval no frontend: use ReturnType<typeof setInterval> [web:336].
+    let interval: ReturnType<typeof setInterval> | undefined;
+
     if (isTimerRunning && timeLeft > 0) {
       interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     } else if (isTimerRunning && timeLeft === 0) {
       setIsTimerRunning(false);
       setTimeLeft(POMODORO_TIME);
       saveWorkSession(POMODORO_TIME);
-      new Audio('https://assets.mixkit.co/active/bell.wav').play().catch(() => {});
-      alert(`🎉 25 minutes completed for: ${selectedTask}!`);
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning, timeLeft, selectedTask]);
 
-  const toggleTimer = () => setIsTimerRunning(!isTimerRunning);
+      new Audio("https://assets.mixkit.co/active/bell.wav").play().catch(() => {});
+      alert(`25 minutes completed for: ${selectedTask}!`);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, timeLeft, selectedTask, POMODORO_TIME, saveWorkSession]);
+
+  const toggleTimer = () => setIsTimerRunning((prev) => !prev);
 
   const resetTimer = () => {
     setIsTimerRunning(false);
@@ -214,7 +238,7 @@ export default function Notes() {
 
     try {
       await api.post("/api/notes", {
-        title: `.sys_folder_marker`,
+        title: ".sys_folder_marker",
         subject: fullPath,
         contentMarkdown: " ",
         briefDefinition: "System marker to persist empty folder",
@@ -234,7 +258,7 @@ export default function Notes() {
     if (name && !tasks.includes(name)) {
       setTasks((prev) => {
         const newTasks = [...prev, name];
-        localStorage.setItem("deepWorkTasks", JSON.stringify(newTasks)); // Salva no cache
+        localStorage.setItem("deepWorkTasks", JSON.stringify(newTasks));
         return newTasks;
       });
       setSelectedTask(name);
@@ -255,6 +279,7 @@ export default function Notes() {
   async function save() {
     setSaving(true);
     setError("");
+
     const body = {
       title,
       subject,
@@ -270,10 +295,13 @@ export default function Notes() {
       } else {
         await api.post("/api/notes", body);
       }
+
       const { data } = await api.get<Note[]>("/api/notes");
       setNotes(data);
+
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders((prev) => Array.from(new Set([...prev, ...uniqueSubjects])));
+
       if (!selected) clearForm();
     } catch (err) {
       setError("Failed to save note.");
@@ -286,8 +314,10 @@ export default function Notes() {
     try {
       await api.delete(`/api/notes/${id}`);
       if (selected?.id === id) clearForm();
+
       const { data } = await api.get<Note[]>("/api/notes");
       setNotes(data);
+
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders((prev) => Array.from(new Set([...prev, ...uniqueSubjects])));
     } catch (err) {
@@ -295,7 +325,7 @@ export default function Notes() {
     }
   }
 
-  function handleContextMenu(e: React.MouseEvent, noteId: string) {
+  function handleContextMenu(e: ReactMouseEvent, noteId: string) {
     e.preventDefault();
     e.stopPropagation();
     setContextMenu({ noteId, x: e.clientX, y: e.clientY });
@@ -315,55 +345,18 @@ export default function Notes() {
       setRenamingNoteId(null);
       return;
     }
+
     try {
       await api.put(`/api/notes/${noteId}`, { ...note, title: renameValue.trim() });
       const { data } = await api.get<Note[]>("/api/notes");
       setNotes(data);
       if (selected?.id === noteId) setTitle(renameValue.trim());
-    } catch (err) {} finally {
+    } finally {
       setRenamingNoteId(null);
     }
   }
 
-  function startMove(noteId: string) {
-    setMovingNoteId(noteId);
-    setContextMenu(null);
-  }
-
-  async function confirmMove(noteId: string, newFolderPath: string) {
-    const noteIndex = notes.findIndex((n) => n.id === noteId);
-    if (noteIndex === -1) return;
-
-    const note = notes[noteIndex];
-    if (note.subject === newFolderPath) return;
-
-    const oldSubject = note.subject;
-    setNotes((prev) => {
-      const newNotes = [...prev];
-      newNotes[noteIndex] = { ...newNotes[noteIndex], subject: newFolderPath };
-      return newNotes;
-    });
-
-    if (selected?.id === noteId) setSubject(newFolderPath);
-
-    try {
-      await api.put(`/api/notes/${noteId}`, { ...note, subject: newFolderPath });
-      setFolders((prev) => prev.includes(newFolderPath) ? prev : [...prev, newFolderPath]);
-      setOpenFolders((prev) => new Set(prev).add(newFolderPath));
-    } catch (err) {
-      setNotes((prev) => {
-        const rollback = [...prev];
-        const idx = rollback.findIndex((n) => n.id === noteId);
-        if (idx > -1) rollback[idx] = { ...rollback[idx], subject: oldSubject };
-        return rollback;
-      });
-      setError("Failed to move note.");
-    } finally {
-      setMovingNoteId(null);
-    }
-  }
-
-  function handleFolderContextMenu(e: React.MouseEvent, folderPath: string) {
+  function handleFolderContextMenu(e: ReactMouseEvent, folderPath: string) {
     e.preventDefault();
     e.stopPropagation();
     setContextMenu(null);
@@ -379,6 +372,7 @@ export default function Notes() {
 
       const { data } = await api.get<Note[]>("/api/notes");
       setNotes(data);
+
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders(uniqueSubjects);
     } catch (err) {
@@ -390,7 +384,7 @@ export default function Notes() {
 
   function startFolderRename(folderPath: string) {
     setRenamingFolder(folderPath);
-    const parts = folderPath.split('/');
+    const parts = folderPath.split("/");
     setRenameFolderValue(parts[parts.length - 1]);
     setFolderContextMenu(null);
   }
@@ -401,9 +395,9 @@ export default function Notes() {
       return;
     }
 
-    const parts = oldPath.split('/');
+    const parts = oldPath.split("/");
     parts[parts.length - 1] = renameFolderValue.trim();
-    const newPath = parts.join('/');
+    const newPath = parts.join("/");
 
     if (newPath === oldPath) {
       setRenamingFolder(null);
@@ -411,7 +405,9 @@ export default function Notes() {
     }
 
     try {
-      await api.put(`/api/notes/folder/rename?oldPath=${encodeURIComponent(oldPath)}&newPath=${encodeURIComponent(newPath)}`);
+      await api.put(
+          `/api/notes/folder/rename?oldPath=${encodeURIComponent(oldPath)}&newPath=${encodeURIComponent(newPath)}`
+      );
 
       if (selected?.subject?.startsWith(oldPath)) {
         setSubject(newPath + selected.subject.substring(oldPath.length));
@@ -419,6 +415,7 @@ export default function Notes() {
 
       const { data } = await api.get<Note[]>("/api/notes");
       setNotes(data);
+
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders(uniqueSubjects);
     } catch (err) {
@@ -428,39 +425,68 @@ export default function Notes() {
     }
   }
 
-  function handleDragStart(e: React.DragEvent, noteId: string) {
+  function handleDragStart(e: ReactDragEvent, noteId: string) {
     e.dataTransfer.setData("text/plain", noteId);
     e.dataTransfer.effectAllowed = "move";
+
     setTimeout(() => {
       const target = e.target as HTMLElement;
-      if (target && target.style) {
-        target.style.opacity = "0.5";
-      }
+      if (target && target.style) target.style.opacity = "0.5";
     }, 0);
   }
 
-  function handleDragEnd(e: React.DragEvent) {
+  function handleDragEnd(e: ReactDragEvent) {
     const target = e.target as HTMLElement;
-    if (target && target.style) {
-      target.style.opacity = "1";
-    }
+    if (target && target.style) target.style.opacity = "1";
     setDragOverFolder(null);
   }
 
-  function handleDragOver(e: React.DragEvent, folderPath: string) {
+  function handleDragOver(e: ReactDragEvent, folderPath: string) {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     if (dragOverFolder !== folderPath) setDragOverFolder(folderPath);
   }
 
-  function handleDrop(e: React.DragEvent, folderPath: string) {
+  async function confirmMove(noteId: string, newFolderPath: string) {
+    const noteIndex = notes.findIndex((n) => n.id === noteId);
+    if (noteIndex === -1) return;
+
+    const note = notes[noteIndex];
+    if (note.subject === newFolderPath) return;
+
+    const oldSubject = note.subject;
+
+    setNotes((prev) => {
+      const newNotes = [...prev];
+      newNotes[noteIndex] = { ...newNotes[noteIndex], subject: newFolderPath };
+      return newNotes;
+    });
+
+    if (selected?.id === noteId) setSubject(newFolderPath);
+
+    try {
+      await api.put(`/api/notes/${noteId}`, { ...note, subject: newFolderPath });
+      setFolders((prev) => (prev.includes(newFolderPath) ? prev : [...prev, newFolderPath]));
+      setOpenFolders((prev) => new Set(prev).add(newFolderPath));
+    } catch (err) {
+      setNotes((prev) => {
+        const rollback = [...prev];
+        const idx = rollback.findIndex((n) => n.id === noteId);
+        if (idx > -1) rollback[idx] = { ...rollback[idx], subject: oldSubject };
+        return rollback;
+      });
+      setError("Failed to move note.");
+    }
+  }
+
+  function handleDrop(e: ReactDragEvent, folderPath: string) {
     e.preventDefault();
     setDragOverFolder(null);
     const noteId = e.dataTransfer.getData("text/plain");
     if (noteId) confirmMove(noteId, folderPath);
   }
 
-  function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  function handlePdfUpload(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file && file.type === "application/pdf") {
       const fileUrl = URL.createObjectURL(file);
@@ -468,7 +494,7 @@ export default function Notes() {
     } else if (file) {
       alert("Please upload a valid PDF file.");
     }
-    if (e.target) e.target.value = '';
+    e.target.value = "";
   }
 
   function clearPdf() {
@@ -476,43 +502,51 @@ export default function Notes() {
     setPdfUrl(null);
   }
 
-  const { tree, ungrouped } = useMemo(() => {
+  // FIX: tipagem explícita + deps obrigatórias do useMemo (corrige TS2554/TS2339).
+  const { tree, ungrouped } = useMemo<{ tree: Record<string, FolderNode>; ungrouped: Note[] }>(() => {
     const root: Record<string, FolderNode> = {};
     const ungroupedList: Note[] = [];
-    const allPaths = new Set([...folders, ...notes.map(n => n.subject).filter(Boolean)]);
 
-    Array.from(allPaths).forEach((path) => {
-      const parts = path.split('/');
-      let currentLevel = root;
-      let currentPath = '';
+    const allPaths = new Set([...folders, ...notes.map((n) => n.subject).filter(Boolean)]);
 
-      parts.forEach((part) => {
+    for (const path of allPaths) {
+      const parts = path.split("/");
+      let currentLevel: Record<string, FolderNode> = root;
+      let currentPath = "";
+
+      for (const part of parts) {
         currentPath = currentPath ? `${currentPath}/${part}` : part;
         if (!currentLevel[part]) {
           currentLevel[part] = { name: part, path: currentPath, subFolders: {}, notes: [] };
         }
         currentLevel = currentLevel[part].subFolders;
-      });
-    });
+      }
+    }
 
-    notes.forEach((note) => {
-      if (note.title === '.sys_folder_marker') return;
+    for (const note of notes) {
+      if (note.title === ".sys_folder_marker") continue;
 
       if (!note.subject) {
         ungroupedList.push(note);
-        return;
+        continue;
       }
-      const parts = note.subject.split('/');
-      let currentLevel = root;
-      let targetNode: FolderNode | null = null;
 
-      parts.forEach((part) => {
-        targetNode = currentLevel[part];
-        if (targetNode) currentLevel = targetNode.subFolders;
-      });
+      const parts = note.subject.split("/");
+      let currentLevel: Record<string, FolderNode> = root;
+      let targetNode: FolderNode | undefined;
+
+      for (const part of parts) {
+        const node = currentLevel[part];
+        if (!node) {
+          targetNode = undefined;
+          break;
+        }
+        targetNode = node;
+        currentLevel = node.subFolders;
+      }
 
       if (targetNode) targetNode.notes.push(note);
-    });
+    }
 
     return { tree: root, ungrouped: ungroupedList };
   }, [notes, folders]);
@@ -532,16 +566,7 @@ export default function Notes() {
                 border: isDragOver ? "1px dashed #c15a01" : "none",
               }}
               onClick={() => toggleFolder(node.path)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setContextMenu(null);
-                setFolderContextMenu({
-                  path: node.path,
-                  x: e.clientX,
-                  y: e.clientY
-                });
-              }}
+              onContextMenu={(e) => handleFolderContextMenu(e, node.path)}
               onDragOver={(e) => handleDragOver(e, node.path)}
               onDragLeave={() => setDragOverFolder(null)}
               onDrop={(e) => handleDrop(e, node.path)}
@@ -580,7 +605,7 @@ export default function Notes() {
 
           {isOpen && (
               <ul className={styles.folderNotes}>
-                {Object.values(node.subFolders).map(subNode => renderFolderNode(subNode, level + 1))}
+                {Object.values(node.subFolders).map((subNode) => renderFolderNode(subNode, level + 1))}
 
                 {node.notes.map((n) => (
                     <li
@@ -588,12 +613,7 @@ export default function Notes() {
                         className={`${styles.item} ${selected?.id === n.id ? styles.active : ""}`}
                         style={{ paddingLeft: `${2.2 + level * 1.2}rem` }}
                         onClick={() => selectNote(n)}
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setFolderContextMenu(null);
-                          setContextMenu({ noteId: n.id, x: e.clientX, y: e.clientY });
-                        }}
+                        onContextMenu={(e) => handleContextMenu(e, n.id)}
                         draggable
                         onDragStart={(e) => handleDragStart(e, n.id)}
                         onDragEnd={handleDragEnd}
@@ -616,6 +636,7 @@ export default function Notes() {
                       )}
                     </li>
                 ))}
+
                 <li
                     className={styles.addInFolder}
                     style={{ paddingLeft: `${2.2 + level * 1.2}rem` }}
@@ -629,33 +650,64 @@ export default function Notes() {
     );
   };
 
-  const wikiNotes: WikiNoteInfo[] = useMemo(() => notes.map((n) => ({ id: n.id, title: n.title, briefDefinition: n.briefDefinition ?? "" })), [notes]);
-  const navigateToNote = useCallback((noteId: string) => {
-    const note = notes.find((n) => n.id === noteId);
-    if (note) selectNote(note);
-  }, [notes]);
+  const wikiNotes: WikiNoteInfo[] = useMemo(
+      () => notes.map((n) => ({ id: n.id, title: n.title, briefDefinition: n.briefDefinition ?? "" })),
+      [notes]
+  );
+
+  const navigateToNote = useCallback(
+      (noteId: string) => {
+        const note = notes.find((n) => n.id === noteId);
+        if (note) selectNote(note);
+      },
+      [notes]
+  );
 
   useEffect(() => {
     if (!contextMenu && !folderContextMenu) return;
+
     const handler = () => {
       setContextMenu(null);
       setFolderContextMenu(null);
     };
+
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
   }, [contextMenu, folderContextMenu]);
+
+  const isUngroupedDragOver = dragOverFolder === "Ungrouped";
 
   return (
       <div className={styles.notesWorkspace}>
         <aside className={`${styles.sidebar} ${!isSidebarOpen ? styles.hidden : ""}`}>
           <div className={styles.sidebarHeader}>
-            <Link to="/" className={styles.backLink}>← Back to Home</Link>
+            <Link to="/" className={styles.backLink}>
+              ← Back to Home
+            </Link>
             <h2>My Notes</h2>
-            <button className={styles.newBtn} onClick={clearForm}>+ New Note</button>
+            <button className={styles.newBtn} onClick={clearForm}>
+              + New Note
+            </button>
 
             <div className={styles.btnRow}>
-              <button className={styles.addFolderBtn} onClick={() => { setShowNewFolder({ visible: true, parentPath: null }); setShowNewTask(false); }}>+ New Folder</button>
-              <button className={styles.addTaskBtn} onClick={() => { setShowNewTask(true); setShowNewFolder({ visible: false, parentPath: null }); }}>+ New Task</button>
+              <button
+                  className={styles.addFolderBtn}
+                  onClick={() => {
+                    setShowNewFolder({ visible: true, parentPath: null });
+                    setShowNewTask(false);
+                  }}
+              >
+                + New Folder
+              </button>
+              <button
+                  className={styles.addTaskBtn}
+                  onClick={() => {
+                    setShowNewTask(true);
+                    setShowNewFolder({ visible: false, parentPath: null });
+                  }}
+              >
+                + New Task
+              </button>
             </div>
           </div>
 
@@ -663,9 +715,9 @@ export default function Notes() {
             {showNewFolder.visible && (
                 <div className={styles.newFolderRow}>
                   <div className={styles.inputWrapper}>
-                    <span className={styles.folderContextLabel}>
-                      {showNewFolder.parentPath ? `${showNewFolder.parentPath}/` : "/"}
-                    </span>
+                <span className={styles.folderContextLabel}>
+                  {showNewFolder.parentPath ? `${showNewFolder.parentPath}/` : "/"}
+                </span>
                     <input
                         className={styles.newFolderInput}
                         placeholder="Folder name..."
@@ -675,8 +727,15 @@ export default function Notes() {
                         autoFocus
                     />
                   </div>
-                  <button className={styles.newFolderConfirm} onClick={addFolder}>Add</button>
-                  <button className={styles.newFolderCancel} onClick={() => setShowNewFolder({ visible: false, parentPath: null })}>×</button>
+                  <button className={styles.newFolderConfirm} onClick={addFolder}>
+                    Add
+                  </button>
+                  <button
+                      className={styles.newFolderCancel}
+                      onClick={() => setShowNewFolder({ visible: false, parentPath: null })}
+                  >
+                    ×
+                  </button>
                 </div>
             )}
 
@@ -690,23 +749,27 @@ export default function Notes() {
                       onKeyDown={(e) => e.key === "Enter" && addTask()}
                       autoFocus
                   />
-                  <button className={styles.newFolderConfirm} onClick={addTask}>Add</button>
-                  <button className={styles.newFolderCancel} onClick={() => setShowNewTask(false)}>×</button>
+                  <button className={styles.newFolderConfirm} onClick={addTask}>
+                    Add
+                  </button>
+                  <button className={styles.newFolderCancel} onClick={() => setShowNewTask(false)}>
+                    ×
+                  </button>
                 </div>
             )}
           </div>
 
           <div className={styles.tree}>
-            {Object.values(tree).map(node => renderFolderNode(node, 0))}
+            {Object.values(tree).map((node) => renderFolderNode(node, 0))}
 
             {ungrouped.length > 0 && (
                 <div>
                   <div
-                      className={`${styles.folderHeader} ${isDragOver ? styles.dragOver : ""}`}
+                      className={`${styles.folderHeader} ${isUngroupedDragOver ? styles.dragOver : ""}`}
                       style={{
                         paddingLeft: "1rem",
-                        backgroundColor: isDragOver ? "rgba(193, 90, 1, 0.15)" : "",
-                        border: isDragOver ? "1px dashed #c15a01" : "none",
+                        backgroundColor: isUngroupedDragOver ? "rgba(193, 90, 1, 0.15)" : "",
+                        border: isUngroupedDragOver ? "1px dashed #c15a01" : "none",
                       }}
                       onClick={() => toggleFolder("Ungrouped")}
                       onDragOver={(e) => handleDragOver(e, "Ungrouped")}
@@ -716,19 +779,16 @@ export default function Notes() {
                     <span className={styles.folderToggleIcon}>{openFolders.has("Ungrouped") ? "▾" : "▸"}</span>
                     <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>Ungrouped</span>
                   </div>
+
                   {openFolders.has("Ungrouped") && (
                       <ul className={styles.folderNotes}>
-                        {ungrouped.map((n) => (
+                        {ungrouped.map((n: Note) => (
                             <li
                                 key={n.id}
                                 className={`${styles.item} ${selected?.id === n.id ? styles.active : ""}`}
                                 style={{ paddingLeft: `2.2rem` }}
                                 onClick={() => selectNote(n)}
-                                onContextMenu={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setContextMenu({ noteId: n.id, x: e.clientX, y: e.clientY });
-                                }}
+                                onContextMenu={(e) => handleContextMenu(e, n.id)}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, n.id)}
                                 onDragEnd={handleDragEnd}
@@ -759,36 +819,46 @@ export default function Notes() {
 
           <div className={styles.pomodoroWidget}>
             <span className={styles.moveLabel}>Deep Work Tracker</span>
+
             <select
                 className={styles.taskSelect}
                 value={selectedTask}
                 onChange={(e) => setSelectedTask(e.target.value)}
                 disabled={isTimerRunning}
             >
-              <option value="" disabled>{tasks.length === 0 ? "Create a task first ☝️" : "Select Task..."}</option>
-              {tasks.map((t) => <option key={t} value={t}>{t}</option>)}
+              <option value="" disabled>
+                {tasks.length === 0 ? "Create a task first ☝️" : "Select Task..."}
+              </option>
+              {tasks.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+              ))}
             </select>
 
-            <div className={`${styles.pomodoroTime} ${isTimerRunning ? styles.timeRunning : ''}`}>
-              {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
+            <div className={`${styles.pomodoroTime} ${isTimerRunning ? styles.timeRunning : ""}`}>
+              {Math.floor(timeLeft / 60)
+                  .toString()
+                  .padStart(2, "0")}
+              :{(timeLeft % 60).toString().padStart(2, "0")}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <div style={{ display: "flex", gap: "0.4rem" }}>
               <button
                   className={styles.startSessionBtn}
                   disabled={!selectedTask}
                   onClick={toggleTimer}
-                  style={{ flex: 1, backgroundColor: isTimerRunning ? '#dc2626' : '' }}
+                  style={{ flex: 1, backgroundColor: isTimerRunning ? "#dc2626" : "" }}
               >
                 {isTimerRunning ? "Pause" : "Start"}
               </button>
             </div>
 
             {timeLeft < POMODORO_TIME && !isTimerRunning && (
-                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.2rem' }}>
+                <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.2rem" }}>
                   <button
                       className={styles.startSessionBtn}
-                      style={{ flex: 2, backgroundColor: '#059669', fontSize: '0.8rem', padding: '0.4rem' }}
+                      style={{ flex: 2, backgroundColor: "#059669", fontSize: "0.8rem", padding: "0.4rem" }}
                       onClick={saveProgress}
                       title="Save the time you spent so far"
                   >
@@ -796,7 +866,7 @@ export default function Notes() {
                   </button>
                   <button
                       className={styles.startSessionBtn}
-                      style={{ flex: 1, backgroundColor: '#a39581', fontSize: '0.8rem', padding: '0.4rem' }}
+                      style={{ flex: 1, backgroundColor: "#a39581", fontSize: "0.8rem", padding: "0.4rem" }}
                       onClick={resetTimer}
                   >
                     Cancel
@@ -806,17 +876,19 @@ export default function Notes() {
 
             {stats && stats.totalOverall > 0 && (
                 <div className={styles.statsContainer}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem'}}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
                     <span className={styles.moveLabel}>Dashboard</span>
-                    <span style={{fontSize: '0.75rem', fontWeight: 600, color: '#c15a01'}}>
-                    Total: {formatStatsTime(stats.totalOverall)}
-                  </span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#c15a01" }}>
+                  Total: {formatStatsTime(stats.totalOverall)}
+                </span>
                   </div>
 
                   <ul className={styles.statsList}>
                     {stats.tasks.map((stat) => (
                         <li key={stat.taskName} className={styles.statItem}>
-                          <span className={styles.statTask} title={stat.taskName}>{stat.taskName}</span>
+                    <span className={styles.statTask} title={stat.taskName}>
+                      {stat.taskName}
+                    </span>
                           <span className={styles.statCount}>{formatStatsTime(stat.totalSeconds)}</span>
                         </li>
                     ))}
@@ -828,27 +900,51 @@ export default function Notes() {
 
         <main className={styles.centerPanel}>
           <header className={styles.panelHeader}>
-            <button className={styles.toggleSidebarBtn} onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <button className={styles.toggleSidebarBtn} onClick={() => setIsSidebarOpen((p) => !p)}>
               {isSidebarOpen ? "◀" : "▶"}
             </button>
-            <span className={styles.moveLabel} style={{ flex: 1 }}>{subject ? `${subject}` : "Uncategorized"}</span>
+
+            <span className={styles.moveLabel} style={{ flex: 1 }}>
+            {subject ? subject : "Uncategorized"}
+          </span>
+
             {error && <span style={{ color: "red", fontSize: "0.8rem" }}>{error}</span>}
+
             <button className={styles.saveBtn} onClick={save} disabled={saving || !title}>
               {saving ? "Saving..." : selected ? "Update" : "Create"}
             </button>
+
             {selected && (
-                <button className={styles.deleteBtn} onClick={() => remove(selected.id)}>Delete</button>
+                <button className={styles.deleteBtn} onClick={() => remove(selected.id)}>
+                  Delete
+                </button>
             )}
           </header>
 
-          <div ref={editorAreaRef} className={styles.editorContainer} onClick={() => setIsEditingMd(true)} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div
+              ref={editorAreaRef}
+              className={styles.editorContainer}
+              onClick={() => setIsEditingMd(true)}
+              style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
+          >
             <div className={styles.editorToolbar}>
-              <input className={styles.titleInput} placeholder="Untitled Note..." value={title} onChange={(e) => setTitle(e.target.value)} />
+              <input
+                  className={styles.titleInput}
+                  placeholder="Untitled Note..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
 
-            <div className={`${styles.editor} ${styles.editorScroll}`} style={{ cursor: isEditingMd ? 'text' : 'pointer' }}>
+            <div className={`${styles.editor} ${styles.editorScroll}`} style={{ cursor: isEditingMd ? "text" : "pointer" }}>
               <div className={styles.mdEditor}>
-                <MarkdownEditor value={content} onChange={setContent} notes={wikiNotes} onNavigate={navigateToNote} previewMode={isEditingMd || !content ? "edit" : "preview"} />
+                <MarkdownEditor
+                    value={content}
+                    onChange={setContent}
+                    notes={wikiNotes}
+                    onNavigate={navigateToNote}
+                    previewMode={isEditingMd || !content ? "edit" : "preview"}
+                />
               </div>
             </div>
           </div>
@@ -866,37 +962,24 @@ export default function Notes() {
 
           <div className={styles.pdfContainer}>
             {pdfUrl ? (
-                <object
-                    data={pdfUrl}
-                    type="application/pdf"
-                    width="100%"
-                    height="100%"
-                    className={styles.pdfViewer}
-                >
-                  <p>Your browser does not support PDFs. <a href={pdfUrl}>Download the PDF</a>.</p>
+                <object data={pdfUrl} type="application/pdf" width="100%" height="100%" className={styles.pdfViewer}>
+                  <p>
+                    Your browser does not support PDFs. <a href={pdfUrl}>Download the PDF</a>.
+                  </p>
                 </object>
             ) : (
                 <div className={styles.pdfPlaceholder}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="12" y1="18" x2="12" y2="12" />
-                    <line x1="9" y1="15" x2="15" y2="15" />
-                  </svg>
                   <p>No document loaded</p>
 
                   <input
                       type="file"
                       accept="application/pdf"
                       ref={fileInputRef}
-                      style={{ display: 'none' }}
+                      style={{ display: "none" }}
                       onChange={handlePdfUpload}
                   />
 
-                  <button
-                      className={styles.pdfUploadBtn}
-                      onClick={() => fileInputRef.current?.click()}
-                  >
+                  <button className={styles.pdfUploadBtn} onClick={() => fileInputRef.current?.click()}>
                     Upload PDF for Split View
                   </button>
                 </div>
@@ -905,16 +988,41 @@ export default function Notes() {
         </aside>
 
         {contextMenu && (
-            <div className={styles.contextMenu} style={{ top: contextMenu.y, left: contextMenu.x }} onClick={(e) => e.stopPropagation()}>
-              <button className={styles.contextMenuItem} onClick={() => startRename(contextMenu.noteId)}>Rename</button>
-              <button className={`${styles.contextMenuItem} ${styles.contextMenuDanger}`} onClick={() => { setContextMenu(null); remove(contextMenu.noteId); }}>Delete</button>
+            <div
+                className={styles.contextMenu}
+                style={{ top: contextMenu.y, left: contextMenu.x }}
+                onClick={(e) => e.stopPropagation()}
+            >
+              <button className={styles.contextMenuItem} onClick={() => startRename(contextMenu.noteId)}>
+                Rename
+              </button>
+              <button
+                  className={`${styles.contextMenuItem} ${styles.contextMenuDanger}`}
+                  onClick={() => {
+                    setContextMenu(null);
+                    remove(contextMenu.noteId);
+                  }}
+              >
+                Delete
+              </button>
             </div>
         )}
 
         {folderContextMenu && (
-            <div className={styles.contextMenu} style={{ top: folderContextMenu.y, left: folderContextMenu.x }} onClick={(e) => e.stopPropagation()}>
-              <button className={styles.contextMenuItem} onClick={() => startFolderRename(folderContextMenu.path)}>Rename Folder</button>
-              <button className={`${styles.contextMenuItem} ${styles.contextMenuDanger}`} onClick={() => deleteFolder(folderContextMenu.path)}>Delete Folder & Notes</button>
+            <div
+                className={styles.contextMenu}
+                style={{ top: folderContextMenu.y, left: folderContextMenu.x }}
+                onClick={(e) => e.stopPropagation()}
+            >
+              <button className={styles.contextMenuItem} onClick={() => startFolderRename(folderContextMenu.path)}>
+                Rename Folder
+              </button>
+              <button
+                  className={`${styles.contextMenuItem} ${styles.contextMenuDanger}`}
+                  onClick={() => deleteFolder(folderContextMenu.path)}
+              >
+                Delete Folder & Notes
+              </button>
             </div>
         )}
       </div>
