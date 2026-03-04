@@ -2,6 +2,7 @@
 using HeatSphere.Domain.Entities;
 using HeatSphere.Domain.Interfaces;
 using HeatSphere.Infrastructure;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,17 @@ builder.Services.AddCors(options =>
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+var forwarded = new ForwardedHeadersOptions
+{
+  ForwardedHeaders = ForwardedHeaders.XForwardedFor
+                   | ForwardedHeaders.XForwardedProto
+                   | ForwardedHeaders.XForwardedHost
+};
+
+forwarded.KnownNetworks.Clear();
+forwarded.KnownProxies.Clear();
+app.UseForwardedHeaders(forwarded);
 
 app.UseCors(corsPolicy);
 

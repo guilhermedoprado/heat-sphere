@@ -1,40 +1,84 @@
-name: Build and Push Docker Images to ACR
+name: CI/CD - Build, Push, Deploy (ACA)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+
+env:
+  RG: rg-heatsphere-prod
+  ACR: ${{ secrets.ACR_LOGIN_SERVER }}
 
 jobs:
-  build-and-push:
+  build-test-push-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Docker Login to ACR
+      # (Opcional mas recomendado) testes/builds antes de publicar
+      - name: Frontend build
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: C# tests
+        run: |
+          dotnet test ./backend/HeatSphere.Api/HeatSphere.Api.csproj
+
+      - name: Python tests
+        run: |
+          pip install -r py_service/requirements.txt
+          pytest -q py_service || true
+
+      - name: Docker login ACR
         uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and Push Core API (C#)
+      - name: Build & push C#
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-csharp:latest -f backend/HeatSphere.Api/Dockerfile ./backend
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-csharp:latest
+          docker build -t $ACR/heatsphere-csharp:${{ github.sha }} -t $ACR/heatsphere-csharp:latest -f backend/HeatSphere.Api/Dockerfile ./backend
+          docker push $ACR/heatsphere-csharp:${{ github.sha }}
+          docker push $ACR/heatsphere-csharp:latest
 
-      - name: Build and Push Math Service (Python)
+      - name: Build & push Python
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-python:latest -f py_service/Dockerfile ./py_service
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-python:latest
+          docker build -t $ACR/heatsphere-python:${{ github.sha }} -t $ACR/heatsphere-python:latest -f py_service/Dockerfile ./py_service
+          docker push $ACR/heatsphere-python:${{ github.sha }}
+          docker push $ACR/heatsphere-python:latest
 
-      - name: Build and Push API Gateway (Nginx)
+      - name: Build & push Gateway
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-gateway:latest -f nginx.Dockerfile .
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-gateway:latest
+          docker build -t $ACR/heatsphere-gateway:${{ github.sha }} -t $ACR/heatsphere-gateway:latest -f nginx.Dockerfile .
+          docker push $ACR/heatsphere-gateway:${{ github.sha }}
+          docker push $ACR/heatsphere-gateway:latest
 
-      - name: Build and Push Frontend (React)
+      - name: Build & push Frontend
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-frontend:latest -f frontend/Dockerfile ./frontend
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/heatsphere-frontend:latest
+          docker build -t $ACR/heatsphere-frontend:${{ github.sha }} -t $ACR/heatsphere-frontend:latest -f frontend/Dockerfile ./frontend
+          docker push $ACR/heatsphere-frontend:${{ github.sha }}
+          docker push $ACR/heatsphere-frontend:latest
+
+      # Deploy de verdade (aplica a nova imagem -> nova revision)
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Container Apps (single revision mode)
+        run: |
+          az extension add --name containerapp --upgrade
+
+          az containerapp revision set-mode -n heatsphere-csharp   -g $RG --mode single
+          az containerapp revision set-mode -n heatsphere-python   -g $RG --mode single
+          az containerapp revision set-mode -n heatsphere-gateway  -g $RG --mode single
+          az containerapp revision set-mode -n heatsphere-frontend -g $RG --mode single
+
+          az containerapp update -n heatsphere-csharp   -g $RG --image $ACR/heatsphere-csharp:${{ github.sha }}
+          az containerapp update -n heatsphere-python   -g $RG --image $ACR/heatsphere-python:${{ github.sha }}
+          az containerapp update -n heatsphere-gateway  -g $RG --image $ACR/heatsphere-gateway:${{ github.sha }}
+          az containerapp update -n heatsphere-frontend -g $RG --image $ACR/heatsphere-frontend:${{ github.sha }}
