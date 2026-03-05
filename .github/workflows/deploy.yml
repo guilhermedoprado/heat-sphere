@@ -79,7 +79,7 @@ jobs:
           az containerapp revision set-mode -n heatsphere-gateway  -g $RG --mode single
           az containerapp revision set-mode -n heatsphere-frontend -g $RG --mode single
 
-          az containerapp update -n heatsphere-csharp   -g $RG --image $ACR/heatsphere-csharp:${{ github.sha }}
-          az containerapp update -n heatsphere-python   -g $RG --image $ACR/heatsphere-python:${{ github.sha }}
-          az containerapp update -n heatsphere-gateway  -g $RG --image $ACR/heatsphere-gateway:${{ github.sha }}
-          az containerapp update -n heatsphere-frontend -g $RG --image $ACR/heatsphere-frontend:${{ github.sha }}
+          az containerapp update -n heatsphere-csharp   -g $RG --image $ACR/heatsphere-csharp:${{ github.sha }} --min-replicas 1
+          az containerapp update -n heatsphere-python   -g $RG --image $ACR/heatsphere-python:${{ github.sha }} --min-replicas 1
+          az containerapp update -n heatsphere-gateway  -g $RG --image $ACR/heatsphere-gateway:${{ github.sha }} --min-replicas 1
+          az containerapp update -n heatsphere-frontend -g $RG --image $ACR/heatsphere-frontend:${{ github.sha }} --min-replicas 1
