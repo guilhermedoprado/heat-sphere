@@ -30,6 +30,7 @@ jobs:
       - name: Python tests
         run: |
           pip install -r py_service/requirements.txt
+          pip install pytest httpx
           pytest -q py_service
 
       - name: Docker login ACR
