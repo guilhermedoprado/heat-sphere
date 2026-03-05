@@ -10,8 +10,6 @@ Heat Sphere is an interactive learning platform designed to help students and en
 *   **Formulary:** A comprehensive database of correlations and formulas organized by topic.
 *   **Solvers:** Built-in tools to calculate parameters for various flow scenarios.
 *   **Exercises Sheets:** Step-by-step worked examples to practice problem-solving.
-*   **Case Studies:** Real-world engineering scenarios applied to theory.
-*   **Data Visualization:** Interactive charts to explore how parameters affect heat transfer.
 
 ## 🛠 Tech Stack
 
