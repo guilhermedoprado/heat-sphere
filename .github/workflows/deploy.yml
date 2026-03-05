@@ -60,7 +60,11 @@ jobs:
 
       - name: Build & push Frontend
         run: |
-          docker build -t $ACR/heatsphere-frontend:${{ github.sha }} -t $ACR/heatsphere-frontend:latest -f frontend/Dockerfile ./frontend
+          docker build \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            -t $ACR/heatsphere-frontend:${{ github.sha }} \
+            -t $ACR/heatsphere-frontend:latest \
+            -f frontend/Dockerfile ./frontend
           docker push $ACR/heatsphere-frontend:${{ github.sha }}
           docker push $ACR/heatsphere-frontend:latest
 

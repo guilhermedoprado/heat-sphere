@@ -15,7 +15,11 @@ app = FastAPI(title="HeatSphere Math Microservice")
 # Permite que o React (localhost:5173 ou outro domínio em prod) faça chamadas
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://heatsphere.guilhermedoprado.com"], # Em produção, coloque o link exato do seu frontend
+    allow_origins=[
+        "http://localhost:5173",
+        "https://heatsphere.guilhermedoprado.com",
+        "https://heatsphere-frontend.whitefield-dc96e279.brazilsouth.azurecontainerapps.io",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
