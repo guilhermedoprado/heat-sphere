@@ -16,13 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # (Opcional mas recomendado) testes/builds antes de publicar
-      - name: Frontend build
-        run: |
-          cd frontend
-          npm ci
-          npm run build
-
       - name: C# tests
         run: |
           dotnet test ./backend/HeatSphere.Api/HeatSphere.Api.csproj
@@ -61,6 +54,7 @@ jobs:
       - name: Build & push Frontend
         run: |
           docker build \
+            --no-cache \
             --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
             -t $ACR/heatsphere-frontend:${{ github.sha }} \
             -t $ACR/heatsphere-frontend:latest \
