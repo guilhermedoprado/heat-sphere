@@ -1,6 +1,7 @@
 ﻿using HeatSphere.Domain.Entities;
 using HeatSphere.Domain.Interfaces;
 using HeatSphere.Infrastructure;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ var fwdOptions = new ForwardedHeadersOptions
                      | ForwardedHeaders.XForwardedProto
                      | ForwardedHeaders.XForwardedHost
 };
-fwdOptions.KnownNetworks.Clear();
+fwdOptions.KnownIPNetworks.Clear();
 fwdOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(fwdOptions);
 
