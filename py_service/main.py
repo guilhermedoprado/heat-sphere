@@ -1,7 +1,6 @@
 import uuid
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 
 from models import (
     RateShellAndTubeInput, RateShellAndTubeOutput,
@@ -12,18 +11,7 @@ from services import FluidInterpolationService, AIR_FLUID_ID
 
 app = FastAPI(title="HeatSphere Math Microservice")
 
-# Permite que o React (localhost:5173 ou outro domínio em prod) faça chamadas
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://heatsphere.guilhermedoprado.com",
-        "https://heatsphere-frontend.whitefield-dc96e279.brazilsouth.azurecontainerapps.io",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS é tratado pelo nginx gateway (default.conf) para evitar headers duplicados.
 
 # --- Global Exception Handler para ValueErrors ---
 @app.exception_handler(ValueError)
