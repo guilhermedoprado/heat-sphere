@@ -4,5 +4,7 @@
 **/.vs
 **/.vscode
 **/bin
+**/bin\*
 **/obj
 **/out
+**/TestResults

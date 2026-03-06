@@ -9,6 +9,9 @@ public sealed class NoteRepository(AppDbContext db) : INoteRepository
     public async Task<Note?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await db.Notes.FindAsync([id], ct);
 
+    public async Task<IReadOnlyList<Note>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
+        => await db.Notes.AsNoTracking().Where(n => n.UserId == userId).ToListAsync(ct);
+
     public async Task<IReadOnlyList<Note>> GetAllAsync(CancellationToken ct = default)
         => await db.Notes.AsNoTracking().ToListAsync(ct);
 

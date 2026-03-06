@@ -159,5 +159,46 @@
     margin-top: 0.25rem !important;
 }
 
+.avatarLink {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    color: #1f2937;
+    transition: opacity 0.2s;
+}
+
+.avatarLink:hover {
+    opacity: 0.8;
+    color: #c15a01;
+    transform: none !important;
+}
+
+.avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #e0d5c8;
+}
+
+.avatarFallback {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #c15a01;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarName {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
 
 

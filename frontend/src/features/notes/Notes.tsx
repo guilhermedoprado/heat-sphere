@@ -1,10 +1,11 @@
-﻿import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import type {
   MouseEvent as ReactMouseEvent,
   DragEvent as ReactDragEvent,
   ChangeEvent,
 } from "react";
 import { api } from "../../lib/axios";
+import { useAuth } from "../../lib/auth";
 import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import styles from "./Notes.module.css";
@@ -35,6 +36,7 @@ type ProductivityStats = {
 };
 
 export default function Notes() {
+  const { user, logout } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [selected, setSelected] = useState<Note | null>(null);
   const [title, setTitle] = useState("");
@@ -685,6 +687,19 @@ export default function Notes() {
               ← Back to Home
             </Link>
             <h2>My Notes</h2>
+
+            {user && (
+              <div className={styles.userRow}>
+                {user.pictureUrl && (
+                  <img src={user.pictureUrl} alt={user.name} className={styles.userAvatar} />
+                )}
+                <span className={styles.userName}>{user.name}</span>
+                <button className={styles.logoutBtn} onClick={logout} title="Sign out">
+                  ↪
+                </button>
+              </div>
+            )}
+
             <button className={styles.newBtn} onClick={clearForm}>
               + New Note
             </button>

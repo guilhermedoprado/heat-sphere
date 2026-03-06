@@ -1,10 +1,12 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import styles from "./AppLayout.module.css";
 import ScrollToAnchor from "../ScrollToAnchor.tsx";
+import { useAuth } from "../../lib/auth";
 
 export default function AppLayout() {
     const location = useLocation();
     const isNotesPage = location.pathname.startsWith('/my-notes');
+    const { user, isAuthenticated } = useAuth();
 
     return (
         <div className={styles.shell} style={isNotesPage ? { backgroundColor: '#FDF9F4' } : {}}>
@@ -28,15 +30,26 @@ export default function AppLayout() {
                                 <Link to="/modules/heat-exchangers">Heat Exchangers</Link>
                             </div>
                         </div>
-                        <Link to="/my-notes">My Notes</Link>
+
                         <Link to="/formularies">Formularies</Link>
                         <Link to="/solvers">Solvers</Link>
                         <Link to="/calculations">Calculations</Link>
+
+                        {isAuthenticated && user ? (
+                            <Link to="/my-notes" className={styles.avatarLink}>
+                                {user.pictureUrl
+                                    ? <img src={user.pictureUrl} alt={user.name} className={styles.avatar} />
+                                    : <span className={styles.avatarFallback}>{user.name[0]}</span>
+                                }
+                                <span className={styles.avatarName}>{user.name.split(' ')[0]}</span>
+                            </Link>
+                        ) : (
+                            <Link to="/my-notes">My Notes</Link>
+                        )}
                     </nav>
                 </header>
             )}
 
-            {/* A MÁGICA ESTÁ AQUI: Removemos paddings/margins se for o My-Notes */}
             <main
                 className={styles.main}
                 style={isNotesPage ? { padding: 0, margin: 0, height: '100vh', width: '100vw', maxWidth: 'none', display: 'flex' } : {}}

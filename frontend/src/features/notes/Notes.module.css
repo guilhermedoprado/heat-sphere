@@ -1,4 +1,4 @@
-﻿/* Layout Principal - 3 Colunas (Sidebar + Middle + Right) */
+/* Layout Principal - 3 Colunas (Sidebar + Middle + Right) */
 .notesWorkspace {
   display: flex;
   height: 100vh; /* <-- REMOVA O CALC(-60PX). Deixe só 100vh! */
@@ -59,6 +59,50 @@
 
 .backLink:hover {
   opacity: 0.7;
+}
+
+/* User row */
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: #fdf0e6;
+  border-radius: 8px;
+  border: 1px solid #e8ddd0;
+}
+
+.userAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.userName {
+  flex: 1;
+  font-size: 0.8rem;
+  color: #5a4a3a;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoutBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9b8c7e;
+  font-size: 1rem;
+  padding: 0 0.1rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.logoutBtn:hover {
+  color: #c15a01;
 }
 
 /* Botões da Sidebar */

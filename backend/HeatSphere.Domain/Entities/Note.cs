@@ -1,8 +1,10 @@
-﻿namespace HeatSphere.Domain.Entities;
+namespace HeatSphere.Domain.Entities;
 
 public sealed class Note
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid? UserId { get; set; }
+    public User? User { get; set; }
     public required string Title { get; set; }
     public required string Subject { get; set; }
     public string ContentMarkdown { get; set; } = string.Empty;
