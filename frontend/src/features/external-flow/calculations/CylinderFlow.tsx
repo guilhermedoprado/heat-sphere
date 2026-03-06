@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 import { api } from "../../../lib/axios";
 import styles from "./CylinderFlow.module.css";
 
-// Atualizado para bater com as chaves snake_case do Pydantic (Python)
+// snake_case para compatibilidade com Go service
 type ResponseDto = {
     id: string;
     name: string;

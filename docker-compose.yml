@@ -37,7 +37,7 @@ services:
       - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=postgresql://neondb_owner:npg_bXBvc78CYmqQ@ep-falling-thunder-a85hlmu6-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require
+      - ConnectionStrings__DefaultConnection=Host=ep-falling-thunder-a85hlmu6-pooler.eastus2.azure.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_bXBvc78CYmqQ;Ssl Mode=Require
       - DOTNET_EnableGCRegions=0
     depends_on:
       postgres_db:

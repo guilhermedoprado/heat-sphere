@@ -7,7 +7,7 @@ import {
 } from "recharts";
 import styles from "./ShellTubeRating.module.css";
 
-// Atualizado para bater com as chaves snake_case do Pydantic (Python)
+// snake_case para compatibilidade com Go service
 type ResponseDto = {
   dt1: number;
   dt2: number;
