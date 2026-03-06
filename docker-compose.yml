@@ -1,28 +1,32 @@
 services:
-  # 1. O SEU NOVO API GATEWAY
+  # 1. API GATEWAY (Nginx)
   gateway:
     image: nginx:alpine
     container_name: heatsphere_gateway
     ports:
-      - "8080:80" # O Frontend vai chamar localhost:8080
+      - "8080:80"
     volumes:
       - ./default.dev.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - py_service
+      - go_service
       - csharp_api
+    networks:
+      - heatsphere
 
-  # 2. O MICROSSERVIÇO PYTHON (Matemática)
-  py_service:
+  # 2. O MICROSSERVIÇO DE CÁLCULOS (Go — migrado de Python)
+  go_service:
     build:
-      context: ./py_service
+      context: ./go_service
       dockerfile: Dockerfile
-    container_name: heatsphere_math_service
+    container_name: heatsphere_go_service
     ports:
       - "8000:8000"
     environment:
-      - PYTHONUNBUFFERED=1
+      - PORT=8000
+    networks:
+      - heatsphere
 
-  # 3. O SEU BACKEND C# (Banco, Regras de Negócio, Autenticação)
+  # 3. BACKEND C# (Banco, Regras de Negócio, Autenticação)
   csharp_api:
     image: ${DOCKER_REGISTRY-}heatsphereapi
     build:
@@ -33,11 +37,13 @@ services:
       - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres_db;Database=heatspheredb;Username=postgres;Password=cguib00m.
+      - ConnectionStrings__DefaultConnection=postgresql://neondb_owner:npg_bXBvc78CYmqQ@ep-falling-thunder-a85hlmu6-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require
       - DOTNET_EnableGCRegions=0
     depends_on:
       postgres_db:
         condition: service_healthy
+    networks:
+      - heatsphere
 
   # 4. O BANCO DE DADOS
   postgres_db:
@@ -54,6 +60,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - heatsphere
 
   # 5. O SEU FRONTEND REACT
   frontend:
@@ -65,7 +73,14 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://localhost:8080
+      - VITE_PROXY_TARGET=http://gateway:80
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    networks:
+      - heatsphere
+
+networks:
+  heatsphere:
+    name: heatsphere_net

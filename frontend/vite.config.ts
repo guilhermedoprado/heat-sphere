@@ -1,6 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+// Quando o frontend roda DENTRO do Docker, usa o gateway. Quando roda LOCAL (npm run dev), usa localhost:8080.
+const apiTarget = process.env.VITE_PROXY_TARGET || "http://localhost:8080";
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -10,11 +13,7 @@ export default defineConfig({
     allowedHosts: true,
     watch: { usePolling: true },
     proxy: {
-      '/api/notes':             { target: 'http://heatsphere_core_api:8080', changeOrigin: true },
-      '/api/auth':              { target: 'http://heatsphere_core_api:8080', changeOrigin: true },
-      '/api/productivity':      { target: 'http://heatsphere_core_api:8080', changeOrigin: true },
-      '/api/heat-exchangers':   { target: 'http://heatsphere_math_service:8000', changeOrigin: true },
-      '/api/external-flow':     { target: 'http://heatsphere_math_service:8000', changeOrigin: true },
-    }
-  }
+      "/api": { target: apiTarget, changeOrigin: true },
+    },
+  },
 });
