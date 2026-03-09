@@ -9,7 +9,7 @@ type PdfSlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
 };
 
-export function PdfSlot({ pdfUrl, onUpload, onClear, slotLabel = "PDF", fileInputRef }: PdfSlotProps) {
+export function PdfSlot({ pdfUrl, onUpload, slotLabel = "PDF", fileInputRef }: PdfSlotProps) {
   return (
     <div className={styles.pdfContainer}>
       {pdfUrl ? (
