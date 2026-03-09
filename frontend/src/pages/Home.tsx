@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "./Home.module.css";
 import Hero from "../features/landing-page/components/Hero";
+import FAQ from "../features/landing-page/components/FAQ";
 import bgImage from "../assets/wood-stick-burning-high-angle.jpg";
 
 const Home = () => {
@@ -47,6 +48,7 @@ const Home = () => {
             <main id="content" className={styles.main}>
                 <Hero />
             </main>
+            <FAQ />
         </div>
     );
 };

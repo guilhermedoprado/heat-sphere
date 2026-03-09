@@ -6,11 +6,16 @@ import type {
 } from "react";
 import { api } from "../../lib/axios";
 import { useAuth } from "../../lib/auth";
+import { useFocusTimer } from "../../hooks/useFocusTimer";
 import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import { PdfSlot } from "./PdfSlot";
 import styles from "./Notes.module.css";
 import { Link } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 type Note = {
   id: string;
@@ -73,9 +78,6 @@ export default function Notes() {
   const [newTaskName, setNewTaskName] = useState("");
   const [showNewTask, setShowNewTask] = useState(false);
 
-  const POMODORO_TIME = 25 * 60;
-  const [timeLeft, setTimeLeft] = useState(POMODORO_TIME);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
 
   const [stats, setStats] = useState<ProductivityStats | null>(null);
 
@@ -84,6 +86,7 @@ export default function Notes() {
   const [renameValue, setRenameValue] = useState("");
 
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
+  const draggedFolderRef = useRef<string | null>(null);
 
   const [folderContextMenu, setFolderContextMenu] = useState<{ path: string; x: number; y: number } | null>(null);
   const [renamingFolder, setRenamingFolder] = useState<string | null>(null);
@@ -95,6 +98,95 @@ export default function Notes() {
   const [middleBarMode, setMiddleBarMode] = useState<"editor" | "pdf">("editor");
   const [pdfUrlMiddle, setPdfUrlMiddle] = useState<string | null>(null);
   const fileInputRefMiddle = useRef<HTMLInputElement>(null);
+
+  const noteExportRef = useRef<HTMLDivElement>(null);
+
+  const handleExportNotePDF = () => {
+    const node = noteExportRef.current;
+    if (!node || !content) return;
+  
+    const katexCSS = Array.from(document.styleSheets)
+      .filter(s => { try { return !!s.href?.includes("katex"); } catch { return false; } })
+      .map(s => { try { return Array.from(s.cssRules).map(r => r.cssText).join("\n"); } catch { return ""; } })
+      .join("\n");
+  
+    const win = window.open("", "_blank", "width=900,height=700");
+    if (!win) { alert("Permita pop-ups para este site."); return; }
+  
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${title || "Nota"}</title>
+        <style>
+          ${katexCSS}
+          *, *::before, *::after { box-sizing: border-box; }
+          body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.75;
+            color: #1e293b;
+            margin: 2rem 2.5rem;
+            background: white;
+          }
+          h1 { font-size: 1.5rem; border-bottom: 3px solid #c15a01; padding-bottom: 0.4rem; color: #0f172a; }
+          h2 { font-size: 1.15rem; color: #7c3a10; border-left: 4px solid #c15a01; padding-left: 0.7rem; margin-top: 2rem; }
+          h3 { font-size: 1rem; color: #334155; margin-top: 1.2rem; }
+          p  { color: #3d2b1a; margin: 0.5rem 0; }
+          .katex-display {
+            background: rgba(193,90,1,0.06);
+            border-left: 4px solid #c15a01;
+            border-radius: 0 8px 8px 0;
+            padding: 0.75rem 1.25rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          /* Solver blocks aparecem como nota de rodapé */
+          pre {
+            background: #f5ede0;
+            border: 1px dashed #c15a01;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-size: 0.82rem;
+            color: #9a4800;
+            overflow-x: auto;
+          }
+          pre::before {
+            content: "⚙ Solver (use o app para ver os resultados)";
+            display: block;
+            font-size: 0.75rem;
+            color: #c15a01;
+            margin-bottom: 0.3rem;
+            font-style: italic;
+          }
+          code { background: #f0e4d0; color: #9a4800; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.88em; }
+          table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; }
+          thead th { background: #7c3a10; color: white; padding: 0.6rem 1rem; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          tbody tr:nth-child(even) { background: #f5ede0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          tbody td { padding: 0.5rem 1rem; border-top: 1px solid #e0ccb4; }
+          blockquote { background: rgba(193,90,1,0.07); border-left: 4px solid #c15a01; border-radius: 0 8px 8px 0; padding: 0.65rem 1rem; margin: 1rem 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          hr { border: none; border-top: 1.5px solid #e0ccb4; margin: 2rem 0; }
+          @media print {
+            body { margin: 1.5cm 2cm; }
+            .katex-display, pre, table, blockquote { page-break-inside: avoid; }
+            h2, h3 { page-break-after: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${title || "Nota"}</h1>
+        ${subject ? `<p style="color:#9a9a9a;font-size:0.85rem;margin:0 0 2rem">📁 ${subject}</p>` : ""}
+        ${node.innerHTML}
+      </body>
+      </html>
+    `);
+  
+    win.document.close();
+    win.onload = () => setTimeout(() => { win.focus(); win.print(); win.close(); }, 400);
+  }; 
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -152,6 +244,11 @@ export default function Notes() {
             durationSeconds: durationSecs,
           });
           fetchStats();
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("Foco concluído", {
+              body: `${selectedTask} — ${Math.floor(durationSecs / 60)} min`,
+            });
+          }
         } catch (err) {
           console.error("Failed to save session", err);
         }
@@ -159,35 +256,28 @@ export default function Notes() {
       [selectedTask, fetchStats]
   );
 
-  useEffect(() => {
-    // setInterval no frontend: use ReturnType<typeof setInterval> [web:336].
-    let interval: ReturnType<typeof setInterval> | undefined;
-
-    if (isTimerRunning && timeLeft > 0) {
-      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (isTimerRunning && timeLeft === 0) {
-      setIsTimerRunning(false);
-      setTimeLeft(POMODORO_TIME);
-      saveWorkSession(POMODORO_TIME);
-
-      new Audio("https://assets.mixkit.co/active/bell.wav").play().catch(() => {});
-      alert(`25 minutes completed for: ${selectedTask}!`);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isTimerRunning, timeLeft, selectedTask, POMODORO_TIME, saveWorkSession]);
-
-  const toggleTimer = () => setIsTimerRunning((prev) => !prev);
-
-  const resetTimer = () => {
-    setIsTimerRunning(false);
-    setTimeLeft(POMODORO_TIME);
-  };
+  const timer = useFocusTimer({ onWorkComplete: saveWorkSession });
+  const {
+    timeLeft,
+    isRunning: isTimerRunning,
+    phase: timerPhase,
+    config: timerConfig,
+    toggle: toggleTimer,
+    reset: resetTimer,
+    setWorkMinutes,
+    setBreakMinutes,
+    setAutoAdvance,
+    switchToWork,
+    switchToBreak,
+    workSecs,
+    MIN_WORK,
+    MAX_WORK,
+    MIN_BREAK,
+    MAX_BREAK,
+  } = timer;
 
   const saveProgress = () => {
-    const timeSpent = POMODORO_TIME - timeLeft;
+    const timeSpent = workSecs - timeLeft;
     saveWorkSession(timeSpent);
     resetTimer();
   };
@@ -432,25 +522,44 @@ export default function Notes() {
     }
   }
 
+  const FOLDER_DRAG_TYPE = "application/x-folder-path";
+
   function handleDragStart(e: ReactDragEvent, noteId: string) {
     e.dataTransfer.setData("text/plain", noteId);
     e.dataTransfer.effectAllowed = "move";
-
     setTimeout(() => {
       const target = e.target as HTMLElement;
-      if (target && target.style) target.style.opacity = "0.5";
+      if (target?.style) target.style.opacity = "0.5";
+    }, 0);
+  }
+
+  function handleFolderDragStart(e: ReactDragEvent, folderPath: string) {
+    draggedFolderRef.current = folderPath;
+    e.dataTransfer.setData(FOLDER_DRAG_TYPE, folderPath);
+    e.dataTransfer.setData("text/plain", ""); // evita conflito com note
+    e.dataTransfer.effectAllowed = "move";
+    e.stopPropagation();
+    setTimeout(() => {
+      const target = e.target as HTMLElement;
+      if (target?.style) target.style.opacity = "0.5";
     }, 0);
   }
 
   function handleDragEnd(e: ReactDragEvent) {
     const target = e.target as HTMLElement;
-    if (target && target.style) target.style.opacity = "1";
+    if (target?.style) target.style.opacity = "1";
+    draggedFolderRef.current = null;
     setDragOverFolder(null);
   }
 
   function handleDragOver(e: ReactDragEvent, folderPath: string) {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    const draggedFolder = draggedFolderRef.current;
+    if (draggedFolder && (folderPath === draggedFolder || folderPath.startsWith(draggedFolder + "/"))) {
+      setDragOverFolder(null);
+      return;
+    }
     if (dragOverFolder !== folderPath) setDragOverFolder(folderPath);
   }
 
@@ -486,9 +595,34 @@ export default function Notes() {
     }
   }
 
+  async function confirmFolderMove(oldPath: string, newPath: string) {
+    if (oldPath === newPath) return;
+    if (newPath.startsWith(oldPath + "/")) return; // não mover para dentro de si
+    try {
+      await api.put(
+          `/api/notes/folder/rename?oldPath=${encodeURIComponent(oldPath)}&newPath=${encodeURIComponent(newPath)}`
+      );
+      const { data } = await api.get<Note[]>("/api/notes");
+      setNotes(data);
+      setFolders(Array.from(new Set(data.map((n) => n.subject).filter(Boolean))));
+      if (selected?.subject?.startsWith(oldPath)) {
+        setSubject(newPath + selected.subject.substring(oldPath.length));
+      }
+    } catch {
+      setError("Failed to move folder.");
+    }
+  }
+
   function handleDrop(e: ReactDragEvent, folderPath: string) {
     e.preventDefault();
     setDragOverFolder(null);
+    const folderPathDragged = e.dataTransfer.getData(FOLDER_DRAG_TYPE);
+    if (folderPathDragged) {
+      const leaf = folderPathDragged.split("/").pop() ?? folderPathDragged;
+      const newPath = folderPath ? `${folderPath}/${leaf}` : leaf;
+      confirmFolderMove(folderPathDragged, newPath);
+      return;
+    }
     const noteId = e.dataTransfer.getData("text/plain");
     if (noteId) confirmMove(noteId, folderPath);
   }
@@ -595,12 +729,22 @@ export default function Notes() {
                 backgroundColor: isDragOver ? "rgba(193, 90, 1, 0.15)" : "",
                 border: isDragOver ? "1px dashed #c15a01" : "none",
               }}
+              draggable
+              onDragStart={(e) => handleFolderDragStart(e, node.path)}
+              onDragEnd={handleDragEnd}
               onClick={() => toggleFolder(node.path)}
               onContextMenu={(e) => handleFolderContextMenu(e, node.path)}
               onDragOver={(e) => handleDragOver(e, node.path)}
               onDragLeave={() => setDragOverFolder(null)}
               onDrop={(e) => handleDrop(e, node.path)}
           >
+            <span
+                className={styles.folderDragHandle}
+                title="Arrastar pasta"
+                onClick={(e) => e.stopPropagation()}
+            >
+              ⋮⋮
+            </span>
             <span className={styles.folderToggleIcon}>{isOpen ? "▾" : "▸"}</span>
 
             {renamingFolder === node.path ? (
@@ -757,19 +901,14 @@ export default function Notes() {
           <div className={styles.folderActions}>
             {showNewFolder.visible && (
                 <div className={styles.newFolderRow}>
-                  <div className={styles.inputWrapper}>
-                <span className={styles.folderContextLabel}>
-                  {showNewFolder.parentPath ? `${showNewFolder.parentPath}/` : "/"}
-                </span>
-                    <input
-                        className={styles.newFolderInput}
-                        placeholder="Folder name..."
-                        value={newFolderName}
-                        onChange={(e) => setNewFolderName(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && addFolder()}
-                        autoFocus
-                    />
-                  </div>
+                  <input
+                      className={styles.newFolderInput}
+                      placeholder="Folder name..."
+                      value={newFolderName}
+                      onChange={(e) => setNewFolderName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && addFolder()}
+                      autoFocus
+                  />
                   <button className={styles.newFolderConfirm} onClick={addFolder}>
                     Add
                   </button>
@@ -863,6 +1002,42 @@ export default function Notes() {
           <div className={styles.pomodoroWidget}>
             <span className={styles.moveLabel}>Deep Work Tracker</span>
 
+            <div className={styles.timerConfig}>
+              <div className={styles.timerConfigRow}>
+                <label className={styles.timerConfigLabel}>Focus (min)</label>
+                <input
+                    type="number"
+                    min={MIN_WORK}
+                    max={MAX_WORK}
+                    value={timerConfig.workMinutes}
+                    onChange={(e) => setWorkMinutes(Number(e.target.value) || MIN_WORK)}
+                    disabled={isTimerRunning}
+                    className={styles.timerConfigInput}
+                />
+              </div>
+              <div className={styles.timerConfigRow}>
+                <label className={styles.timerConfigLabel}>Pause (min)</label>
+                <input
+                    type="number"
+                    min={MIN_BREAK}
+                    max={MAX_BREAK}
+                    value={timerConfig.breakMinutes}
+                    onChange={(e) => setBreakMinutes(Number(e.target.value) || MIN_BREAK)}
+                    disabled={isTimerRunning}
+                    className={styles.timerConfigInput}
+                />
+              </div>
+              <label className={styles.timerConfigCheck}>
+                <input
+                    type="checkbox"
+                    checked={timerConfig.autoAdvance}
+                    onChange={(e) => setAutoAdvance(e.target.checked)}
+                    disabled={isTimerRunning}
+                />
+                <span>Auto advance focus ↔ pause</span>
+              </label>
+            </div>
+
             <select
                 className={styles.taskSelect}
                 value={selectedTask}
@@ -879,40 +1054,61 @@ export default function Notes() {
               ))}
             </select>
 
-            <div className={`${styles.pomodoroTime} ${isTimerRunning ? styles.timeRunning : ""}`}>
+            <div
+                className={`${styles.pomodoroTime} ${isTimerRunning ? styles.timeRunning : ""} ${timerPhase === "break" ? styles.timeBreak : ""}`}
+            >
               {Math.floor(timeLeft / 60)
                   .toString()
                   .padStart(2, "0")}
               :{(timeLeft % 60).toString().padStart(2, "0")}
             </div>
 
+            {!isTimerRunning && (
+                <div className={styles.phaseSwitcher}>
+                  <button
+                      type="button"
+                      className={`${styles.phaseBtn} ${timerPhase === "work" ? styles.phaseBtnActive : ""}`}
+                      onClick={switchToWork}
+                  >
+                    Foco
+                  </button>
+                  <button
+                      type="button"
+                      className={`${styles.phaseBtn} ${timerPhase === "break" ? styles.phaseBtnActive : ""}`}
+                      onClick={switchToBreak}
+                  >
+                    Pausa
+                  </button>
+                </div>
+            )}
+
             <div style={{ display: "flex", gap: "0.4rem" }}>
               <button
                   className={styles.startSessionBtn}
-                  disabled={!selectedTask}
+                  disabled={timerPhase === "work" && !selectedTask}
                   onClick={toggleTimer}
                   style={{ flex: 1, backgroundColor: isTimerRunning ? "#dc2626" : "" }}
               >
-                {isTimerRunning ? "Pause" : "Start"}
+                {isTimerRunning ? "Pausar" : "Iniciar"}
               </button>
             </div>
 
-            {timeLeft < POMODORO_TIME && !isTimerRunning && (
+            {timerPhase === "work" && timeLeft < workSecs && !isTimerRunning && (
                 <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.2rem" }}>
                   <button
                       className={styles.startSessionBtn}
                       style={{ flex: 2, backgroundColor: "#059669", fontSize: "0.8rem", padding: "0.4rem" }}
                       onClick={saveProgress}
-                      title="Save the time you spent so far"
+                      title="Salvar o tempo já estudado"
                   >
-                    Save Progress
+                    Salvar progresso
                   </button>
                   <button
                       className={styles.startSessionBtn}
                       style={{ flex: 1, backgroundColor: "#a39581", fontSize: "0.8rem", padding: "0.4rem" }}
                       onClick={resetTimer}
                   >
-                    Cancel
+                    Cancelar
                   </button>
                 </div>
             )}
@@ -1016,6 +1212,19 @@ export default function Notes() {
               fileInputRef={fileInputRefMiddle}
             />
           )}
+          {middleBarMode === "editor" && (
+            <>
+              {content && (
+                <button
+                  className={styles.exportPdfIconBtn}
+                  onClick={handleExportNotePDF}
+                  title="Export as PDF"
+                >
+                  Export as PDF ⬇
+                </button>
+              )}
+            </>
+          )}
         </main>
 
         <aside className={styles.rightPanel}>
@@ -1074,6 +1283,32 @@ export default function Notes() {
               </button>
             </div>
         )}
+        {/* Render oculto para exportação PDF */}
+        <div
+          ref={noteExportRef}
+          data-color-mode="light"
+          style={{
+            position: "absolute",
+            left: "-9999px",
+            visibility: "hidden",
+            width: "800px",
+            padding: "2rem",
+            background: "white",
+            fontSize: "0.95rem",
+            lineHeight: "1.75",
+            color: "#1e293b",
+            fontFamily: "'Inter', 'Segoe UI', sans-serif",
+          }}
+        >
+          <h1 style={{ color: "#0f172a", marginBottom: "0.5rem" }}>{title}</h1>
+          {subject && <p style={{ color: "#9a9a9a", fontSize: "0.85rem", marginBottom: "2rem" }}>{subject}</p>}
+
+          <MDEditor.Markdown
+            source={content}
+            remarkPlugins={[remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+          />
+        </div>
       </div>
   );
 }
