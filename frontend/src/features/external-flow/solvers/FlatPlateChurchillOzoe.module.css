@@ -1,0 +1,115 @@
+.wrapper {
+    background: #FDF9F4;
+    border: 1px solid #c15a01;
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-family: "Inter", sans-serif;
+    max-width: 720px;
+}
+
+.title {
+    margin: 0 0 0.25rem 0;
+    color: #c15a01;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.subtitle {
+    margin: 0 0 1.25rem 0;
+    color: #5c4b37;
+    font-size: 0.9rem;
+}
+
+.equationBlock {
+    background: #fff;
+    border: 1px solid #e6d8c0;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.quadrantsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.quadrantLabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: text;
+}
+
+.quadrant {
+    width: 72px;
+    padding: 0.35rem 0.5rem;
+    border: 2px solid #c15a01;
+    border-radius: 6px;
+    background: #fffbf7;
+    color: #c15a01;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.quadrant:focus {
+    outline: none;
+    border-color: #a34c01;
+    box-shadow: 0 0 0 2px rgba(193, 90, 1, 0.2);
+}
+
+.quadrant::placeholder {
+    color: #a39581;
+}
+
+.peHint {
+    font-size: 0.85rem;
+    color: #5c4b37;
+    margin-bottom: 1rem;
+}
+
+.actions {
+    margin-bottom: 0.5rem;
+}
+
+.calcBtn {
+    background: #c15a01;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.calcBtn:hover {
+    background: #a34c01;
+}
+
+.error {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.result {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 2px dashed #c15a01;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #c15a01;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.resultValue {
+    font-variant-numeric: tabular-nums;
+}

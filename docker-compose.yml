@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     container_name: heatsphere_go_service
     ports:
-      - "8000:8000"
+      - "8001:8000"  # host:container (8001 evita conflito com outros serviços na 8000)
     environment:
       - PORT=8000
     networks:

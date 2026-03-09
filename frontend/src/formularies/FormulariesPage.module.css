@@ -1,0 +1,168 @@
+/* ════════════════════════════════════════
+   FORMULARY — tema sépia quente
+   ════════════════════════════════════════ */
+
+   .formularyToolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e8d8c4;
+}
+
+.btnExportPdf {
+    background: #c15a01;
+    color: #fff;
+    border: none;
+    padding: 0.45rem 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+.btnExportPdf:hover { background: #9a4800; }
+
+/* ── Wrapper: fundo claro para contrastar com o site escuro ── */
+.formularyContent {
+    background: #fdf7ef;
+    border-radius: 12px;
+    padding: 2rem 2.5rem;        /* padding generoso em todos os lados */
+}
+
+/* ── Texto base ── */
+.formularyContent :global(.wmde-markdown) {
+    background: transparent !important;
+    color: #3d2b1a;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ── Headings ── */
+.formularyContent :global(.wmde-markdown) h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1008;
+    border-bottom: 2px solid #c15a01;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.formularyContent :global(.wmde-markdown) h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #7c3a10;
+    border-left: 4px solid #c15a01;
+    padding-left: 0.75rem;
+    margin-top: 2.2rem;
+    margin-bottom: 0.5rem;
+    background: transparent;
+}
+
+.formularyContent :global(.wmde-markdown) h3 {
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: #a0550e;
+    margin-top: 1.4rem;
+    margin-bottom: 0.4rem;
+}
+
+/* ── Parágrafos ── */
+.formularyContent :global(.wmde-markdown) p {
+    color: #2c1a0a;
+    margin: 0.5rem 0;
+}
+
+/* ── HR ── */
+.formularyContent :global(.wmde-markdown) hr {
+    border: none;
+    border-top: 1px solid #e8d8c4;
+    margin: 2rem 0;
+}
+
+/* ── Equações display — com margin-left para afastar da borda ── */
+.formularyContent :global(.katex-display) {
+    background: rgba(193, 90, 1, 0.06);
+    border-left: 4px solid #c15a01;
+    border-radius: 0 8px 8px 0;
+    padding: 0.8rem 1.5rem;
+    margin: 1.1rem 0 1.1rem 1rem;  /* ← left margin é o que afasta da borda */
+    overflow-x: auto;
+}
+
+/* ── KaTeX inline e display ── */
+.formularyContent :global(.katex) {
+    color: #2c1a0a;
+    font-size: 1.05em;
+}
+
+/* ── Tabelas ── */
+.formularyContent :global(.wmde-markdown) table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2rem 0;
+    font-size: 0.88rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0ccb4;
+}
+
+.formularyContent :global(.wmde-markdown) thead th {
+    background: #7c3a10;
+    color: #fdf0e0;
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.formularyContent :global(.wmde-markdown) tbody tr:nth-child(even) {
+    background: #f5ede0;
+}
+.formularyContent :global(.wmde-markdown) tbody tr:nth-child(odd) {
+    background: #fdf7ef;
+}
+.formularyContent :global(.wmde-markdown) tbody tr:hover {
+    background: #f0e4d0;
+}
+.formularyContent :global(.wmde-markdown) tbody td {
+    padding: 0.55rem 1rem;
+    border-top: 1px solid #e0ccb4;
+    color: #3d2b1a;
+}
+
+/* ── Blockquote (destaques, ex: Temperatura de filme) ── */
+.formularyContent :global(.wmde-markdown) blockquote {
+    background: rgba(193, 90, 1, 0.07);
+    border-left: 4px solid #c15a01;
+    border-radius: 0 8px 8px 0;
+    padding: 0.65rem 1rem;
+    margin: 1rem 0;
+}
+.formularyContent :global(.wmde-markdown) blockquote p {
+    margin: 0;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* ── Strong / Em ── */
+.formularyContent :global(.wmde-markdown) strong { color: #1a1008; font-weight: 700; }
+.formularyContent :global(.wmde-markdown) em     { color: #7c3a10; }
+
+/* ── Code inline ── */
+.formularyContent :global(.wmde-markdown) code {
+    background: #f0e4d0;
+    color: #9a4800;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.88em;
+    border: 1px solid #e0ccb4;
+}
+
+/* ════════════════════════════════════
+   PRINT (a nova janela já tem CSS próprio)
+   ════════════════════════════════════ */
+@media print {
+    .formularyToolbar { display: none !important; }
+}

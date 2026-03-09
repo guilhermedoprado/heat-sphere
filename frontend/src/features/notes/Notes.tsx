@@ -8,6 +8,7 @@ import { api } from "../../lib/axios";
 import { useAuth } from "../../lib/auth";
 import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
+import { PdfSlot } from "./PdfSlot";
 import styles from "./Notes.module.css";
 import { Link } from "react-router-dom";
 
@@ -90,6 +91,10 @@ export default function Notes() {
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [middleBarMode, setMiddleBarMode] = useState<"editor" | "pdf">("editor");
+  const [pdfUrlMiddle, setPdfUrlMiddle] = useState<string | null>(null);
+  const fileInputRefMiddle = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -503,6 +508,29 @@ export default function Notes() {
     if (pdfUrl) URL.revokeObjectURL(pdfUrl);
     setPdfUrl(null);
   }
+
+  function handlePdfUploadMiddle(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file && file.type === "application/pdf") {
+      const fileUrl = URL.createObjectURL(file);
+      setPdfUrlMiddle(fileUrl);
+    } else if (file) {
+      alert("Please upload a valid PDF file.");
+    }
+    e.target.value = "";
+  }
+
+  function clearPdfMiddle() {
+    if (pdfUrlMiddle) URL.revokeObjectURL(pdfUrlMiddle);
+    setPdfUrlMiddle(null);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      if (pdfUrlMiddle) URL.revokeObjectURL(pdfUrlMiddle);
+    };
+  }, [pdfUrl, pdfUrlMiddle]);
 
   // FIX: tipagem explícita + deps obrigatórias do useMemo (corrige TS2554/TS2339).
   const { tree, ungrouped } = useMemo<{ tree: Record<string, FolderNode>; ungrouped: Note[] }>(() => {
@@ -919,87 +947,93 @@ export default function Notes() {
               {isSidebarOpen ? "◀" : "▶"}
             </button>
 
+            <button
+              className={styles.modeToggleBtn}
+              onClick={() => setMiddleBarMode((m) => (m === "editor" ? "pdf" : "editor"))}
+              title={middleBarMode === "editor" ? "Switch to PDF view (compare two PDFs)" : "Switch to Note editor"}
+            >
+              {middleBarMode === "editor" ? "📄 PDF" : "📝 Editor"}
+            </button>
+
             <span className={styles.moveLabel} style={{ flex: 1 }}>
-            {subject ? subject : "Uncategorized"}
-          </span>
+              {middleBarMode === "editor" ? (subject ? subject : "Uncategorized") : "Exercise / Your PDF"}
+            </span>
 
             {error && <span style={{ color: "red", fontSize: "0.8rem" }}>{error}</span>}
 
-            <button className={styles.saveBtn} onClick={save} disabled={saving || !title}>
-              {saving ? "Saving..." : selected ? "Update" : "Create"}
-            </button>
-
-            {selected && (
-                <button className={styles.deleteBtn} onClick={() => remove(selected.id)}>
-                  Delete
+            {middleBarMode === "editor" && (
+              <>
+                <button className={styles.saveBtn} onClick={save} disabled={saving || !title}>
+                  {saving ? "Saving..." : selected ? "Update" : "Create"}
                 </button>
+                {selected && (
+                  <button className={styles.deleteBtn} onClick={() => remove(selected.id)}>
+                    Delete
+                  </button>
+                )}
+              </>
+            )}
+            {middleBarMode === "pdf" && pdfUrlMiddle && (
+              <button className={styles.clearPdfBtn} onClick={clearPdfMiddle}>
+                Close PDF
+              </button>
             )}
           </header>
 
-          <div
+          {middleBarMode === "editor" ? (
+            <div
               ref={editorAreaRef}
               className={styles.editorContainer}
               onClick={() => setIsEditingMd(true)}
               style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
-          >
-            <div className={styles.editorToolbar}>
-              <input
+            >
+              <div className={styles.editorToolbar}>
+                <input
                   className={styles.titleInput}
                   placeholder="Untitled Note..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-
-            <div className={`${styles.editor} ${styles.editorScroll}`} style={{ cursor: isEditingMd ? "text" : "pointer" }}>
-              <div className={styles.mdEditor}>
-                <MarkdownEditor
+                />
+              </div>
+              <div className={`${styles.editor} ${styles.editorScroll}`} style={{ cursor: isEditingMd ? "text" : "pointer" }}>
+                <div className={styles.mdEditor}>
+                  <MarkdownEditor
                     value={content}
                     onChange={setContent}
                     notes={wikiNotes}
                     onNavigate={navigateToNote}
                     previewMode={isEditingMd || !content ? "edit" : "preview"}
-                />
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <PdfSlot
+              pdfUrl={pdfUrlMiddle}
+              onUpload={handlePdfUploadMiddle}
+              onClear={clearPdfMiddle}
+              slotLabel="Exercise"
+              fileInputRef={fileInputRefMiddle}
+            />
+          )}
         </main>
 
         <aside className={styles.rightPanel}>
           <header className={styles.panelHeader}>
-            <span className={styles.moveLabel}>Reference Material (PDF)</span>
+            <span className={styles.moveLabel}>Solution / Reference PDF</span>
             {pdfUrl && (
-                <button className={styles.clearPdfBtn} onClick={clearPdf}>
-                  Close PDF
-                </button>
+              <button className={styles.clearPdfBtn} onClick={clearPdf}>
+                Close PDF
+              </button>
             )}
           </header>
-
-          <div className={styles.pdfContainer}>
-            {pdfUrl ? (
-                <object data={pdfUrl} type="application/pdf" width="100%" height="100%" className={styles.pdfViewer}>
-                  <p>
-                    Your browser does not support PDFs. <a href={pdfUrl}>Download the PDF</a>.
-                  </p>
-                </object>
-            ) : (
-                <div className={styles.pdfPlaceholder}>
-                  <p>No document loaded</p>
-
-                  <input
-                      type="file"
-                      accept="application/pdf"
-                      ref={fileInputRef}
-                      style={{ display: "none" }}
-                      onChange={handlePdfUpload}
-                  />
-
-                  <button className={styles.pdfUploadBtn} onClick={() => fileInputRef.current?.click()}>
-                    Upload PDF for Split View
-                  </button>
-                </div>
-            )}
-          </div>
+          <PdfSlot
+            pdfUrl={pdfUrl}
+            onUpload={handlePdfUpload}
+            onClear={clearPdf}
+            slotLabel="Reference PDF"
+            fileInputRef={fileInputRef}
+          />
         </aside>
 
         {contextMenu && (

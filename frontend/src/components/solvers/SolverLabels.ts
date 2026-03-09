@@ -1,0 +1,18 @@
+export const SolverLabels: Record<string, string> = {
+    "transf-calor":           "Lei de Newton — Taxa de Transferência de Calor",
+    "corr-cilindro-cruzado":  "Correlação — Cilindro em Escoamento Cruzado (Churchill-Bernstein)",
+    "temp-media-const-q":     "Escoamento Interno — Temperatura Média (q'' constante)",
+    "temp-media-const-ts":    "Escoamento Interno — Temperatura Média (Ts constante)",
+    "bal-energia-cruzado":    "Escoamento Cruzado — Balanço de Energia (Ts constante)",
+    "parametros-parede-aleta":"Aleta — Parâmetros m e M",
+    "def-theta":              "Aleta — Temperaturas Excesso θ e θb",
+    "transf-aleta-caso-b":    "Aleta — Transferência de Calor Caso B (Ponta Adiabática)",
+    "transf-aleta-caso-a":    "Aleta — Transferência de Calor Caso A (Ponta Convectiva)",
+    "transf-aleta-caso-c":    "Aleta — Transferência de Calor Caso C (Temp. Prescrita)",
+    "transf-aleta-caso-d":    "Aleta — Transferência de Calor Caso D (Aleta Infinita)",
+    "dist-temp-aleta-caso-b": "Aleta — Distribuição de Temperatura Caso B",
+    "dist-temp-aleta-caso-a": "Aleta — Distribuição de Temperatura Caso A",
+    "dist-temp-aleta-caso-c": "Aleta — Distribuição de Temperatura Caso C",
+    "dist-temp-aleta-caso-d": "Aleta — Distribuição de Temperatura Caso D",
+    "efic-aleta":             "Aleta — Eficiência (Perfil Retangular, Eq. 3.94)",
+};

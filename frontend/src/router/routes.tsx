@@ -24,13 +24,11 @@ export default function AppRoutes() {
                 <Route path="formularies"  element={<ResourceHub type="formulary" />} />
                 <Route path="solvers"      element={<ResourceHub type="solver" />} />
                 <Route path="calculations" element={<ResourceHub type="calculation" />} />
-                <Route path="case-studies" element={<ResourceHub type="case-study" />} />
                 <Route path="all"          element={<ResourceHub type="all" />} />
 
                 <Route path="formularies/:resourceSlug"  element={<ResourcePage type="formulary" />} />
                 <Route path="solvers/:resourceSlug"      element={<ResourcePage type="solver" />} />
                 <Route path="calculations/:resourceSlug" element={<ResourcePage type="calculation" />} />
-                <Route path="case-studies/:resourceSlug" element={<ResourcePage type="case-study" />} />
 
                 <Route
                     path="my-notes"

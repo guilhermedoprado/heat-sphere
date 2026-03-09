@@ -20,6 +20,7 @@ func main() {
 
 	r.Post("/api/heat-exchangers/shell-tube/rate", handler.RateShellAndTube)
 	r.Post("/api/external-flow/cylinder/calculate", handler.CalculateCylinderFlow(fluidSvc))
+	r.Post("/api/external-flow/flat-plate/calculate", handler.CalculateFlatPlate(fluidSvc))
 
 	port := os.Getenv("PORT")
 	if port == "" {

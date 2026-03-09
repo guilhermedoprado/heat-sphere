@@ -16,7 +16,7 @@ export type ModuleSlug = (typeof MODULES)[number]["slug"];
 
 // ── Tipos de recurso ──────────────────────────────────────────────────────────
 export const RESOURCE_TYPES = [
-    "solver", "calculation", "case-study", "formulary",
+    "solver", "calculation", "formulary",
 ] as const;
 
 export type ResourceType = (typeof RESOURCE_TYPES)[number];
@@ -39,7 +39,6 @@ export type Resource = {
 const TYPE_ROUTE: Record<ResourceType, string> = {
     solver:       "solvers",
     calculation:  "calculations",
-    "case-study": "case-studies",
     formulary:    "formularies",
 };
 
@@ -50,9 +49,76 @@ export function resourcePath(r: Pick<Resource, "type" | "slug">): string {
 // ── Dados ─────────────────────────────────────────────────────────────────────
 export const RESOURCES: readonly Resource[] = [
 
-    // External Flow
+    // Formularies
+
     {
-        type:       "calculation",
+        type:   "formulary",
+        slug:   "introduction-to-convection",
+        title:  "Cap 6 - Introduction to Convection",
+        module: "introduction-to-convection",
+        summary:    "Equações de camada limite, parâmetros adimensionais e analogias.",
+        tags:       ["convecção", "camada limite", "Nusselt", "Reynolds"],
+        difficulty: "core",
+    },
+    {
+        type:   "formulary",
+        slug:   "external-flow",
+        title:  "Cap 7 - External Flow",
+        module: "external-flow",
+        summary:    "Correlações para transferência de calor em escoamento externo sobre placas planas, cilindros, esferas e bancos de tubos.",
+        tags:       ["Churchill–Bernstein", "Re", "Nu", "h", "q\""],
+        difficulty: "core",
+    },
+    
+    {
+        type:   "formulary",
+        slug:   "internal-flow",
+        title:  "Cap 8 - Internal Flow",
+        module: "internal-flow",
+        summary:    "Correlações para transferência de calor em escoamento interno em tubos, incluindo comprimento de entrada hidráulico e térmico, escoamento completamente desenvolvido e condições de contorno de temperatura constante e fluxo de calor constante.",
+        tags:       ["Dittus–Boelter", "Sieder–Tate", "Reynolds number", "Prandtl number"],
+        difficulty: "core",
+    },
+    {
+        type:   "formulary",
+        slug:   "free-convection-formulary",
+        title:  "Cap 9 - Free Convection",
+        module: "free-convection",
+        summary:    "Correlações para transferência de calor em escoamento livre sobre placas verticais, placas horizontais, placas inclinadas e espaços fechados.",
+        tags:       ["Grashof number", "Rayleigh number", "Nusselt number", "Reynolds number", "Prandtl number"],
+        difficulty: "core",
+    },
+    {
+        type:   "formulary",
+        slug:   "boiling-formulary",
+        title:  "Cap 10 - Boiling",
+        module: "boiling",
+        summary:    "Correlações para transferência de calor em ebulição em tubos, incluindo curva de ebulição, ebulição nucleada, fluxo de calor crítico e ebulição em filmagem.",
+        tags:       ["Churchill–Bernstein", "Re", "Nu", "h", "q\""],
+        difficulty: "core",
+    },
+    {
+        type:   "formulary",
+        slug:   "condensation-formulary",
+        title:  "Cap 11 - Condensation",
+        module: "condensation",
+        summary:    "Correlações para transferência de calor em condensação em tubos, incluindo condensação em filmagem, condensação em gotas e condensação em bancos de tubos.",
+        tags:       ["Nusselt", "Reynolds", "Prandtl", "Grashof", "Rayleigh "],
+        difficulty: "core",
+    },
+    {
+        type:   "formulary",
+        slug:   "heat-exchangers-formulary",
+        title:  "Cap 12 - Heat Exchangers",
+        module: "heat-exchangers",
+        summary:    "Correlações para transferência de calor em trocadores de calor, incluindo trocadores de calor de carcaça e tubo, trocadores de calor de placas e trocadores de calor de tubos concêntricos.",
+        tags:       ["LMTD", "ε-NTU", "Reynolds number", "Prandtl number"],
+        difficulty: "core",
+    },
+
+    // Solvers
+    {
+        type:       "solver",
         slug:       "cylinder-cross-flow-1",
         title:      "Cylinder Cross-Flow (Churchill–Bernstein)",
         module:     "external-flow",
@@ -63,18 +129,23 @@ export const RESOURCES: readonly Resource[] = [
         featured:   true,
     },
     {
-        type:   "formulary",
-        slug:   "external-flow-formulary",
-        title:  "External Flow Formulary",
-        module: "external-flow",
-    },
-    {
         type:       "solver",
         slug:       "external-flow-cylinder-nu",
         title:      "Nu for Cylinder in Cross-Flow",
         module:     "external-flow",
         tags:       ["Churchill–Bernstein", "Nu", "Re"],
         difficulty: "core",
+        featured:   true,
+    },
+    {
+        type:       "solver",
+        slug:       "external-flow-flat-plate-nu",
+        title:      "Nu_x for Flat Plate (Churchill–Ozoe)",
+        module:     "external-flow",
+        summary:    "Local Nusselt from Re_x and Pr. Pe_x ≥ 100. Eq. 7.33 Incropera.",
+        tags:       ["Churchill–Ozoe", "Nu_x", "Re_x", "Pr", "Pe_x"],
+        difficulty: "core",
+        minutes:    3,
         featured:   true,
     },
 

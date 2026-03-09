@@ -1,3 +1,4 @@
+/* ── Base ── */
 .pageWrapper {
     min-height: 100vh;
     background: #0a0a0a;
@@ -12,6 +13,7 @@
     padding: 0 2rem;
 }
 
+/* ── Breadcrumb ── */
 .breadcrumb {
     display: flex;
     flex-wrap: wrap;
@@ -21,15 +23,13 @@
     color: #777;
     margin-bottom: 2rem;
 }
-
 .crumb { color: #aaa; text-decoration: none; }
 .crumb:hover { color: #fff; text-decoration: underline; }
 .sep { color: #444; }
 .current { color: #fff; }
 
-.header {
-    margin-bottom: 2.5rem;
-}
+/* ── Header ── */
+.header { margin-bottom: 2.5rem; }
 
 .titleRow {
     display: flex;
@@ -72,7 +72,6 @@
     font-size: 0.85rem;
     color: #e0e0e0;
 }
-
 .badgeAccent {
     border-color: rgba(193, 90, 1, 0.5);
     background: rgba(193, 90, 1, 0.15);
@@ -86,7 +85,6 @@
     gap: 0.5rem;
     margin-top: 0.75rem;
 }
-
 .tag {
     background: #111;
     border: 1px solid #333;
@@ -96,6 +94,15 @@
     font-size: 0.8rem;
 }
 
+.backLink {
+    display: flex;
+    color: #e67d23;
+    padding-bottom: 25px;
+    text-decoration: none;
+}
+.backLink:hover { text-decoration: underline; }
+
+/* ── Body card ── */
 .bodyCard {
     background: #121212;
     border: 1px solid #2a2a2a;
@@ -104,8 +111,160 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-.backLink {
+.muted { color: #666; font-style: italic; }
+
+/* ════════════════════════════════════════
+   FORMULARY — dark theme adaptado
+   ════════════════════════════════════════ */
+
+.formularyToolbar {
     display: flex;
-    color: #e67d23;
-    padding-bottom: 25px;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.btnExportPdf {
+    background: #704214;
+    color: white;
+    border: none;
+    padding: 0.45rem 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+.btnExportPdf:hover { background: #1e40af; }
+
+/* Wrapper do conteúdo MD */
+.formularyContent {
+    padding: 0 1rem;
+}
+
+/* wmde-markdown raiz — texto geral no dark */
+.formularyContent :global(.wmde-markdown) {
+    background: #FFF2F2 !important;
+    color: #8d8c8c;
+    font-size: 0.95rem;
+    line-height: 1.75;
+}
+
+/* Headings */
+.formularyContent :global(.wmde-markdown) h1 {
+    font-size: 1.4rem;
+    color: black;
+    border-bottom: 2px solid #704214;
+    padding-bottom: 0.4rem;
+    margin-bottom: 1.2rem;
+}
+.formularyContent :global(.wmde-markdown) h2 {
+    font-size: 1.1rem;
+    color: #3d3d3d;
+    border-left: 4px solid #704214;
+    padding-left: 0.7rem;
+    margin-top: 2rem;
+    background: transparent;
+}
+.formularyContent :global(.wmde-markdown) h3 {
+    font-size: 0.97rem;
+    color: #94a3b8;
+    margin-top: 1.2rem;
+}
+
+/* Parágrafo */
+.formularyContent :global(.wmde-markdown) p {
+    color: #858585;
+    margin: 0.5rem 0;
+}
+
+/* HR */
+.formularyContent :global(.wmde-markdown) hr {
+    border: none;
+    border-top: 1px solid #2a2a2a;
+    margin: 2rem 0;
+}
+
+/* ── Equações display (KaTeX) ── */
+.formularyContent :global(.katex-display) {
+    background: rgba(59, 130, 246, 0.08);
+    border-left: 4px solid #704214;
+    border-radius: 0 8px 8px 0;
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0 1rem 0;
+    overflow-x: auto;
+}
+
+/* Cor do texto KaTeX no dark */
+.formularyContent :global(.katex) {
+    color: #3b3b3b;
+    font-size: 1.05em;
+}
+
+/* ── Tabelas ── */
+.formularyContent :global(.wmde-markdown) table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2rem 0;
+    font-size: 0.88rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.formularyContent :global(.wmde-markdown) thead th {
+    background: #704214;
+    color: #ffffff;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #704214;
+}
+.formularyContent :global(.wmde-markdown) tbody tr:nth-child(even) {
+    background: #d7d6d6;
+    color: #c4c4c4;
+}
+.formularyContent :global(.wmde-markdown) tbody tr:nth-child(odd) {
+    background: #d7d6d6;
+}
+.formularyContent :global(.wmde-markdown) tbody tr:hover {
+    background: #1f1f1f;
+}
+.formularyContent :global(.wmde-markdown) tbody td {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid #2a2a2a;
+    color: #c4c4c4;
+}
+
+/* ── Blockquote (destaques) ── */
+.formularyContent :global(.wmde-markdown) blockquote {
+    background: rgba(234, 179, 8, 0.08);
+    border-left: 4px solid #ca8a04;
+    border-radius: 0 8px 8px 0;
+    padding: 0.6rem 1rem;
+    margin: 1rem 0;
+    color: #fbbf24;
+}
+.formularyContent :global(.wmde-markdown) blockquote p {
+    margin: 0;
+    color: #fbbf24;
+}
+
+/* ── Strong / Em ── */
+.formularyContent :global(.wmde-markdown) strong { color: #f1f1f1; }
+.formularyContent :global(.wmde-markdown) em     { color: #94a3b8; }
+
+/* ── Code inline ── */
+.formularyContent :global(.wmde-markdown) code {
+    background: #1e1e1e;
+    color: #f472b6;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.88em;
+}
+
+/* ════════════════════════════════════
+   PRINT — não usado diretamente
+   (PDF gerado por nova janela branca)
+   ════════════════════════════════════ */
+@media print {
+    .formularyToolbar { display: none !important; }
 }

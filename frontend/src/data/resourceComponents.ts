@@ -7,4 +7,8 @@ export const RESOURCE_COMPONENTS: Record<string, ComponentType> = {
         () => import("../features/external-flow/calculations/CylinderFlow")
             .then(m => ({ default: m.CylinderFlow }))
     ),
+    "solver:external-flow-flat-plate-nu": lazy(
+        () => import("../features/external-flow/solvers/FlatPlateChurchillOzoe")
+            .then(m => ({ default: m.FlatPlateChurchillOzoe }))
+    ),
 };

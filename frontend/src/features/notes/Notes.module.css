@@ -473,6 +473,22 @@
   background: rgba(193, 90, 1, 0.1);
 }
 
+.modeToggleBtn {
+  padding: 0.35rem 0.75rem;
+  background: rgba(193, 90, 1, 0.12);
+  color: #c15a01;
+  border: 1px solid rgba(193, 90, 1, 0.3);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modeToggleBtn:hover {
+  background: rgba(193, 90, 1, 0.2);
+}
+
 .saveBtn {
   padding: 0.35rem 1rem;
   background: #c15a01;
