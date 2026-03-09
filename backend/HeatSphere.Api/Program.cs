@@ -17,16 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "https://heatsphere.guilhermedoprado.com")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
-});
-
 var jwtSecret = builder.Configuration["Auth:Jwt:Secret"]
     ?? throw new InvalidOperationException("Auth:Jwt:Secret não configurado.");
 
@@ -59,7 +49,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     KnownProxies     = { }
 });
 
-app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
