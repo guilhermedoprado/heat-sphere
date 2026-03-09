@@ -1070,14 +1070,14 @@ export default function Notes() {
                       className={`${styles.phaseBtn} ${timerPhase === "work" ? styles.phaseBtnActive : ""}`}
                       onClick={switchToWork}
                   >
-                    Foco
+                    Focus
                   </button>
                   <button
                       type="button"
                       className={`${styles.phaseBtn} ${timerPhase === "break" ? styles.phaseBtnActive : ""}`}
                       onClick={switchToBreak}
                   >
-                    Pausa
+                    Pause
                   </button>
                 </div>
             )}
@@ -1089,7 +1089,7 @@ export default function Notes() {
                   onClick={toggleTimer}
                   style={{ flex: 1, backgroundColor: isTimerRunning ? "#dc2626" : "" }}
               >
-                {isTimerRunning ? "Pausar" : "Iniciar"}
+                {isTimerRunning ? "Pause" : "Start"}
               </button>
             </div>
 
@@ -1099,16 +1099,16 @@ export default function Notes() {
                       className={styles.startSessionBtn}
                       style={{ flex: 2, backgroundColor: "#059669", fontSize: "0.8rem", padding: "0.4rem" }}
                       onClick={saveProgress}
-                      title="Salvar o tempo já estudado"
+                      title="Save the time already studied"
                   >
-                    Salvar progresso
+                    Save progress
                   </button>
                   <button
                       className={styles.startSessionBtn}
                       style={{ flex: 1, backgroundColor: "#a39581", fontSize: "0.8rem", padding: "0.4rem" }}
                       onClick={resetTimer}
                   >
-                    Cancelar
+                    Cancel session
                   </button>
                 </div>
             )}

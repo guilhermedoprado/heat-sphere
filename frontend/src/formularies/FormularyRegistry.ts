@@ -15,38 +15,38 @@ interface FormularyMeta {
 
 export const FormularyRegistry: Record<string, FormularyMeta> = {
   "introduction-to-convection": {
-    title: "Cap. 6 — Introdução à Convecção",
-    subject: "Transferência de Calor",
+    title: "Cap. 6 — Introduction to Convection",
+    subject: "Heat Transfer",
     content: cap6,
   },
   "external-flow": {
-    title: "Cap. 7 — Escoamento Externo",
-    subject: "Transferência de Calor",
+    title: "Cap. 7 — External Flow",
+    subject: "Heat Transfer",
     content: cap7,
   },
   "internal-flow": {
-    title: "Cap. 8 — Escoamento Interno",
-    subject: "Transferência de Calor",
+    title: "Cap. 8 — Internal Flow",
+    subject: "Heat Transfer",
     content: cap8,
   },
   /* "cap9": {
-    title: "Cap. 9 — Convecção Livre",
-    subject: "Transferência de Calor",
+    title: "Cap. 9 — Free Convection",
+    subject: "Heat Transfer",
     content: cap9,
   },
   "cap10": {
-    title: "Cap. 10 — Ebulição",
-    subject: "Transferência de Calor",
+    title: "Cap. 10 — Boiling",
+    subject: "Heat Transfer",
     content: cap10,
   },
   "cap11": {
-    title: "Cap. 11 — Condensação",
-    subject: "Transferência de Calor",
+    title: "Cap. 11 — Condensation",
+    subject: "Heat Transfer",
     content: cap11,
   },
   "cap12": {
-    title: "Cap. 12 — Trocadores de Calor",
-    subject: "Transferência de Calor",
+    title: "Cap. 12 — Heat Exchangers",
+    subject: "Heat Transfer",
     content: cap12,
   },
   */

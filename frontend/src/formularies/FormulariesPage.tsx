@@ -21,8 +21,8 @@ export function FormulariesPage() {
   if (!entry) {
     return (
       <div className={styles.formularyNotFound}>
-        <h2>Formulário não encontrado</h2>
-        <p>Módulo: <code>{module}</code></p>
+        <h2>Formulary not found</h2>
+        <p>Module: <code>{module}</code></p>
       </div>
     );
   }
