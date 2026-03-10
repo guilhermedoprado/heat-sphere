@@ -2,7 +2,6 @@ import React, { useMemo, useRef, useEffect } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
 import remarkWikiLink from "./remarkWikiLink";
 import { WikiLink, type WikiNoteInfo } from "./WikiLink";
 import { SolverRegistry } from "../solvers/SolverRegistry";

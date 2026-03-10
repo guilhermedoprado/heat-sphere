@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BlockMath, InlineMath } from "react-katex";
-import "katex/dist/katex.min.css";
 import styles from "./FlatPlateChurchillOzoe.module.css";
 
 function computeNuX(reX: number, pr: number): number | null {

@@ -3,7 +3,6 @@ import { Suspense, useRef } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
 import { RESOURCE_BY_SLUG, MODULES, type ResourceType } from "../../data/resources.ts";
 import { RESOURCE_COMPONENTS } from "../../data/resourceComponents.ts";
 import { FormularyRegistry } from "../../features/formularies/FormularyRegistry.ts";

@@ -1,6 +1,5 @@
 // src/features/solvers/CylinderFlow/CorrelationBlock.tsx
 import { InlineMath, BlockMath } from "react-katex";
-import "katex/dist/katex.min.css";
 import styles from "./CylinderFlow.module.css";
 
 export function CorrelationBlock() {

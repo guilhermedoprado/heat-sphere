@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
 import { FormularyRegistry } from "./FormularyRegistry";
 import styles from "./FormulariesPage.module.css";
 

@@ -6,8 +6,6 @@ import rehypeKatex from "rehype-katex";
 import remarkWikiLink from "./remarkWikiLink";
 import { WikiLink, type WikiNoteInfo } from "./WikiLink";
 
-import "katex/dist/katex.min.css";
-
 type Props = {
   content: string;
   notes?: WikiNoteInfo[];

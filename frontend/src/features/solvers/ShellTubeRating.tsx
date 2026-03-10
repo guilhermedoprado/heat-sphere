@@ -7,7 +7,6 @@ import {
 } from "recharts";
 import styles from "./ShellTubeRating.module.css";
 import { BlockMath, InlineMath } from "react-katex";
-import "katex/dist/katex.min.css";
 
 // snake_case para compatibilidade com Go service
 type ResponseDto = {
