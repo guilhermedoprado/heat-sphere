@@ -98,3 +98,55 @@ button:focus-visible {
   text-align: center !important;
   margin: 1.25rem 0 !important;
 }
+
+/* ── Formulary Tables — override wmde-markdown ── */
+.formulary-table-scope .wmde-markdown table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.5rem 0;
+  font-size: 0.88rem;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(193, 90, 1, 0.15), 0 0 0 1px #e0ccb4;
+}
+
+.formulary-table-scope .wmde-markdown thead tr {
+  background: linear-gradient(90deg, #7c3a10 0%, #c15a01 100%);
+}
+
+.formulary-table-scope .wmde-markdown thead th {
+  background: transparent;
+  color: #fff;
+  padding: 0.7rem 1.1rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid #9a4800;
+}
+
+.formulary-table-scope .wmde-markdown thead th:first-child { border-radius: 10px 0 0 0; }
+.formulary-table-scope .wmde-markdown thead th:last-child  { border-radius: 0 10px 0 0; }
+
+.formulary-table-scope .wmde-markdown tbody tr:nth-child(even) { background: #f5ede0; }
+.formulary-table-scope .wmde-markdown tbody tr:nth-child(odd)  { background: #fdf7ef; }
+.formulary-table-scope .wmde-markdown tbody tr:hover           { background: #fde8ce; }
+
+.formulary-table-scope .wmde-markdown tbody td {
+  padding: 0.6rem 1.1rem;
+  border-top: 1px solid #e8d8c4;
+  color: #2c1a0a;
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.formulary-table-scope .wmde-markdown tbody td:first-child {
+  font-weight: 600;
+  color: #7c3a10;
+  white-space: nowrap;
+}
+
+.formulary-table-scope .wmde-markdown tbody tr:last-child td:first-child { border-radius: 0 0 0 10px; }
+.formulary-table-scope .wmde-markdown tbody tr:last-child td:last-child  { border-radius: 0 0 10px 0; }

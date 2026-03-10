@@ -5,12 +5,21 @@
    .formularyToolbar {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid #e8d8c4;
 }
 
-.btnExportPdf {
+.formularyTitleBar {
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #3d2b1a;
+}
+
+.btnExportPDF {
     background: #c15a01;
     color: #fff;
     border: none;
@@ -21,16 +30,14 @@
     font-weight: 500;
     transition: background 0.15s;
 }
-.btnExportPdf:hover { background: #9a4800; }
+.btnExportPDF:hover { background: #9a4800; }
 
-/* ── Wrapper: fundo claro para contrastar com o site escuro ── */
 .formularyContent {
     background: #fdf7ef;
     border-radius: 12px;
-    padding: 2rem 2.5rem;        /* padding generoso em todos os lados */
+    padding: 2rem 2.5rem;
 }
 
-/* ── Texto base ── */
 .formularyContent :global(.wmde-markdown) {
     background: transparent !important;
     color: #3d2b1a;
@@ -39,7 +46,6 @@
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Headings ── */
 .formularyContent :global(.wmde-markdown) h1 {
     font-size: 1.5rem;
     font-weight: 700;
@@ -68,89 +74,48 @@
     margin-bottom: 0.4rem;
 }
 
-/* ── Parágrafos ── */
 .formularyContent :global(.wmde-markdown) p {
     color: #2c1a0a;
     margin: 0.5rem 0;
 }
 
-/* ── HR ── */
 .formularyContent :global(.wmde-markdown) hr {
     border: none;
     border-top: 1px solid #e8d8c4;
     margin: 2rem 0;
 }
 
-/* ── Equações display — com margin-left para afastar da borda ── */
 .formularyContent :global(.katex-display) {
     background: rgba(193, 90, 1, 0.06);
     border-left: 4px solid #c15a01;
     border-radius: 0 8px 8px 0;
     padding: 0.8rem 1.5rem;
-    margin: 1.1rem 0 1.1rem 1rem;  /* ← left margin é o que afasta da borda */
+    margin: 1.1rem 0 1.1rem 1rem;
     overflow-x: auto;
 }
 
-/* ── KaTeX inline e display ── */
 .formularyContent :global(.katex) {
     color: #2c1a0a;
     font-size: 1.05em;
 }
 
-/* ── Tabelas ── */
-.formularyContent :global(.wmde-markdown) table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1.2rem 0;
-    font-size: 0.88rem;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #e0ccb4;
-}
-
-.formularyContent :global(.wmde-markdown) thead th {
-    background: #7c3a10;
-    color: #fdf0e0;
-    padding: 0.65rem 1rem;
-    text-align: left;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-
-.formularyContent :global(.wmde-markdown) tbody tr:nth-child(even) {
-    background: #f5ede0;
-}
-.formularyContent :global(.wmde-markdown) tbody tr:nth-child(odd) {
-    background: #fdf7ef;
-}
-.formularyContent :global(.wmde-markdown) tbody tr:hover {
-    background: #f0e4d0;
-}
-.formularyContent :global(.wmde-markdown) tbody td {
-    padding: 0.55rem 1rem;
-    border-top: 1px solid #e0ccb4;
-    color: #3d2b1a;
-}
-
-/* ── Blockquote (destaques, ex: Temperatura de filme) ── */
 .formularyContent :global(.wmde-markdown) blockquote {
     background: rgba(193, 90, 1, 0.07);
     border-left: 4px solid #c15a01;
     border-radius: 0 8px 8px 0;
     padding: 0.65rem 1rem;
     margin: 1rem 0;
+    color: #2c1a0a;
 }
 .formularyContent :global(.wmde-markdown) blockquote p {
     margin: 0;
-    color: #ffffff;
+    color: #3d2b1a;
     font-weight: 500;
 }
 
-/* ── Strong / Em ── */
 .formularyContent :global(.wmde-markdown) strong { color: #1a1008; font-weight: 700; }
 .formularyContent :global(.wmde-markdown) em     { color: #7c3a10; }
 
-/* ── Code inline ── */
 .formularyContent :global(.wmde-markdown) code {
     background: #f0e4d0;
     color: #9a4800;
@@ -160,9 +125,12 @@
     border: 1px solid #e0ccb4;
 }
 
-/* ════════════════════════════════════
-   PRINT (a nova janela já tem CSS próprio)
-   ════════════════════════════════════ */
+.formularyNotFound {
+    padding: 3rem;
+    text-align: center;
+    color: #3d2b1a;
+}
+
 @media print {
     .formularyToolbar { display: none !important; }
 }

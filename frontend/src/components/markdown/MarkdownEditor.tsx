@@ -26,6 +26,14 @@ export function MarkdownEditor({ value, onChange, notes = [], onNavigate, previe
     useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
 
     const { palette, filtered, onTextareaChange, onKeyDown, insertSolver, textareaRef, close } = useSolverPalette(value, onChange);
+        // Adiciona ref pro container externo
+    const editorContainerRef = useRef<HTMLDivElement>(null);
+
+    // Captura a textarea real do DOM após montar
+    useEffect(() => {
+        const ta = editorContainerRef.current?.querySelector("textarea");
+        if (ta) textareaRef.current = ta as HTMLTextAreaElement;
+    });
 
     const components = useMemo(() => ({
 
@@ -135,7 +143,11 @@ export function MarkdownEditor({ value, onChange, notes = [], onNavigate, previe
                 onSelect={insertSolver}
                 onClose={close}
             />
-            <div data-color-mode="light" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+            <div
+                ref={editorContainerRef}
+                data-color-mode="light"
+                style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
+            >
                 <MDEditor
                     value={value}
                     onChange={(val) => onChange(val || "")}
@@ -146,9 +158,9 @@ export function MarkdownEditor({ value, onChange, notes = [], onNavigate, previe
                     style={{ backgroundColor: "transparent", boxShadow: "none" }}
                     textareaProps={{
                         placeholder: "Type your notes here...",
-                        onChange: onTextareaChange,   // <-- detecta o \
-                        onKeyDown: onKeyDown,          // <-- navega e seleciona
-                        ref: (el) => { textareaRef.current = el; },
+                        onChange: onTextareaChange,
+                        onKeyDown: onKeyDown,
+                        // ref REMOVIDO daqui
                     }}
                     previewOptions={{
                         remarkPlugins: [remarkWikiLink, remarkMath, remarkSolvers],
