@@ -17,14 +17,14 @@ const Home = () => {
 
                 <div className={styles.brandCenter}>
                     <h1 className={styles.brandTitle}>HeatSphere</h1>
-                    <p className={styles.brandTagline}>Convective Heat Transfer — Demystified</p>
+                    <p className={styles.brandTagline}>Convective Heat Transfer — Supported</p>
 
                     <h2 className={styles.homeHeadline}>
-                        From equations to intuition, all in one place
+                        From notes to calculations, all in one place
                     </h2>
                     <p className={styles.homeSub}>
-                        Explore modules, craft your own notes, work through calculations,
-                        <br />analyze case studies and build knowledge.
+                        Craft your own notes, use interactive solvers,<br />
+                        and work through calculations.
                     </p>
 
                     <div className={styles.ctaGroup}>
