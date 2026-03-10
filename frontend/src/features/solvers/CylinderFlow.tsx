@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { AxiosError } from "axios";
-import { api } from "../../../lib/axios";
+import { api } from "../../lib/axios";
 import styles from "./CylinderFlow.module.css";
+import { CorrelationBlock } from "./CorrelationBlock";
 
-// snake_case para compatibilidade com Go service
 type ResponseDto = {
     id: string;
     name: string;
@@ -52,10 +52,11 @@ export function CylinderFlow() {
     return (
         <div className={styles.container}>
             <div className={styles.container}>
-                <h1 className={styles.title}>Cylinder Flow Solver</h1>
+                <h1 className={styles.title}>Cylinder Cross-Flow Solver</h1>
                 <p className={styles.description}>
                     Calculate heat transfer coefficients for cross-flow over a circular cylinder.
                 </p>
+                <CorrelationBlock />
             </div>
 
             <div className={styles.inputsContainer}>

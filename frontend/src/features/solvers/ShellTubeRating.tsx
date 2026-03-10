@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { AxiosError } from "axios"; // Usando axios puro, você pode configurar baseUrl se quiser
-import { api } from "../../../lib/axios";
+import { api } from "../../lib/axios";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Legend
 } from "recharts";
 import styles from "./ShellTubeRating.module.css";
+import { BlockMath, InlineMath } from "react-katex";
+import "katex/dist/katex.min.css";
 
 // snake_case para compatibilidade com Go service
 type ResponseDto = {
@@ -31,7 +33,7 @@ export function ShellTubeRating() {
   async function run() {
     try {
       setErrorMsg(null); // Limpa erro anterior
-      // Aponta para a porta 8000 do microsserviço Python e usa snake_case no body
+      // Aponta para a porta 8000 do microsserviço Go e usa snake_case no body
       const { data } = await api.post<ResponseDto>("/api/heat-exchangers/shell-tube/rate", {
         th_in_c: thInC,
         th_out_c: thOutC,
@@ -55,11 +57,34 @@ export function ShellTubeRating() {
       <div className={styles.container}>
 
         <section className={styles.intro}>
-          <h2>Case Study: Oil Cooler Performance</h2>
-          <p>
-            Evaluate the performance of a 1-2 shell-and-tube heat exchanger used to cool
-            turbine oil (Hot Fluid) using cooling water (Cold Fluid).
-          </p>
+            <h2>Shell &amp; Tube Heat Exchanger — Rating</h2>
+            <p>
+                Evaluate the thermal performance of a 1-2 shell-and-tube heat exchanger.
+                The corrected LMTD method applies a correction factor <InlineMath math="F" /> to
+                account for the deviation from pure counter-flow.
+            </p>
+
+            <div className={styles.equationRow}>
+                <div className={styles.equationBlock}>
+                    <span className={styles.equationCaption}>Log Mean Temperature Difference</span>
+                    <BlockMath math="\Delta T_{lm} = \frac{\Delta T_1 - \Delta T_2}{\ln(\Delta T_1 / \Delta T_2)}" />
+                    <span className={styles.equationCaption} style={{ marginTop: "0.25rem" }}>
+                        Corrected LMTD
+                    </span>
+                    <BlockMath math="\Delta T_{lm,corr} = F \cdot \Delta T_{lm}" />
+                </div>
+
+                <div className={styles.equationBlock}>
+                    <span className={styles.equationCaption}>Dimensionless Parameters</span>
+                    <BlockMath math="P = \frac{T_{c,out} - T_{c,in}}{T_{h,in} - T_{c,in}}" />
+                    <BlockMath math="R = \frac{T_{h,in} - T_{h,out}}{T_{c,out} - T_{c,in}}" />
+                </div>
+            </div>
+
+            <p className={styles.validity}>
+                Valid for 1-2 exchangers. If <InlineMath math="F < 0.8" />, consider a different
+                configuration — efficiency is critically low.
+            </p>
         </section>
 
         <div className={styles.workspace}>

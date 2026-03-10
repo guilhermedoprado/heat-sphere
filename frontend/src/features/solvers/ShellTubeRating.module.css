@@ -17,7 +17,7 @@ body {
   padding: 2rem 2.5rem;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  border-left: 6px solid #667eea;
+  border-left: 6px solid #c15a01;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
@@ -150,4 +150,37 @@ body {
 @media (max-width: 900px) {
   .workspace { grid-template-columns: 1fr; }
   .controlPanel { position: relative; top: 0; }
+}
+
+.equationRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.equationBlock {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  flex: 1;
+  min-width: 240px;
+  overflow-x: auto;
+}
+
+.equationCaption {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #c15a01;
+  margin-bottom: 0.25rem;
+}
+
+.validity {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #c15a01;
 }

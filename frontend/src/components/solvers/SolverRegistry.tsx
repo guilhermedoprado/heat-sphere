@@ -14,23 +14,29 @@ import { HeatTransferRate } from "./HeatTransferRate"; // ou ConvectionSolver, d
 import { MeanTemperature } from "./MeanTemperature";
 import { MeanTemperatureConstTs } from "./MeanTemperatureTsConstant";
 import { ThetaDefinition } from "./ThetaDefinition";
+import { LinearInterpolation } from "./LinearInterpolation";
+import { FlatPlateChurchillOzoe } from "../../features/solvers/FlatPlateChurchillOzoe";
+import { CylinderFlow } from "../../features/solvers/CylinderFlow";
 
 // Agora guarda a referência da função do componente (React.FC) e não a instância em si
 export const SolverRegistry: Record<string, React.FC<any>> = {
-    "transf-calor": HeatTransferRate,
-    "corr-cilindro-cruzado": CylinderCrossFlow,
-    "temp-media-const-q": MeanTemperature,
-    "temp-media-const-ts": MeanTemperatureConstTs,
-    "bal-energia-cruzado": CrossFlowEnergyBalance,
-    "parametros-parede-aleta": FinParameters,
-    "transf-aleta-b": FinHeatTransferCaseB,
-    "transf-aleta-a": FinHeatTransferCaseA,
-    "transf-aleta-c": FinHeatTransferCaseC,
-    "transf-aleta-d": FinHeatTransferCaseD,
-    "dist-temp-aleta-b": FinTempDistCaseB,
-    "dist-temp-aleta-a": FinTempDistCaseA,
-    "dist-temp-aleta-c": FinTempDistCaseC,
-    "dist-temp-aleta-d": FinTempDistCaseD,
-    "def-theta": ThetaDefinition,
-    "efic-aleta": FlatFinEfficiency,
+    "linear-interpolation": LinearInterpolation,
+    "heat-transfer-rate": HeatTransferRate,
+    "churchill-ozoe": FlatPlateChurchillOzoe,
+    "churchill-bernstein-1": CylinderCrossFlow,
+    "churchill-bernstein-2": CylinderFlow,
+    "internal-flow-avg-temp-q-const": MeanTemperature,
+    "internal-flow-avg-temp-ts-const": MeanTemperatureConstTs,
+    "cross-flow-energy-balance-ts-const": CrossFlowEnergyBalance,
+    "fin-parameters": FinParameters,
+    "fin-excess-temp": ThetaDefinition,
+    "fin-heat-transfer-case-b": FinHeatTransferCaseB,
+    "fin-heat-transfer-case-a": FinHeatTransferCaseA,
+    "fin-heat-transfer-case-c": FinHeatTransferCaseC,
+    "fin-heat-transfer-case-d": FinHeatTransferCaseD,
+    "fin-temp-dist-case-b": FinTempDistCaseB,
+    "fin-temp-dist-case-a": FinTempDistCaseA,
+    "fin-temp-dist-case-c": FinTempDistCaseC,
+    "fin-temp-dist-case-d": FinTempDistCaseD,
+    "fin-rect-profile-efficiency": FlatFinEfficiency,
 };

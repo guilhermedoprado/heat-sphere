@@ -6,7 +6,7 @@ import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { RESOURCE_BY_SLUG, MODULES, type ResourceType } from "../../data/resources.ts";
 import { RESOURCE_COMPONENTS } from "../../data/resourceComponents.ts";
-import { FormularyRegistry } from "../../formularies/FormularyRegistry";
+import { FormularyRegistry } from "../../features/formularies/FormularyRegistry.ts";
 import styles from "./ResourcePage.module.css";
 
 const TYPE_LABEL: Record<ResourceType, string> = {

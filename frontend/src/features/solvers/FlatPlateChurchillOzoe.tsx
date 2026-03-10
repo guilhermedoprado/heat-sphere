@@ -3,9 +3,6 @@ import { BlockMath, InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import styles from "./FlatPlateChurchillOzoe.module.css";
 
-// Churchill-Ozoe (1973): Nu_x = 0.3387 Re_x^0.5 Pr^(1/3) / [1 + (0.0468/Pr)^(2/3)]^0.25
-// Valid for Pe_x = Re_x * Pr >= 100
-
 function computeNuX(reX: number, pr: number): number | null {
     const peX = reX * pr;
     if (peX < 100) return null;
@@ -40,8 +37,7 @@ export function FlatPlateChurchillOzoe() {
             return;
         }
 
-        const nu = computeNuX(re, p);
-        setResult(nu);
+        setResult(computeNuX(re, p));
     }
 
     const numRe = parseFloat(reX);
@@ -53,54 +49,69 @@ export function FlatPlateChurchillOzoe() {
         <div className={styles.wrapper}>
             <h3 className={styles.title}>Churchill–Ozoe (1973) — Laminar Flat Plate</h3>
             <p className={styles.subtitle}>
-                Local Nusselt number. Eq. 7.33 Incropera. Requires Pe_x = Re_x × Pr ≥ 100.
+                Local Nusselt number at position <InlineMath math="x" />. Eq. 7.33 Incropera.
+                Requires <InlineMath math="\mathrm{Pe}_x = \mathrm{Re}_x \cdot \mathrm{Pr} \geq 100" />.
             </p>
 
             <div className={styles.equationBlock}>
-                <BlockMath math="\mathrm{Nu}_x = \frac{0.3387 \,\mathrm{Re}_x^{1/2} \,\mathrm{Pr}^{1/3}}{\left[1 + \left(\dfrac{0.0468}{\mathrm{Pr}}\right)^{2/3}\right]^{1/4}}" />
+                <BlockMath math="\mathrm{Nu}_x = \frac{0.3387\,\mathrm{Re}_x^{1/2}\,\mathrm{Pr}^{1/3}}{\left[1+\left(\dfrac{0.0468}{\mathrm{Pr}}\right)^{2/3}\right]^{1/4}}" />
             </div>
 
-            <div className={styles.quadrantsRow}>
-                <label className={styles.quadrantLabel}>
-                    <InlineMath math="\mathrm{Re}_x" />
+            <div className={styles.inputsGrid}>
+                <label className={styles.fieldLabel}>
+                    <span className={styles.fieldName}>
+                        <InlineMath math="\mathrm{Re}_x" /> — Reynolds at x
+                    </span>
                     <input
                         type="number"
-                        className={styles.quadrant}
+                        className={styles.fieldInput}
                         value={reX}
                         onChange={(e) => setReX(e.target.value)}
                         placeholder="Re_x"
-                        title="Reynolds number at x"
                     />
                 </label>
-                <label className={styles.quadrantLabel}>
-                    <InlineMath math="\mathrm{Pr}" />
+                <label className={styles.fieldLabel}>
+                    <span className={styles.fieldName}>
+                        <InlineMath math="\mathrm{Pr}" /> — Prandtl Number
+                    </span>
                     <input
                         type="number"
-                        className={styles.quadrant}
+                        className={styles.fieldInput}
                         value={pr}
                         onChange={(e) => setPr(e.target.value)}
                         placeholder="Pr"
-                        title="Prandtl number"
                     />
                 </label>
             </div>
 
             <div className={styles.peHint}>
-                Pe_x = Re_x × Pr = {peX.toLocaleString(undefined, { maximumFractionDigits: 0 })} {peValid ? "✓" : "(need ≥ 100)"}
+                <InlineMath math="\mathrm{Pe}_x = \mathrm{Re}_x \times \mathrm{Pr}" /> ={" "}
+                {peX.toLocaleString(undefined, { maximumFractionDigits: 0 })}{" "}
+                {peValid ? "✓" : "— need ≥ 100"}
             </div>
 
             <div className={styles.actions}>
                 <button className={styles.calcBtn} onClick={calculate}>
-                    Calculate Nu_x
+                    Calculate
                 </button>
+                {result !== null && (
+                    <button className={styles.clearBtn} onClick={() => setResult(null)}>
+                        Clear
+                    </button>
+                )}
             </div>
 
             {error && <div className={styles.error}>{error}</div>}
 
             {result !== null && (
-                <div className={styles.result}>
-                    <InlineMath math="\mathrm{Nu}_x = " />
-                    <span className={styles.resultValue}>{result.toFixed(4)}</span>
+                <div className={styles.resultsGrid}>
+                    <div className={styles.resultCard}>
+                        <span className={styles.resultLabel}>Local Nusselt Number</span>
+                        <div className={styles.resultValue}>
+                            {result.toFixed(4)}
+                        </div>
+                        <InlineMath math="\mathrm{Nu}_x" />
+                    </div>
                 </div>
             )}
         </div>

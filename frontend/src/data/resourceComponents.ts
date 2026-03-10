@@ -3,12 +3,16 @@ import { lazy } from "react";
 import type { ComponentType } from "react";
 
 export const RESOURCE_COMPONENTS: Record<string, ComponentType> = {
-    "calculation:cylinder-cross-flow-1": lazy(
-        () => import("../features/external-flow/calculations/CylinderFlow")
+    "solver:cylinder-cross-flow-1": lazy(
+        () => import("../features/solvers/CylinderFlow")
             .then(m => ({ default: m.CylinderFlow }))
     ),
-    "solver:external-flow-flat-plate-nu": lazy(
-        () => import("../features/external-flow/solvers/FlatPlateChurchillOzoe")
+    "solver:flat-plate-churchill-ozoe-1": lazy(
+        () => import("../features/solvers/FlatPlateChurchillOzoe")
             .then(m => ({ default: m.FlatPlateChurchillOzoe }))
+    ),
+    "solver:shell-tube-rating-1": lazy(
+        () => import("../features/solvers/ShellTubeRating")
+            .then(m => ({ default: m.ShellTubeRating }))
     ),
 };

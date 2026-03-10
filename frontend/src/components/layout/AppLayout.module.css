@@ -1,3 +1,4 @@
+/* ── Shell ── */
 .shell {
     display: flex;
     flex-direction: column;
@@ -6,11 +7,19 @@
     padding: 0;
 }
 
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* ── Header / Nav ── */
 .header {
     position: absolute;
     top: 1.5rem;
     right: 2rem;
-    z-index: 100;
+    z-index: 200;
 }
 
 .nav {
@@ -33,6 +42,7 @@
     color: #1f2937;
     text-decoration: none;
     transition: color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
 }
 
 .nav a:hover {
@@ -40,13 +50,7 @@
     transform: translateY(-1px);
 }
 
-.main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
+/* ── Dropdown ── */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -62,6 +66,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
 }
 
 .dropdownToggle:hover {
@@ -70,22 +75,20 @@
 
 .dropdownMenu {
     position: absolute;
-    top: 100%;
-    left: 0;
+    top: calc(100% + 0.5rem);
+    right: 0;
     background: #fff;
     min-width: 220px;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     border: 1px solid #eee;
     padding: 0.5rem 0;
-    margin-top: 0.5rem;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s ease;
-    z-index: 100;
+    z-index: 300;
 }
-
 
 .dropdown:hover .dropdownMenu,
 .dropdown:focus-within .dropdownMenu {
@@ -93,7 +96,6 @@
     visibility: visible;
     transform: translateY(0);
 }
-
 
 .dropdownMenu a {
     display: block;
@@ -106,59 +108,121 @@
 
 .dropdownMenu a:hover,
 .dropdownMenu a:focus {
-    background: #fdfafa;
+    background: #fdf6f0;
     color: #c15a01;
 }
 
+/* ── Hamburger (mobile only) ── */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    cursor: pointer;
+    padding: 0 10px;
+    z-index: 300;
+}
 
-.footer {
-    background: linear-gradient(180deg, #0a0a0a 10%, #c15a01 100%);
-    color: rgba(255, 255, 255, 1);
-    text-align: center;
-    padding: 1.5rem 2rem;
-    font-size: 0.9rem;
-    font-family: 'Inter', system-ui, sans-serif;
-    border-top: none;
-    margin-top: -1px;
+.hamburger span {
+    display: block;
+    height: 2px;
+    background: #1f2937;
+    border-radius: 2px;
+    transition: all 0.25s ease;
+    transform-origin: center;
+}
+
+/* X quando aberto */
+.hamburgerOpen span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburgerOpen span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburgerOpen span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Mobile drawer ── */
+.mobileMenu {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(10, 10, 10, 0.5);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.mobileMenuOpen {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.mobileDrawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(80vw, 300px);
+    height: 100%;
+    background: #fff;
+    padding: 5rem 1.5rem 2rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    box-sizing: border-box;
     gap: 0.25rem;
+    box-shadow: -8px 0 30px rgba(0,0,0,0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
 }
 
-.footer p {
-    margin: 0;
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    color: rgba(255, 255, 255, 0.9);
+.mobileMenuOpen .mobileDrawer {
+    transform: translateX(0);
 }
 
-.techStack {
-    color: rgba(255, 255, 255, 0.7) !important;
-}
-
-.footerLink {
-    color: #fff;
-    font-weight: 600;
+.mobileDrawer a,
+.mobileDrawer button {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
     text-decoration: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    transition: all 0.2s ease;
+    padding: 0.75rem 0.5rem;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    display: block;
+    width: 100%;
+    transition: background 0.15s, color 0.15s;
 }
 
-.footerLink:hover {
-    color: #ffd8a8;
-    border-bottom-color: #ffd8a8;
+.mobileDrawer a:hover,
+.mobileDrawer button:hover {
+    background: #fdf6f0;
+    color: #c15a01;
 }
 
-.credits {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.4) !important;
-    margin-top: 0.25rem !important;
+.mobileSectionLabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 1rem 0.5rem 0.25rem;
 }
 
+.mobileDrawer .mobileSubLink {
+    padding-left: 1.25rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+/* ── Avatar ── */
 .avatarLink {
     display: flex;
     align-items: center;
@@ -195,10 +259,37 @@
     justify-content: center;
 }
 
-.avatarName {
-    font-size: 0.95rem;
-    font-weight: 500;
+.avatarName { font-size: 0.95rem; font-weight: 500; }
+
+/* ── Footer ── */
+.footer {
+    background: linear-gradient(180deg, #0a0a0a 10%, #c15a01 100%);
+    color: rgba(255,255,255,1);
+    text-align: center;
+    padding: 1.5rem 2rem;
+    font-size: 0.9rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    border-top: none;
+    margin-top: -1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0.25rem;
 }
 
+.footer p { margin: 0; font-weight: 400; letter-spacing: 0.01em; color: rgba(255,255,255,0.9); }
+.techStack { color: rgba(255,255,255,0.7) !important; }
+.footerLink { color: #fff; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.4); transition: all 0.2s ease; }
+.footerLink:hover { color: #ffd8a8; border-bottom-color: #ffd8a8; }
+.credits { font-size: 0.75rem; color: rgba(255,255,255,0.4) !important; margin-top: 0.25rem !important; }
 
-
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .header { top: 1rem; right: 1rem; }
+    .nav { display: none; }          /* esconde pill no mobile */
+    .hamburger { display: flex; }    /* mostra hamburguer */
+    .mobileMenu { display: block; }
+}
