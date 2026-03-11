@@ -43,7 +43,7 @@ export function FinHeatTransferCaseD({
                 label="M — Fin parameter M (W)"
                 value={M}
                 onChange={setM}
-                placeholderNode={<InlineMath math="M \text{ (W)}" />}
+                placeholderNode={<InlineMath math={String.raw`M \text{ (W)}`} />}
             />
         </SolverWrapper>
     );

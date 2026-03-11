@@ -44,7 +44,7 @@ export function FinTempDistCaseD({
     return (
         <SolverWrapper
             title="Fin Temp. Distribution — Case D (Infinite Fin)"
-            equationLatex="\frac{\theta}{\theta_b} = e^{-mx}"
+            equationLatex={String.raw`\frac{\theta}{\theta_b} = e^{-mx}`}
             result={
                 <>
                     <InlineMath math={`\\theta/\\theta_b = ${ratio.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} />
@@ -57,19 +57,19 @@ export function FinTempDistCaseD({
                 label="m — Fin parameter m (m⁻¹)"
                 value={m}
                 onChange={setm}
-                placeholderNode={<InlineMath math="m \text{ (m}^{-1}\text{)}" />}
+                placeholderNode={<InlineMath math={String.raw`m \text{ (m}^{-1}\text{)}`} />}
             />
             <SolverInput
                 label="x — Position along fin (m)"
                 value={x}
                 onChange={setX}
-                placeholderNode={<InlineMath math="x \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`x \text{ (m)}`} />}
             />
             <SolverInput
                 label="θb — Base excess temp (K)  (T_b - T∞)"
                 value={thetaB}
                 onChange={setThetaB}
-                placeholderNode={<InlineMath math="\theta_b \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`\theta_b \text{ (K)}`} />}
             />
         </SolverWrapper>
     );

@@ -13,7 +13,7 @@ export function CorrelationBlock() {
                 \left[1 + \left(\frac{Re_D}{282{,}000}\right)^{5/8}\right]^{4/5}
             `} />
             <span className={styles.correlationValidity}>
-                Valid for <InlineMath math="Re_D \cdot Pr \geq 0.2" />, all <InlineMath math="Pr" />
+                Valid for <InlineMath math={String.raw`Re_D \cdot Pr \geq 0.2`} />, all <InlineMath math={String.raw`Pr`} />
             </span>
         </div>
     );

@@ -60,7 +60,7 @@ export function FinTempDistCaseA({
     return (
         <SolverWrapper
             title="Fin Temp. Distribution — Case A (Convective Tip)"
-            equationLatex="\frac{\theta}{\theta_b} = \frac{\cosh[m(L-x)]+(h/mk)\sinh[m(L-x)]}{\cosh(mL)+(h/mk)\sinh(mL)}"
+            equationLatex={String.raw`\frac{\theta}{\theta_b} = \frac{\cosh[m(L-x)]+(h/mk)\sinh[m(L-x)]}{\cosh(mL)+(h/mk)\sinh(mL)}`}
             result={
                 <>
                     <InlineMath math={`\\theta/\\theta_b = ${ratio.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} />
@@ -73,37 +73,37 @@ export function FinTempDistCaseA({
                 label="m — Fin parameter m (m⁻¹)"
                 value={m}
                 onChange={setm}
-                placeholderNode={<InlineMath math="m \text{ (m}^{-1}\text{)}" />}
+                placeholderNode={<InlineMath math={String.raw`m \text{ (m}^{-1}\text{)}`} />}
             />
             <SolverInput
                 label="L — Fin length (m)"
                 value={L}
                 onChange={setL}
-                placeholderNode={<InlineMath math="L \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`L \text{ (m)}`} />}
             />
             <SolverInput
                 label="x — Position along fin (m)"
                 value={x}
                 onChange={setX}
-                placeholderNode={<InlineMath math="x \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`x \text{ (m)}`} />}
             />
             <SolverInput
                 label="h — Tip conv. coefficient (W/m²·K)"
                 value={h}
                 onChange={setH}
-                placeholderNode={<InlineMath math="h \text{ (W/m²·K)}" />}
+                placeholderNode={<InlineMath math={String.raw`h \text{ (W/m²·K)}`} />}
             />
             <SolverInput
                 label="k — Thermal conductivity (W/m·K)"
                 value={k}
                 onChange={setK}
-                placeholderNode={<InlineMath math="k \text{ (W/mK)}" />}
+                placeholderNode={<InlineMath math={String.raw`k \text{ (W/mK)}`} />}
             />
             <SolverInput
                 label="θb — Base excess temp (K)  (T_b - T∞)"
                 value={thetaB}
                 onChange={setThetaB}
-                placeholderNode={<InlineMath math="\theta_b \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`\theta_b \text{ (K)}`} />}
             />
         </SolverWrapper>
     );

@@ -49,17 +49,17 @@ export function FlatPlateChurchillOzoe() {
             <h3 className={styles.title}>Churchill–Ozoe (1973) — Laminar Flat Plate</h3>
             <p className={styles.subtitle}>
                 Local Nusselt number at position <InlineMath math="x" />. Eq. 7.33 Incropera.
-                Requires <InlineMath math="\mathrm{Pe}_x = \mathrm{Re}_x \cdot \mathrm{Pr} \geq 100" />.
+                Requires <InlineMath math={String.raw`\mathrm{Pe}_x = \mathrm{Re}_x \cdot \mathrm{Pr} \geq 100`} />.
             </p>
 
             <div className={styles.equationBlock}>
-                <BlockMath math="\mathrm{Nu}_x = \frac{0.3387\,\mathrm{Re}_x^{1/2}\,\mathrm{Pr}^{1/3}}{\left[1+\left(\dfrac{0.0468}{\mathrm{Pr}}\right)^{2/3}\right]^{1/4}}" />
+                <BlockMath math={String.raw`\mathrm{Nu}_x = \frac{0.3387\,\mathrm{Re}_x^{1/2}\,\mathrm{Pr}^{1/3}}{\left[1+\left(\dfrac{0.0468}{\mathrm{Pr}}\right)^{2/3}\right]^{1/4}}`} />
             </div>
 
             <div className={styles.inputsGrid}>
                 <label className={styles.fieldLabel}>
                     <span className={styles.fieldName}>
-                        <InlineMath math="\mathrm{Re}_x" /> — Reynolds at x
+                        <InlineMath math={String.raw`\mathrm{Re}_x`} /> — Reynolds at x
                     </span>
                     <input
                         type="number"
@@ -71,7 +71,7 @@ export function FlatPlateChurchillOzoe() {
                 </label>
                 <label className={styles.fieldLabel}>
                     <span className={styles.fieldName}>
-                        <InlineMath math="\mathrm{Pr}" /> — Prandtl Number
+                        <InlineMath math={String.raw`\mathrm{Pr}`} /> — Prandtl Number
                     </span>
                     <input
                         type="number"
@@ -84,7 +84,7 @@ export function FlatPlateChurchillOzoe() {
             </div>
 
             <div className={styles.peHint}>
-                <InlineMath math="\mathrm{Pe}_x = \mathrm{Re}_x \times \mathrm{Pr}" /> ={" "}
+                <InlineMath math={String.raw`\mathrm{Pe}_x = \mathrm{Re}_x \times \mathrm{Pr}`} /> ={" "}
                 {peX.toLocaleString(undefined, { maximumFractionDigits: 0 })}{" "}
                 {peValid ? "✓" : "— need ≥ 100"}
             </div>
@@ -109,7 +109,7 @@ export function FlatPlateChurchillOzoe() {
                         <div className={styles.resultValue}>
                             {result.toFixed(4)}
                         </div>
-                        <InlineMath math="\mathrm{Nu}_x" />
+                        <InlineMath math={String.raw`\mathrm{Nu}_x`} />
                     </div>
                 </div>
             )}

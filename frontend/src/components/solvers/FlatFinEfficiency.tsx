@@ -58,7 +58,7 @@ export function FlatFinEfficiency({
     return (
         <SolverWrapper
             title="Flat Fin Efficiency — Rectangular Profile (Eq. 3.94)"
-            equationLatex="\eta_f = \frac{\tanh(mL_c)}{mL_c} \qquad L_c = L + \frac{t}{2}"
+            equationLatex={String.raw`\eta_f = \frac{\tanh(mL_c)}{mL_c} \qquad L_c = L + \frac{t}{2}`}
             result={
                 <>
                     <InlineMath math={`L_c = ${Lc.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} /> m
@@ -75,25 +75,25 @@ export function FlatFinEfficiency({
                 label="m — Fin parameter m (m⁻¹)"
                 value={m}
                 onChange={setm}
-                placeholderNode={<InlineMath math="m \text{ (m}^{-1}\text{)}" />}
+                placeholderNode={<InlineMath math={String.raw`m \text{ (m}^{-1}\text{)}`} />}
             />
             <SolverInput
                 label="L — Fin length: base to tip (m)"
                 value={L}
                 onChange={setL}
-                placeholderNode={<InlineMath math="L \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`L \text{ (m)}`} />}
             />
             <SolverInput
                 label="w — Fin width: span into the page (m)"
                 value={w}
                 onChange={setW}
-                placeholderNode={<InlineMath math="w \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`w \text{ (m)}`} />}
             />
             <SolverInput
                 label="t — Fin thickness: base cross-section (m)"
                 value={t}
                 onChange={setT}
-                placeholderNode={<InlineMath math="t \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`t \text{ (m)}`} />}
             />
         </SolverWrapper>
     );

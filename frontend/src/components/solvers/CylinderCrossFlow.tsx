@@ -54,7 +54,7 @@ export function CylinderCrossFlow({
     return (
         <SolverWrapper
             title="Cylinder in Cross Flow — Churchill-Bernstein"
-            equationLatex="\overline{Nu}_D = 0.3 + \frac{0.62\,Re_D^{1/2}\,Pr^{1/3}}{\left[1+(0.4/Pr)^{2/3}\right]^{1/4}}\!\left[1+\!\left(\frac{Re_D}{282000}\right)^{\!5/8}\right]^{\!4/5}"
+            equationLatex={String.raw`\overline{Nu}_D = 0.3 + \frac{0.62\,Re_D^{1/2}\,Pr^{1/3}}{\left[1+(0.4/Pr)^{2/3}\right]^{1/4}}\!\left[1+\!\left(\frac{Re_D}{282000}\right)^{\!5/8}\right]^{\!4/5}`}
             result={
                 <>
                     <InlineMath math={`\\overline{Nu}_D = ${NuD.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} />
@@ -76,7 +76,7 @@ export function CylinderCrossFlow({
                 label="Pr"
                 value={Pr}
                 onChange={setPr}
-                placeholderNode={<InlineMath math="\mathrm{Pr}" />}
+                placeholderNode={<InlineMath math={String.raw`\mathrm{Pr}`} />}
             />
         </SolverWrapper>
     );

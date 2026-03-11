@@ -43,7 +43,7 @@ export function ThetaDefinition({
     return (
         <SolverWrapper
             title="Fin Excess Temperatures — θ and θ_b"
-            equationLatex="\theta = T - T_\infty \qquad \theta_b = T_b - T_\infty"
+            equationLatex={String.raw`\theta = T - T_\infty \qquad \theta_b = T_b - T_\infty`}
             result={
                 <>
                     <InlineMath math={`\\theta = ${theta.toLocaleString(undefined, { maximumFractionDigits: 2 })}`} /> K
@@ -56,19 +56,19 @@ export function ThetaDefinition({
                 label="T — Local fin temperature (K)"
                 value={T}
                 onChange={setT}
-                placeholderNode={<InlineMath math="T \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T \text{ (K)}`} />}
             />
             <SolverInput
                 label="Tb — Base temperature (K)"
                 value={Tb}
                 onChange={setTb}
-                placeholderNode={<InlineMath math="T_b \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T_b \text{ (K)}`} />}
             />
             <SolverInput
                 label="T∞ — Ambient temperature (K)"
                 value={Tinf}
                 onChange={setTinf}
-                placeholderNode={<InlineMath math="T_\infty \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T_\infty \text{ (K)}`} />}
             />
         </SolverWrapper>
     );

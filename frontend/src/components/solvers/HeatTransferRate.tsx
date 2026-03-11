@@ -50,7 +50,7 @@ export function HeatTransferRate({ initialParams = {}, onParamsChange, needsScaf
     return (
         <SolverWrapper
             title="Heat Transfer Rate (Newton's Law)"
-            equationLatex="q = h \cdot A \cdot (T_s - T_\infty)"
+            equationLatex={String.raw`q = h \cdot A \cdot (T_s - T_\infty)`}
             result={
                 <>
                     <InlineMath math="q =" /> {q.toLocaleString(undefined, { maximumFractionDigits: 2 })} W
@@ -61,28 +61,28 @@ export function HeatTransferRate({ initialParams = {}, onParamsChange, needsScaf
                 label="h (W/m²K)"
                 value={h}
                 onChange={setH}
-                placeholderNode={<InlineMath math="h \text{ (W/m²K)}" />}
+                placeholderNode={<InlineMath math={String.raw`h \text{ (W/m²K)}`} />}
             />
 
             <SolverInput
                 label="Area (m²)"
                 value={area}
                 onChange={setArea}
-                placeholderNode={<InlineMath math="A \text{ (m²)}" />}
+                placeholderNode={<InlineMath math={String.raw`A \text{ (m²)}`} />}
             />
 
             <SolverInput
                 label="Ts (K)"
                 value={tempSurface}
                 onChange={setTempSurface}
-                placeholderNode={<InlineMath math="T_s \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T_s \text{ (K)}`} />}
             />
 
             <SolverInput
                 label="T∞ (K)"
                 value={tempAmbient}
                 onChange={setTempAmbient}
-                placeholderNode={<InlineMath math="T_\infty \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T_\infty \text{ (K)}`} />}
             />
         </SolverWrapper>
     );

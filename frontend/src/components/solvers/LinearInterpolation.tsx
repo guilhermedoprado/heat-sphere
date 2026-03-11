@@ -69,7 +69,7 @@ export function LinearInterpolation({
     return (
         <SolverWrapper
             title="Linear Interpolation"
-            equationLatex="y = y_1 + \frac{x - x_1}{x_2 - x_1}(y_2 - y_1)"
+            equationLatex={String.raw`y = y_1 + \frac{x - x_1}{x_2 - x_1}(y_2 - y_1)`}
             result={resultNode}
         >
             <SolverInput

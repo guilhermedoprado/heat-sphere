@@ -63,7 +63,7 @@ export function FinHeatTransferCaseA({
     return (
         <SolverWrapper
             title="Fin Heat Transfer — Case A (Convective Tip)"
-            equationLatex="q_f = M\,\frac{\sinh(mL)+(h/mk)\cosh(mL)}{\cosh(mL)+(h/mk)\sinh(mL)}"
+            equationLatex={String.raw`q_f = M\,\frac{\sinh(mL)+(h/mk)\cosh(mL)}{\cosh(mL)+(h/mk)\sinh(mL)}`}
             result={
                 <>
                     <InlineMath math={`q_f = ${qf.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} /> W
@@ -74,31 +74,31 @@ export function FinHeatTransferCaseA({
                 label="M — Fin parameter M (W)"
                 value={M}
                 onChange={setM}
-                placeholderNode={<InlineMath math="M \text{ (W)}" />}
+                placeholderNode={<InlineMath math={String.raw`M \text{ (W)}`} />}
             />
             <SolverInput
                 label="m — Fin parameter m (m⁻¹)"
                 value={m}
                 onChange={setm}
-                placeholderNode={<InlineMath math="m \text{ (m}^{-1}\text{)}" />}
+                placeholderNode={<InlineMath math={String.raw`m \text{ (m}^{-1}\text{)}`} />}
             />
             <SolverInput
                 label="L — Fin length (m)"
                 value={L}
                 onChange={setL}
-                placeholderNode={<InlineMath math="L \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`L \text{ (m)}`} />}
             />
             <SolverInput
                 label="h — Tip conv. coefficient (W/m²·K)"
                 value={h}
                 onChange={setH}
-                placeholderNode={<InlineMath math="h \text{ (W/m²·K)}" />}
+                placeholderNode={<InlineMath math={String.raw`h \text{ (W/m²·K)}`} />}
             />
             <SolverInput
                 label="k — Thermal conductivity (W/m·K)"
                 value={k}
                 onChange={setK}
-                placeholderNode={<InlineMath math="k \text{ (W/m \cdot K)}" />}
+                placeholderNode={<InlineMath math={String.raw`k \text{ (W/m \cdot K)}`} />}
             />
         </SolverWrapper>
     );

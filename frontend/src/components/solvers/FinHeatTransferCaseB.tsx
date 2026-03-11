@@ -49,7 +49,7 @@ export function FinHeatTransferCaseB({
     return (
         <SolverWrapper
             title="Fin Heat Transfer — Case B (Adiabatic Tip)"
-            equationLatex="q_f = M \tanh(mL)"
+            equationLatex={String.raw`q_f = M \tanh(mL)`}
             result={
                 <>
                     <InlineMath math={`q_f = ${qf.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} /> W
@@ -60,19 +60,19 @@ export function FinHeatTransferCaseB({
                 label="M — Fin parameter M (W)"
                 value={M}
                 onChange={setM}
-                placeholderNode={<InlineMath math="M \text{ (W)}" />}
+                placeholderNode={<InlineMath math={String.raw`M \text{ (W)}`} />}
             />
             <SolverInput
                 label="m — Fin parameter m (m⁻¹)"
                 value={m}
                 onChange={setm}
-                placeholderNode={<InlineMath math="m \text{ (m}^{-1}\text{)}" />}
+                placeholderNode={<InlineMath math={String.raw`m \text{ (m}^{-1}\text{)}`} />}
             />
             <SolverInput
                 label="L — Fin length (m)"
                 value={L}
                 onChange={setL}
-                placeholderNode={<InlineMath math="L \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`L \text{ (m)}`} />}
             />
         </SolverWrapper>
     );

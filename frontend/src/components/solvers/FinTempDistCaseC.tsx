@@ -55,7 +55,7 @@ export function FinTempDistCaseC({
     return (
         <SolverWrapper
             title="Fin Temp. Distribution — Case C (Prescribed Tip Temp.)"
-            equationLatex="\frac{\theta}{\theta_b} = \frac{(\theta_L/\theta_b)\sinh(mx)+\sinh[m(L-x)]}{\sinh(mL)}"
+            equationLatex={String.raw`\frac{\theta}{\theta_b} = \frac{(\theta_L/\theta_b)\sinh(mx)+\sinh[m(L-x)]}{\sinh(mL)}`}
             result={
                 <>
                     <InlineMath math={`\\theta/\\theta_b = ${ratio.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} />
@@ -68,31 +68,31 @@ export function FinTempDistCaseC({
                 label="m — Fin parameter m (m⁻¹)"
                 value={m}
                 onChange={setm}
-                placeholderNode={<InlineMath math="m \text{ (m}^{-1}\text{)}" />}
+                placeholderNode={<InlineMath math={String.raw`m \text{ (m}^{-1}\text{)}`} />}
             />
             <SolverInput
                 label="L — Fin length (m)"
                 value={L}
                 onChange={setL}
-                placeholderNode={<InlineMath math="L \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`L \text{ (m)}`} />}
             />
             <SolverInput
                 label="x — Position along fin (m)"
                 value={x}
                 onChange={setX}
-                placeholderNode={<InlineMath math="x \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`x \text{ (m)}`} />}
             />
             <SolverInput
                 label="θb — Base excess temp (K)  (T_b - T∞)"
                 value={thetaB}
                 onChange={setThetaB}
-                placeholderNode={<InlineMath math="\theta_b \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`\theta_b \text{ (K)}`} />}
             />
             <SolverInput
                 label="θL — Tip excess temp (K)  (T_L - T∞)"
                 value={thetaL}
                 onChange={setThetaL}
-                placeholderNode={<InlineMath math="\theta_L \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`\theta_L \text{ (K)}`} />}
             />
         </SolverWrapper>
     );

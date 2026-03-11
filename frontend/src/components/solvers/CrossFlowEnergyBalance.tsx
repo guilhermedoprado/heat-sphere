@@ -63,7 +63,7 @@ export function CrossFlowEnergyBalance({
     return (
         <SolverWrapper
             title="Cross-Flow Energy Balance — Constant Ts"
-            equationLatex="\frac{T_s - T_{\infty,o}}{T_s - T_{\infty,i}} = \exp\!\left(-\frac{UA}{\dot{m}\,c_p}\right)"
+            equationLatex={String.raw`\frac{T_s - T_{\infty,o}}{T_s - T_{\infty,i}} = \exp\!\left(-\frac{UA}{\dot{m}\,c_p}\right)`}
             result={
                 <>
                     <InlineMath math={`T_{\\infty,o} = ${Tout.toLocaleString(undefined, { maximumFractionDigits: 2 })}`} /> K
@@ -76,37 +76,37 @@ export function CrossFlowEnergyBalance({
                 label="Ts — Surface temperature (K)"
                 value={Ts}
                 onChange={setTs}
-                placeholderNode={<InlineMath math="T_s \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T_s \text{ (K)}`} />}
             />
             <SolverInput
                 label="T∞,i — Fluid inlet temperature (K)"
                 value={Tinf}
                 onChange={setTinf}
-                placeholderNode={<InlineMath math="T_{\infty,i} \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`T_{\infty,i} \text{ (K)}`} />}
             />
             <SolverInput
                 label="U — Overall heat transfer coefficient (W/m²·K)"
                 value={U}
                 onChange={setU}
-                placeholderNode={<InlineMath math="U \text{ (W/m²·K)}" />}
+                placeholderNode={<InlineMath math={String.raw`U \text{ (W/m²·K)}`} />}
             />
             <SolverInput
                 label="A — Total surface area (m²)"
                 value={A}
                 onChange={setA}
-                placeholderNode={<InlineMath math="A \text{ (m²)}" />}
+                placeholderNode={<InlineMath math={String.raw`A \text{ (m²)}`} />}
             />
             <SolverInput
                 label="ṁ — Mass flow rate (kg/s)"
                 value={mdot}
                 onChange={setMdot}
-                placeholderNode={<InlineMath math="\dot{m} \text{ (kg/s)}" />}
+                placeholderNode={<InlineMath math={String.raw`\dot{m} \text{ (kg/s)}`} />}
             />
             <SolverInput
                 label="cp — Specific heat (J/kg·K)"
                 value={cp}
                 onChange={setCp}
-                placeholderNode={<InlineMath math="c_p \text{ (J/kg \cdot K)}" />}
+                placeholderNode={<InlineMath math={String.raw`c_p \text{ (J/kg \cdot K)}`} />}
             />
         </SolverWrapper>
     );

@@ -60,7 +60,7 @@ export function FinParameters({
     return (
         <SolverWrapper
             title="Fin Parameters — m and M"
-            equationLatex="m = \sqrt{\frac{hP}{kA_c}} \qquad M = \sqrt{hPkA_c}\,\theta_b"
+            equationLatex={String.raw`m = \sqrt{\frac{hP}{kA_c}} \qquad M = \sqrt{hPkA_c}\,\theta_b`}
             result={
                 <>
                     <InlineMath math={`m = ${m.toLocaleString(undefined, { maximumFractionDigits: 4 })}`} /> m⁻¹
@@ -73,31 +73,31 @@ export function FinParameters({
                 label="h — Conv. coefficient (W/m²·K)"
                 value={h}
                 onChange={setH}
-                placeholderNode={<InlineMath math="h \text{ (W/m²·K)}" />}
+                placeholderNode={<InlineMath math={String.raw`h \text{ (W/m²·K)}`} />}
             />
             <SolverInput
                 label="P — Fin perimeter (m)"
                 value={P}
                 onChange={setP}
-                placeholderNode={<InlineMath math="P \text{ (m)}" />}
+                placeholderNode={<InlineMath math={String.raw`P \text{ (m)}`} />}
             />
             <SolverInput
                 label="k — Thermal conductivity (W/m·K)"
                 value={k}
                 onChange={setK}
-                placeholderNode={<InlineMath math="k \text{ (W/m·K)}" />}
+                placeholderNode={<InlineMath math={String.raw`k \text{ (W/m·K)}`} />}
             />
             <SolverInput
                 label="Ac — Cross-sectional area (m²)"
                 value={Ac}
                 onChange={setAc}
-                placeholderNode={<InlineMath math="A_c \text{ (m²)}" />}
+                placeholderNode={<InlineMath math={String.raw`A_c \text{ (m²)}`} />}
             />
             <SolverInput
                 label="θb — Excess temperature (K)  (T_b - T∞)"
                 value={thetaB}
                 onChange={setThetaB}
-                placeholderNode={<InlineMath math="\theta_b \text{ (K)}" />}
+                placeholderNode={<InlineMath math={String.raw`\theta_b \text{ (K)}`} />}
             />
         </SolverWrapper>
     );

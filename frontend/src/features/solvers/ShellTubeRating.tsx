@@ -66,17 +66,17 @@ export function ShellTubeRating() {
             <div className={styles.equationRow}>
                 <div className={styles.equationBlock}>
                     <span className={styles.equationCaption}>Log Mean Temperature Difference</span>
-                    <BlockMath math="\Delta T_{lm} = \frac{\Delta T_1 - \Delta T_2}{\ln(\Delta T_1 / \Delta T_2)}" />
+                    <BlockMath math={String.raw`\Delta T_{lm} = \frac{\Delta T_1 - \Delta T_2}{\ln(\Delta T_1 / \Delta T_2)}`} />
                     <span className={styles.equationCaption} style={{ marginTop: "0.25rem" }}>
                         Corrected LMTD
                     </span>
-                    <BlockMath math="\Delta T_{lm,corr} = F \cdot \Delta T_{lm}" />
+                    <BlockMath math={String.raw`\Delta T_{lm,corr} = F \cdot \Delta T_{lm}`} />
                 </div>
 
                 <div className={styles.equationBlock}>
                     <span className={styles.equationCaption}>Dimensionless Parameters</span>
-                    <BlockMath math="P = \frac{T_{c,out} - T_{c,in}}{T_{h,in} - T_{c,in}}" />
-                    <BlockMath math="R = \frac{T_{h,in} - T_{h,out}}{T_{c,out} - T_{c,in}}" />
+                    <BlockMath math={String.raw`P = \frac{T_{c,out} - T_{c,in}}{T_{h,in} - T_{c,in}}`} />
+                    <BlockMath math={String.raw`R = \frac{T_{h,in} - T_{h,out}}{T_{c,out} - T_{c,in}}`} />
                 </div>
             </div>
 
