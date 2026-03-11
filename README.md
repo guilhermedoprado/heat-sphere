@@ -49,3 +49,46 @@ Start the full stack with:
 
 ```bash
 docker compose up -d --build
+```
+
+Once the containers are running, access the services here:
+
+Frontend: http://localhost:5173
+
+API (Swagger): http://localhost:8080/swagger
+
+## 🔮 Roadmap
+
+Planned improvements include:
+
+- Rename and delete tasks functionality.
+
+- Fix LaTeX rendering inside Markdown solvers.
+
+- Add step-by-step calculations.
+
+- Expand formularies across more heat transfer topics.
+
+- Add more interactive solvers.
+
+- Add Conduction and Radiation modules.
+
+- Improve mobile responsiveness and overall UI polish.
+
+- Add comprehensive tests for calculation engines.
+
+## 🤝 Contributing
+
+Contributions are welcome.
+
+If you have suggestions for engineering modules, solvers, or UI improvements:
+
+- Fork the repository.
+
+- Create a feature branch: git checkout -b feature/AmazingFeature
+
+- Commit your changes: git commit -m "Add some AmazingFeature"
+
+- Push to the branch: git push origin feature/AmazingFeature
+
+- Open a Pull Request.
