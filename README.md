@@ -1,72 +1,51 @@
-# Heat Sphere
+# HeatSphere
 
-> **Master Heat Transfer, One Module at a Time.**
+> **Convective Heat Transfer — Supported.**
 
-Heat Sphere is an interactive learning platform designed to help students and engineers visualize convective heat transfer concepts. Dive into theory, work through real calculations, and build engineering intuition—all in one place.
+HeatSphere is an interactive learning platform built to support the study of Heat Transfer through structured notes, interactive solvers, formularies, and worked calculations.
 
-## 🚀 Available Features
+It was designed as a real study tool for engineering students — not just to read theory, but to write notes, test equations, and build intuition through practical problem-solving.
 
-*   **Study Notes:** Concise, review-ready summaries of key concepts.
-*   **Formulary:** A comprehensive database of correlations and formulas organized by topic.
-*   **Solvers:** Built-in tools to calculate parameters for various flow scenarios.
-*   **Exercises Sheets:** Step-by-step worked examples to practice problem-solving.
+## 🚀 Current Features
+
+- **Markdown Notes:** Create and organize study notes with LaTeX math rendering.
+- **PDF Support:** Export notes and formularies to PDF, and work with imported content.
+- **Formularies:** Browse organized heat transfer equations by topic.
+- **Interactive Solvers:** Use built-in calculators for multiple convection and fin problems.
+- **Command Palette:** Type `\` inside notes to embed live calculators inline, Notion-style.
+- **Pomodoro Timer:** Stay focused while studying with an integrated timer.
+- **Worked Calculations:** Structured engineering exercises with formulas, assumptions, and numerical results.
+
+## 📚 Scope
+
+HeatSphere currently focuses on **Convective Heat Transfer**, with supported content for notes, formularies, and solvers related to this area.
 
 ## 🛠 Tech Stack
 
-**Frontend**
-*   **React:** UI Library
-*   **TypeScript:** Static typing for better code quality
-*   **Vite:** Build tool and development server
-*   **React Router:** Client-side routing
-*   **CSS Modules:** Scoped styling for components
+### Frontend
+- **React**
+- **TypeScript**
+- **Vite**
+- **React Router**
+- **CSS Modules**
 
-**Backend**
-*   **API:** RESTful service with Swagger/OpenAPI documentation
-*   **Framework:** ASP.NET Core (C#)
+### Backend
+- **ASP.NET Core (C#)**
+- **REST API**
+- **Swagger / OpenAPI**
+- **Entity Framework Core**
+- **PostgreSQL**
 
-**DevOps**
-*   **Docker & Docker Compose:** Containerization for easy deployment
+### Services & Infrastructure
+- **Go microservices**
+- **Docker & Docker Compose**
+- **Nginx**
+- **Azure Container Apps**
+- **OAuth 2.0**
 
 ## 🐳 Run with Docker
 
-You can spin up the full stack (Frontend + API) with a single command.
+Start the full stack with:
 
 ```bash
 docker compose up -d --build
-```
-
-Once the containers are running, access the services here:
-
-Frontend: http://localhost:5173
-
-API (Swagger): http://localhost:8080/swagger
-
-## 🔮 Roadmap & Future Improvements
-
-I am currently working on expanding the platform. Future updates will include:
-
- - Additional Modes: Modules for Conduction and Radiation heat transfer.
-
- - User Accounts: Authentication to save progress and "My Notebook" data.
-
- - Complex Solvers: Heat Exchanger (NTU-method) calculators.
-
- - UI Polish: Dark mode support and mobile responsiveness improvements.
-
- - Testing: comprehensive unit testing for calculation engines.
-
-## 🤝 Contributing
-
-Contributions are welcome! 
-
-If you have suggestions for new engineering modules or UI improvements:
-
-- Fork the repository.
-
-- Create a new Feature Branch (git checkout -b feature/AmazingFeature).
-
-- Commit your changes (git commit -m 'Add some AmazingFeature').
-
-- Push to the branch (git push origin feature/AmazingFeature).
-
-- Open a Pull Request.
