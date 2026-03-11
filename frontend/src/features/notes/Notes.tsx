@@ -76,6 +76,10 @@ export default function Notes() {
   const [selectedTask, setSelectedTask] = useState<string>("");
   const [newTaskName, setNewTaskName] = useState("");
   const [showNewTask, setShowNewTask] = useState(false);
+  const [taskMenuOpen, setTaskMenuOpen] = useState<string | null>(null);
+  const [renamingTask, setRenamingTask] = useState<string | null>(null);
+  const [renameTaskValue, setRenameTaskValue] = useState("");
+  const [confirmDeleteTask, setConfirmDeleteTask] = useState<string | null>(null);
 
 
   const [stats, setStats] = useState<ProductivityStats | null>(null);
@@ -288,6 +292,44 @@ export default function Notes() {
     return `${m}m`;
   };
 
+  const persistTasks = useCallback((next: string[]) => {
+    setTasks(next);
+    localStorage.setItem("deepWorkTasks", JSON.stringify(next));
+  }, []);
+
+  const renameTask = useCallback((oldName: string, newNameRaw: string) => {
+    const newName = newNameRaw.trim();
+    if (!newName || oldName === newName) {
+      setRenamingTask(null);
+      setRenameTaskValue("");
+      return;
+    }
+    if (tasks.includes(newName)) {
+      setError("Task name already exists.");
+      return;
+    }
+
+    const nextTasks = tasks.map((t) => (t === oldName ? newName : t));
+    persistTasks(nextTasks);
+    if (selectedTask === oldName) setSelectedTask(newName);
+
+    setRenamingTask(null);
+    setRenameTaskValue("");
+    setTaskMenuOpen(null);
+  }, [persistTasks, selectedTask, tasks]);
+
+  const deleteTask = useCallback((taskName: string) => {
+    const nextTasks = tasks.filter((t) => t !== taskName);
+    persistTasks(nextTasks);
+    if (selectedTask === taskName) setSelectedTask("");
+    if (renamingTask === taskName) {
+      setRenamingTask(null);
+      setRenameTaskValue("");
+    }
+    setConfirmDeleteTask(null);
+    setTaskMenuOpen(null);
+  }, [persistTasks, renamingTask, selectedTask, tasks]);
+
   function selectNote(note: Note) {
     setSelected(note);
     setTitle(note.title);
@@ -399,7 +441,7 @@ export default function Notes() {
       setFolders((prev) => Array.from(new Set([...prev, ...uniqueSubjects])));
 
       if (!selected) clearForm();
-    } catch (err) {
+    } catch {
       setError("Failed to save note.");
     } finally {
       setSaving(false);
@@ -416,7 +458,7 @@ export default function Notes() {
 
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders((prev) => Array.from(new Set([...prev, ...uniqueSubjects])));
-    } catch (err) {
+    } catch {
       setError("Failed to delete note.");
     }
   }
@@ -471,7 +513,7 @@ export default function Notes() {
 
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders(uniqueSubjects);
-    } catch (err) {
+    } catch {
       setError("Failed to delete folder.");
     } finally {
       setFolderContextMenu(null);
@@ -514,7 +556,7 @@ export default function Notes() {
 
       const uniqueSubjects = Array.from(new Set(data.map((n) => n.subject).filter(Boolean)));
       setFolders(uniqueSubjects);
-    } catch (err) {
+    } catch {
       setError("Failed to rename folder.");
     } finally {
       setRenamingFolder(null);
@@ -583,7 +625,7 @@ export default function Notes() {
       await api.put(`/api/notes/${noteId}`, { ...note, subject: newFolderPath });
       setFolders((prev) => (prev.includes(newFolderPath) ? prev : [...prev, newFolderPath]));
       setOpenFolders((prev) => new Set(prev).add(newFolderPath));
-    } catch (err) {
+    } catch {
       setNotes((prev) => {
         const rollback = [...prev];
         const idx = rollback.findIndex((n) => n.id === noteId);
@@ -837,18 +879,30 @@ export default function Notes() {
   );
 
   useEffect(() => {
-    if (!contextMenu && !folderContextMenu) return;
+    if (!contextMenu && !folderContextMenu && !taskMenuOpen && !confirmDeleteTask) return;
 
     const handler = () => {
       setContextMenu(null);
       setFolderContextMenu(null);
+      setTaskMenuOpen(null);
+      setConfirmDeleteTask(null);
     };
 
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
-  }, [contextMenu, folderContextMenu]);
+  }, [contextMenu, folderContextMenu, taskMenuOpen, confirmDeleteTask]);
 
   const isUngroupedDragOver = dragOverFolder === "Ungrouped";
+  const dashboardTasks = useMemo(() => {
+    const statMap = new Map<string, number>();
+    for (const stat of stats?.tasks ?? []) {
+      statMap.set(stat.taskName, stat.totalSeconds);
+    }
+    return tasks.map((taskName) => ({
+      taskName,
+      totalSeconds: statMap.get(taskName) ?? 0,
+    }));
+  }, [stats?.tasks, tasks]);
 
   return (
       <div className={styles.notesWorkspace}>
@@ -999,6 +1053,99 @@ export default function Notes() {
           </div>
 
           <div className={styles.pomodoroWidget}>
+            <span className={styles.moveLabel}>Dashboard</span>
+            <div className={styles.statsContainer}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                <span className={styles.moveLabel}>Tasks</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#c15a01" }}>
+                  Total: {formatStatsTime(stats?.totalOverall ?? 0)}
+                </span>
+              </div>
+
+              <ul className={styles.statsList}>
+                {dashboardTasks.map((task) => (
+                  <li
+                    key={task.taskName}
+                    className={`${styles.statItem} ${selectedTask === task.taskName ? styles.statItemSelected : ""}`}
+                    onClick={() => setSelectedTask(task.taskName)}
+                  >
+                    {renamingTask === task.taskName ? (
+                      <input
+                        className={styles.taskInlineRename}
+                        value={renameTaskValue}
+                        onChange={(e) => setRenameTaskValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") renameTask(task.taskName, renameTaskValue);
+                          if (e.key === "Escape") {
+                            setRenamingTask(null);
+                            setRenameTaskValue("");
+                          }
+                        }}
+                        onBlur={() => renameTask(task.taskName, renameTaskValue)}
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                      />
+                    ) : (
+                      <button className={styles.statTaskButton} title={task.taskName}>
+                        <span className={styles.statTask}>{task.taskName}</span>
+                      </button>
+                    )}
+
+                    <div className={styles.statMain}>
+                      <span className={styles.statCount}>{formatStatsTime(task.totalSeconds)}</span>
+                      <div className={styles.statTaskActions}>
+                        <button
+                          className={styles.taskMenuBtn}
+                          title="Task actions"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTaskMenuOpen((prev) => (prev === task.taskName ? null : task.taskName));
+                            setConfirmDeleteTask(null);
+                          }}
+                        >
+                          ⋯
+                        </button>
+                        {taskMenuOpen === task.taskName && (
+                          <div className={styles.taskMenu} onClick={(e) => e.stopPropagation()}>
+                            <button
+                              className={styles.taskMenuItem}
+                              onClick={() => {
+                                setRenamingTask(task.taskName);
+                                setRenameTaskValue(task.taskName);
+                                setTaskMenuOpen(null);
+                              }}
+                            >
+                              Renomear
+                            </button>
+                            {confirmDeleteTask === task.taskName ? (
+                              <button
+                                className={`${styles.taskMenuItem} ${styles.taskMenuDanger}`}
+                                onClick={() => deleteTask(task.taskName)}
+                              >
+                                Confirmar exclusao
+                              </button>
+                            ) : (
+                              <button
+                                className={`${styles.taskMenuItem} ${styles.taskMenuDanger}`}
+                                onClick={() => setConfirmDeleteTask(task.taskName)}
+                              >
+                                Excluir
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+                {dashboardTasks.length === 0 && (
+                  <li className={styles.statItem}>
+                    <span className={styles.statTask}>Crie uma task para iniciar.</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+
             <span className={styles.moveLabel}>Deep Work Tracker</span>
 
             <div className={styles.timerConfig}>
@@ -1109,28 +1256,6 @@ export default function Notes() {
                   >
                     Cancel session
                   </button>
-                </div>
-            )}
-
-            {stats && stats.totalOverall > 0 && (
-                <div className={styles.statsContainer}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
-                    <span className={styles.moveLabel}>Dashboard</span>
-                    <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#c15a01" }}>
-                  Total: {formatStatsTime(stats.totalOverall)}
-                </span>
-                  </div>
-
-                  <ul className={styles.statsList}>
-                    {stats.tasks.map((stat) => (
-                        <li key={stat.taskName} className={styles.statItem}>
-                    <span className={styles.statTask} title={stat.taskName}>
-                      {stat.taskName}
-                    </span>
-                          <span className={styles.statCount}>{formatStatsTime(stat.totalSeconds)}</span>
-                        </li>
-                    ))}
-                  </ul>
                 </div>
             )}
           </div>
