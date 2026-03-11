@@ -219,7 +219,7 @@ export default function ResourcePage({ type }: { type: ResourceType }) {
                                 <MDEditor.Markdown
                                     source={formulary.content}
                                     remarkPlugins={[remarkMath]}
-                                    rehypePlugins={[rehypeKatex]}
+                                    rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, output: "html" }]]}
                                 />
                             </div>
                         </>

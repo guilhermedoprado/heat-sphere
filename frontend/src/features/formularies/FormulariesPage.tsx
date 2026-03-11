@@ -97,7 +97,7 @@ export function FormulariesPage() {
                 <MDEditor.Markdown
                     source={entry.content}
                     remarkPlugins={[remarkMath]}
-                    rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false }]]}
+                    rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, output: "html" }]]}
                     components={tableComponents}
                 />
             </div>

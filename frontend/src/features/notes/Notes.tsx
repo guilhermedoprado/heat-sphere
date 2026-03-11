@@ -1305,7 +1305,7 @@ export default function Notes() {
           <MDEditor.Markdown
             source={content}
             remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
+            rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, output: "html" }]]}
           />
         </div>
       </div>

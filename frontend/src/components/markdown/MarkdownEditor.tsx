@@ -163,7 +163,7 @@ export function MarkdownEditor({ value, onChange, notes = [], onNavigate, previe
                     }}
                     previewOptions={{
                         remarkPlugins: [remarkWikiLink, remarkMath, remarkSolvers],
-                        rehypePlugins: [[rehypeKatex, { strict: false, throwOnError: false }]] as any,
+                        rehypePlugins: [[rehypeKatex, { strict: false, throwOnError: false, output: "html" }]] as any,
                         components,
                     }}
                 />

@@ -6,6 +6,11 @@ const apiTarget = process.env.VITE_PROXY_TARGET || "http://localhost:8080";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "react-katex": "/src/lib/reactKatexSafe.tsx",
+    },
+  },
   server: {
     host: true,
     port: 5173,

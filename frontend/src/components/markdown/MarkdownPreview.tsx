@@ -35,7 +35,7 @@ export function MarkdownPreview({ content, notes = [], onNavigate }: Props) {
     <div className="markdown-preview">
       <ReactMarkdown
         remarkPlugins={[remarkWikiLink, remarkMath]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, output: "html" }]]}
         components={components as React.ComponentProps<typeof ReactMarkdown>["components"]}
       >
         {content}
