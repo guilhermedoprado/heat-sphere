@@ -21,7 +21,7 @@
   border-right: 1px solid #f0e6d2;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   transition: width 0.3s ease, min-width 0.3s ease;
   color: #5c4b37;
 }
@@ -495,6 +495,8 @@
   gap: 0.35rem;
   max-height: 150px;
   overflow-y: auto;
+  overflow-x: hidden;
+  max-height: none;
 }
 
 .statItem {
@@ -519,6 +521,7 @@
 .statMain {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.25rem;
 }
 
@@ -545,7 +548,9 @@
 }
 
 .statTaskActions {
-  position: relative;
+  position: relative; /* âncora do dropdown */
+  display: inline-flex;
+  align-items: center;
 }
 
 .taskMenuBtn {
@@ -571,41 +576,53 @@
 
 .taskMenu {
   position: absolute;
+  top: calc(100% + 6px); /* abaixo do botão ⋯ */
   right: 0;
-  top: calc(100% + 4px);
-  min-width: 130px;
-  z-index: 20;
-  background: #fff;
-  border: 1px solid #f0e6d2;
-  border-radius: 6px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  padding: 0.3rem 0;
+  min-width: 160px;
+  background: #f0e6d2;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.taskMenuFixed {
+  position: fixed;
+  transform: translateX(-100%); /* ancora no canto direito do botão */
+  min-width: 160px;
+  background: #f0e6d2;
+  border: 1px solid #c15a01;
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .taskMenuItem {
   width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0.4rem 0.7rem;
-  font-size: 0.78rem;
   text-align: left;
+  padding: 10px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
   color: #5c4b37;
   cursor: pointer;
 }
 
 .taskMenuItem:hover {
-  background: #fdf9f4;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .taskMenuDanger {
-  color: #dc2626;
+  color: #ff6b6b;
 }
 
 .statTask {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 110px; /* Impede o texto de empurrar os tomates pra fora */
+  max-width: 180px; /* Impede o texto de empurrar os tomates pra fora */
   font-weight: 500;
 }
 
@@ -641,6 +658,7 @@
   color: #a39581;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
 }
 
 .toggleSidebarBtn {

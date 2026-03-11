@@ -77,6 +77,7 @@ export default function Notes() {
   const [newTaskName, setNewTaskName] = useState("");
   const [showNewTask, setShowNewTask] = useState(false);
   const [taskMenuOpen, setTaskMenuOpen] = useState<string | null>(null);
+  const [taskMenuPos, setTaskMenuPos] = useState<{ top: number; left: number } | null>(null);  
   const [renamingTask, setRenamingTask] = useState<string | null>(null);
   const [renameTaskValue, setRenameTaskValue] = useState("");
   const [confirmDeleteTask, setConfirmDeleteTask] = useState<string | null>(null);
@@ -1053,11 +1054,10 @@ export default function Notes() {
           </div>
 
           <div className={styles.pomodoroWidget}>
-            <span className={styles.moveLabel}>Dashboard</span>
-            <div className={styles.statsContainer}>
+            <div className={styles.moveLabel}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
                 <span className={styles.moveLabel}>Tasks</span>
-                <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#c15a01" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#c15a01", marginBottom: "0.3rem" }}>
                   Total: {formatStatsTime(stats?.totalOverall ?? 0)}
                 </span>
               </div>
@@ -1093,43 +1093,54 @@ export default function Notes() {
 
                     <div className={styles.statMain}>
                       <span className={styles.statCount}>{formatStatsTime(task.totalSeconds)}</span>
-                      <div className={styles.statTaskActions}>
-                        <button
-                          className={styles.taskMenuBtn}
-                          title="Task actions"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setTaskMenuOpen((prev) => (prev === task.taskName ? null : task.taskName));
-                            setConfirmDeleteTask(null);
-                          }}
+                      <div className={styles.statTaskActions} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        className={styles.taskMenuBtn}
+                        title="Task actions"
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
+                          setTaskMenuPos({ top: rect.bottom + 6, left: rect.right });
+
+                          setTaskMenuOpen((prev) => (prev === task.taskName ? null : task.taskName));
+                          setConfirmDeleteTask(null);
+                        }}
                         >
                           ⋯
-                        </button>
-                        {taskMenuOpen === task.taskName && (
-                          <div className={styles.taskMenu} onClick={(e) => e.stopPropagation()}>
+                      </button>
+
+
+                      {taskMenuOpen && taskMenuPos && (
+                          <div
+                            className={styles.taskMenuFixed}
+                            style={{ top: taskMenuPos.top, left: taskMenuPos.left }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <button
                               className={styles.taskMenuItem}
                               onClick={() => {
-                                setRenamingTask(task.taskName);
-                                setRenameTaskValue(task.taskName);
+                                setRenamingTask(taskMenuOpen);
+                                setRenameTaskValue(taskMenuOpen);
                                 setTaskMenuOpen(null);
                               }}
                             >
-                              Renomear
+                              Rename
                             </button>
-                            {confirmDeleteTask === task.taskName ? (
+
+                            {confirmDeleteTask === taskMenuOpen ? (
                               <button
                                 className={`${styles.taskMenuItem} ${styles.taskMenuDanger}`}
-                                onClick={() => deleteTask(task.taskName)}
+                                onClick={() => deleteTask(taskMenuOpen)}
                               >
-                                Confirmar exclusao
+                                Confirm deletion
                               </button>
                             ) : (
                               <button
                                 className={`${styles.taskMenuItem} ${styles.taskMenuDanger}`}
-                                onClick={() => setConfirmDeleteTask(task.taskName)}
+                                onClick={() => setConfirmDeleteTask(taskMenuOpen)}
                               >
-                                Excluir
+                                Delete
                               </button>
                             )}
                           </div>
@@ -1140,7 +1151,7 @@ export default function Notes() {
                 ))}
                 {dashboardTasks.length === 0 && (
                   <li className={styles.statItem}>
-                    <span className={styles.statTask}>Crie uma task para iniciar.</span>
+                    <span className={styles.statTask}>No tasks created yet.</span>
                   </li>
                 )}
               </ul>
