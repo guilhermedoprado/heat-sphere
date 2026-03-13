@@ -253,6 +253,9 @@ export default function Notes() {
 
   useEffect(() => {
     fetchStats();
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
   }, [fetchStats]);
 
   const saveWorkSession = useCallback(
@@ -295,6 +298,9 @@ export default function Notes() {
     MAX_BREAK,
   } = timer;
 
+  const prevPhaseRef = useRef<"work" | "break">(timerPhase);
+  const prevRunningRef = useRef(isTimerRunning);
+
   const saveProgress = () => {
     const timeSpent = workSecs - timeLeft;
     saveWorkSession(timeSpent);
@@ -307,6 +313,32 @@ export default function Notes() {
     if (h > 0) return `${h}h ${m}m`;
     return `${m}m`;
   };
+
+  function playBeep(type: "work" | "break") {
+    try {
+      const ctx = new AudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+  
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+  
+      // Focus terminou: tom mais grave e longo (tipo sino)
+      // Pause terminou: tom mais agudo e curto
+      oscillator.frequency.value = type === "work" ? 440 : 880;
+      oscillator.type = "sine";
+  
+      gain.gain.setValueAtTime(0.6, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (type === "work" ? 1.5 : 0.8));
+  
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + (type === "work" ? 1.5 : 0.8));
+  
+      oscillator.onended = () => ctx.close();
+    } catch {
+      // Navegador bloqueou AudioContext (sem interação prévia) — silencia graciosamente
+    }
+  }
 
   const persistTasks = useCallback((next: string[]) => {
     setTasks(next);
@@ -986,6 +1018,33 @@ export default function Notes() {
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     };
   }, [title, content, subject, briefDefinition, sortOrder, tags, selected]); 
+
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current;
+  
+    // Fase mudou = sessão completou (com ou sem auto-advance)
+    if (prevPhase !== timerPhase) {
+      const completedPhase = prevPhase;
+  
+      playBeep(completedPhase);
+      setIsSidebarOpen(true);
+  
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(
+          completedPhase === "work" ? "🍅 Finished focus" : "☕ Finished break",
+          {
+            body:
+              completedPhase === "work"
+                ? `${selectedTask ? `"${selectedTask}" — ` : ""}time to take a break`
+                : "Time to focus!",
+            silent: true,
+          }
+        );
+      }
+    }
+  
+    prevPhaseRef.current = timerPhase;
+  }, [timerPhase]); // ← só depende de timerPhase agora
 
   return (
       <div className={styles.notesWorkspace}>
