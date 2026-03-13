@@ -299,7 +299,6 @@ export default function Notes() {
   } = timer;
 
   const prevPhaseRef = useRef<"work" | "break">(timerPhase);
-  const prevRunningRef = useRef(isTimerRunning);
 
   const saveProgress = () => {
     const timeSpent = workSecs - timeLeft;
