@@ -286,7 +286,6 @@ export default function Notes() {
     reset: resetTimer,
     setWorkMinutes,
     setBreakMinutes,
-    setAutoAdvance,
     switchToWork,
     switchToBreak,
     workSecs,
