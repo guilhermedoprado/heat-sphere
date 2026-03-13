@@ -52,6 +52,22 @@ export default function Notes() {
   const [tags, setTags] = useState("");
 
   const [saving, setSaving] = useState(false);
+
+  const AUTOSAVE_DELAY = 2000; // ms de inatividade antes de salvar
+
+  type AutoSaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
+  const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>("idle");
+
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSavedRef = useRef({
+    title: "",
+    content: "",
+    subject: "",
+    briefDefinition: "",
+    sortOrder: 0,
+    tags: "",
+  });
+
   const [error, setError] = useState("");
 
   const [folders, setFolders] = useState<string[]>([]);
@@ -340,6 +356,16 @@ export default function Notes() {
     setSortOrder(note.sortOrder ?? 0);
     setTags(note.tags.join(", "));
     setIsEditingMd(!note.contentMarkdown);
+
+    lastSavedRef.current = {
+      title: note.title,
+      content: note.contentMarkdown,
+      subject: note.subject,
+      briefDefinition: note.briefDefinition ?? "",
+      sortOrder: note.sortOrder ?? 0,
+      tags: note.tags.join(", "),
+    };
+    setAutoSaveStatus("idle");
   }
 
   function clearForm() {
@@ -351,6 +377,9 @@ export default function Notes() {
     setSortOrder(0);
     setTags("");
     setIsEditingMd(true);
+
+    lastSavedRef.current = { title: "", content: "", subject: "", briefDefinition: "", sortOrder: 0, tags: "" };
+    setAutoSaveStatus("idle");
   }
 
   function createInFolder(folderPath: string) {
@@ -905,6 +934,60 @@ export default function Notes() {
     }));
   }, [stats?.tasks, tasks]);
 
+  useEffect(() => {
+    // Só faz auto-save em nota EXISTENTE. Nova nota ainda usa o Create manual.
+    if (!selected) return;
+  
+    const isDirty =
+      title !== lastSavedRef.current.title ||
+      content !== lastSavedRef.current.content ||
+      subject !== lastSavedRef.current.subject ||
+      briefDefinition !== lastSavedRef.current.briefDefinition ||
+      sortOrder !== lastSavedRef.current.sortOrder ||
+      tags !== lastSavedRef.current.tags;
+  
+    if (!isDirty) return;
+  
+    setAutoSaveStatus("pending");
+  
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+  
+    autoSaveTimerRef.current = setTimeout(async () => {
+      setAutoSaveStatus("saving");
+      try {
+        const body = {
+          title,
+          subject,
+          contentMarkdown: content,
+          briefDefinition,
+          sortOrder,
+          tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+        };
+        await api.put(`/api/notes/${selected.id}`, body);
+  
+        lastSavedRef.current = { title, content, subject, briefDefinition, sortOrder, tags };
+  
+        // Atualiza o título na sidebar sem recarregar tudo
+        setNotes((prev) =>
+          prev.map((n) =>
+            n.id === selected.id
+              ? { ...n, title, subject, contentMarkdown: content }
+              : n
+          )
+        );
+  
+        setAutoSaveStatus("saved");
+        setTimeout(() => setAutoSaveStatus("idle"), 2500);
+      } catch {
+        setAutoSaveStatus("error");
+      }
+    }, AUTOSAVE_DELAY);
+  
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [title, content, subject, briefDefinition, sortOrder, tags, selected]); 
+
   return (
       <div className={styles.notesWorkspace}>
         <aside className={`${styles.sidebar} ${!isSidebarOpen ? styles.hidden : ""}`}>
@@ -1054,10 +1137,101 @@ export default function Notes() {
           </div>
 
           <div className={styles.pomodoroWidget}>
-            <div className={styles.moveLabel}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+            <div className={styles.trackerCard}>
+              <div className={styles.timerEditRow}>
+                <label className={styles.timerMiniField}>
+                  <span>Focus (min)</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    min={MIN_WORK}
+                    max={MAX_WORK}
+                    value={timerConfig.workMinutes}
+                    onChange={(e) => setWorkMinutes(Number(e.target.value) || MIN_WORK)}
+                    disabled={isTimerRunning}
+                    className={styles.timerMiniInput}
+                  />
+                </label>
+
+                <label className={styles.timerMiniField}>
+                  <span>Pause (min)</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    min={MIN_BREAK}
+                    max={MAX_BREAK}
+                    value={timerConfig.breakMinutes}
+                    onChange={(e) => setBreakMinutes(Number(e.target.value) || MIN_BREAK)}
+                    disabled={isTimerRunning}
+                    className={styles.timerMiniInput}
+                  />
+                </label>
+              </div>
+
+              {!isTimerRunning && (
+                <div className={styles.phaseSwitcher}>
+                  <button
+                    type="button"
+                    className={`${styles.phaseBtn} ${timerPhase === "work" ? styles.phaseBtnActive : ""}`}
+                    onClick={switchToWork}
+                  >
+                    Focus
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.phaseBtn} ${timerPhase === "break" ? styles.phaseBtnActive : ""}`}
+                    onClick={switchToBreak}
+                  >
+                    Pause
+                  </button>
+                </div>
+              )}
+
+              <div
+                className={`${styles.pomodoroTime} ${isTimerRunning ? styles.timeRunning : ""} ${
+                  timerPhase === "break" ? styles.timeBreak : ""
+                }`}
+              >
+                {Math.floor(timeLeft / 60).toString().padStart(2, "0")}:
+                {(timeLeft % 60).toString().padStart(2, "0")}
+              </div>
+
+              <div className={styles.trackerActions}>
+                <button
+                  className={styles.startSessionBtn}
+                  disabled={timerPhase === "work" && !selectedTask}
+                  onClick={toggleTimer}
+                  style={{ flex: 1, backgroundColor: isTimerRunning ? "#dc2626" : "" }}
+                >
+                  {isTimerRunning ? "Pause" : "Start"}
+                </button>
+              </div>
+
+              {timerPhase === "work" && timeLeft < workSecs && !isTimerRunning && (
+                <div className={styles.secondaryActions}>
+                  <button
+                    className={styles.startSessionBtn}
+                    style={{ flex: 2, backgroundColor: "#059669", fontSize: "0.8rem", padding: "0.4rem" }}
+                    onClick={saveProgress}
+                    title="Save the time already studied"
+                  >
+                    Save progress
+                  </button>
+                  <button
+                    className={styles.startSessionBtn}
+                    style={{ flex: 1, backgroundColor: "#a39581", fontSize: "0.8rem", padding: "0.4rem" }}
+                    onClick={resetTimer}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+           </div>
+
+            <div className={styles.statsContainer}>
+              <div className={styles.dashboardHeader}>
                 <span className={styles.moveLabel}>Tasks</span>
-                <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#c15a01", marginBottom: "0.3rem" }}>
+                <span className={styles.totalTime}>
                   Total: {formatStatsTime(stats?.totalOverall ?? 0)}
                 </span>
               </div>
@@ -1093,25 +1267,23 @@ export default function Notes() {
 
                     <div className={styles.statMain}>
                       <span className={styles.statCount}>{formatStatsTime(task.totalSeconds)}</span>
+
                       <div className={styles.statTaskActions} onClick={(e) => e.stopPropagation()}>
-                      <button
-                        className={styles.taskMenuBtn}
-                        title="Task actions"
-                        onClick={(e) => {
-                          e.stopPropagation();
-
-                          const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
-                          setTaskMenuPos({ top: rect.bottom + 6, left: rect.right });
-
-                          setTaskMenuOpen((prev) => (prev === task.taskName ? null : task.taskName));
-                          setConfirmDeleteTask(null);
-                        }}
+                        <button
+                          className={styles.taskMenuBtn}
+                          title="Task actions"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
+                            setTaskMenuPos({ top: rect.bottom + 6, left: rect.right });
+                            setTaskMenuOpen((prev) => (prev === task.taskName ? null : task.taskName));
+                            setConfirmDeleteTask(null);
+                          }}
                         >
                           ⋯
-                      </button>
+                        </button>
 
-
-                      {taskMenuOpen && taskMenuPos && (
+                        {taskMenuOpen === task.taskName && taskMenuPos && (
                           <div
                             className={styles.taskMenuFixed}
                             style={{ top: taskMenuPos.top, left: taskMenuPos.left }}
@@ -1120,25 +1292,25 @@ export default function Notes() {
                             <button
                               className={styles.taskMenuItem}
                               onClick={() => {
-                                setRenamingTask(taskMenuOpen);
-                                setRenameTaskValue(taskMenuOpen);
+                                setRenamingTask(task.taskName);
+                                setRenameTaskValue(task.taskName);
                                 setTaskMenuOpen(null);
                               }}
                             >
                               Rename
                             </button>
 
-                            {confirmDeleteTask === taskMenuOpen ? (
+                            {confirmDeleteTask === task.taskName ? (
                               <button
                                 className={`${styles.taskMenuItem} ${styles.taskMenuDanger}`}
-                                onClick={() => deleteTask(taskMenuOpen)}
+                                onClick={() => deleteTask(task.taskName)}
                               >
                                 Confirm deletion
                               </button>
                             ) : (
                               <button
                                 className={`${styles.taskMenuItem} ${styles.taskMenuDanger}`}
-                                onClick={() => setConfirmDeleteTask(taskMenuOpen)}
+                                onClick={() => setConfirmDeleteTask(task.taskName)}
                               >
                                 Delete
                               </button>
@@ -1149,6 +1321,7 @@ export default function Notes() {
                     </div>
                   </li>
                 ))}
+
                 {dashboardTasks.length === 0 && (
                   <li className={styles.statItem}>
                     <span className={styles.statTask}>No tasks created yet.</span>
@@ -1156,119 +1329,6 @@ export default function Notes() {
                 )}
               </ul>
             </div>
-
-            <span className={styles.moveLabel}>Deep Work Tracker</span>
-
-            <div className={styles.timerConfig}>
-              <div className={styles.timerConfigRow}>
-                <label className={styles.timerConfigLabel}>Focus (min)</label>
-                <input
-                    type="number"
-                    min={MIN_WORK}
-                    max={MAX_WORK}
-                    value={timerConfig.workMinutes}
-                    onChange={(e) => setWorkMinutes(Number(e.target.value) || MIN_WORK)}
-                    disabled={isTimerRunning}
-                    className={styles.timerConfigInput}
-                />
-              </div>
-              <div className={styles.timerConfigRow}>
-                <label className={styles.timerConfigLabel}>Pause (min)</label>
-                <input
-                    type="number"
-                    min={MIN_BREAK}
-                    max={MAX_BREAK}
-                    value={timerConfig.breakMinutes}
-                    onChange={(e) => setBreakMinutes(Number(e.target.value) || MIN_BREAK)}
-                    disabled={isTimerRunning}
-                    className={styles.timerConfigInput}
-                />
-              </div>
-              <label className={styles.timerConfigCheck}>
-                <input
-                    type="checkbox"
-                    checked={timerConfig.autoAdvance}
-                    onChange={(e) => setAutoAdvance(e.target.checked)}
-                    disabled={isTimerRunning}
-                />
-                <span>Auto advance focus ↔ pause</span>
-              </label>
-            </div>
-
-            <select
-                className={styles.taskSelect}
-                value={selectedTask}
-                onChange={(e) => setSelectedTask(e.target.value)}
-                disabled={isTimerRunning}
-            >
-              <option value="" disabled>
-                {tasks.length === 0 ? "Create a task first ☝️" : "Select Task..."}
-              </option>
-              {tasks.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-              ))}
-            </select>
-
-            <div
-                className={`${styles.pomodoroTime} ${isTimerRunning ? styles.timeRunning : ""} ${timerPhase === "break" ? styles.timeBreak : ""}`}
-            >
-              {Math.floor(timeLeft / 60)
-                  .toString()
-                  .padStart(2, "0")}
-              :{(timeLeft % 60).toString().padStart(2, "0")}
-            </div>
-
-            {!isTimerRunning && (
-                <div className={styles.phaseSwitcher}>
-                  <button
-                      type="button"
-                      className={`${styles.phaseBtn} ${timerPhase === "work" ? styles.phaseBtnActive : ""}`}
-                      onClick={switchToWork}
-                  >
-                    Focus
-                  </button>
-                  <button
-                      type="button"
-                      className={`${styles.phaseBtn} ${timerPhase === "break" ? styles.phaseBtnActive : ""}`}
-                      onClick={switchToBreak}
-                  >
-                    Pause
-                  </button>
-                </div>
-            )}
-
-            <div style={{ display: "flex", gap: "0.4rem" }}>
-              <button
-                  className={styles.startSessionBtn}
-                  disabled={timerPhase === "work" && !selectedTask}
-                  onClick={toggleTimer}
-                  style={{ flex: 1, backgroundColor: isTimerRunning ? "#dc2626" : "" }}
-              >
-                {isTimerRunning ? "Pause" : "Start"}
-              </button>
-            </div>
-
-            {timerPhase === "work" && timeLeft < workSecs && !isTimerRunning && (
-                <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.2rem" }}>
-                  <button
-                      className={styles.startSessionBtn}
-                      style={{ flex: 2, backgroundColor: "#059669", fontSize: "0.8rem", padding: "0.4rem" }}
-                      onClick={saveProgress}
-                      title="Save the time already studied"
-                  >
-                    Save progress
-                  </button>
-                  <button
-                      className={styles.startSessionBtn}
-                      style={{ flex: 1, backgroundColor: "#a39581", fontSize: "0.8rem", padding: "0.4rem" }}
-                      onClick={resetTimer}
-                  >
-                    Cancel session
-                  </button>
-                </div>
-            )}
           </div>
         </aside>
 
@@ -1292,21 +1352,26 @@ export default function Notes() {
 
             {error && <span style={{ color: "red", fontSize: "0.8rem" }}>{error}</span>}
 
-            {middleBarMode === "editor" && (
-              <>
-                <button className={styles.saveBtn} onClick={save} disabled={saving || !title}>
-                  {saving ? "Saving..." : selected ? "Update" : "Create"}
-                </button>
-                {selected && (
-                  <button className={styles.deleteBtn} onClick={() => remove(selected.id)}>
-                    Delete
-                  </button>
-                )}
-              </>
+            {selected && (
+              <span className={styles.autoSaveIndicator} data-status={autoSaveStatus}>
+                {autoSaveStatus === "pending" && "..."}
+                {autoSaveStatus === "saving" && "Saving..."}
+                {autoSaveStatus === "saved"  && "✓ Saved"}
+                {autoSaveStatus === "error"  && "⚠ Error"}
+              </span>
             )}
-            {middleBarMode === "pdf" && pdfUrlMiddle && (
-              <button className={styles.clearPdfBtn} onClick={clearPdfMiddle}>
-                Close PDF
+
+            {/* Botão manual: só aparece em nota nova (sem selected) */}
+            {!selected && middleBarMode === "editor" && (
+              <button className={styles.saveBtn} onClick={save} disabled={saving || !title}>
+                {saving ? "Saving..." : "Create"}
+              </button>
+            )}
+
+            {/* Delete continua igual */}
+            {selected && (
+              <button className={styles.deleteBtn} onClick={() => remove(selected.id)}>
+                Delete
               </button>
             )}
           </header>

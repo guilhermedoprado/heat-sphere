@@ -1,14 +1,14 @@
 /* Layout Principal - 3 Colunas (Sidebar + Middle + Right) */
 .notesWorkspace {
   display: flex;
-  height: 100vh; /* <-- REMOVA O CALC(-60PX). Deixe só 100vh! */
-  width: 100vw; /* Garante que pegue a largura inteira também */
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
   background-color: #FDF9F4 !important;
   font-family: 'Inter', system-ui, sans-serif;
   margin: 0;
   padding: 0;
-  position: absolute; /* Prende o workspace nas bordas da tela */
+  position: absolute;
   top: 0;
   left: 0;
 }
@@ -17,11 +17,12 @@
 .sidebar {
   width: 260px;
   min-width: 260px;
+  min-height: 0;
   background: #FDF9F4;
   border-right: 1px solid #f0e6d2;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: hidden;
   transition: width 0.3s ease, min-width 0.3s ease;
   color: #5c4b37;
 }
@@ -33,16 +34,17 @@
 }
 
 .sidebarHeader {
-  padding: 1.25rem 1rem 0.75rem;
+  padding: 0.6rem 0.85rem 0.45rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.45rem;
 }
 
 .sidebarHeader h2 {
   margin: 0;
   font-family: 'Outfit', system-ui, sans-serif;
-  font-size: 1.3rem;
+  font-size: 1.15rem;
+  line-height: 1.1;
   font-weight: 700;
   color: #c15a01;
 }
@@ -50,9 +52,9 @@
 .backLink {
   color: #c15a01;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.1rem;
   align-self: flex-start;
   transition: opacity 0.2s;
 }
@@ -66,7 +68,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.35rem 0.5rem;
   background: #fdf0e6;
   border-radius: 8px;
   border: 1px solid #e8ddd0;
@@ -108,13 +110,13 @@
 /* Botões da Sidebar */
 .newBtn {
   width: 100%;
-  padding: 0.7rem;
+  padding: 0.6rem;
   background: #c15a01;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
   transition: background 0.2s;
 }
@@ -125,32 +127,36 @@
 
 .btnRow {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.45rem;
   width: 100%;
 }
 
-.addFolderBtn, .addTaskBtn {
+.addFolderBtn,
+.addTaskBtn {
   flex: 1;
-  padding: 0.45rem;
+  padding: 0.4rem;
   background: #f0e6d2;
   color: #5c4b37;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   transition: background 0.2s;
 }
 
-.addFolderBtn:hover, .addTaskBtn:hover {
+.addFolderBtn:hover,
+.addTaskBtn:hover {
   background: #e6d8c0;
 }
 
 /* Tree de Pastas */
 .tree {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
-  padding: 0 0 1rem;
+  overflow-x: hidden;
+  padding: 0 0 0.45rem;
 }
 
 .folderHeader {
@@ -159,11 +165,11 @@
   gap: 0.35rem;
   width: 100%;
   min-height: 32px;
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 1rem;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #5c4b37;
   text-align: left;
@@ -181,9 +187,9 @@
 
 .item {
   position: relative;
-  padding: 0.4rem 1rem 0.4rem 2.2rem;
+  padding: 0.38rem 1rem 0.38rem 2.2rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #5c4b37;
   transition: background 0.1s;
   overflow: hidden;
@@ -205,7 +211,7 @@
 .addInFolder {
   padding: 0.35rem 1rem 0.35rem 2.2rem;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: #a39581;
 }
 
@@ -215,14 +221,8 @@
 
 /* Criação de nova pasta / tarefa */
 .folderActions {
-  padding: 0 1rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Criação de nova pasta / tarefa */
-.folderActions {
-  padding: 0 1rem;
-  margin-bottom: 0.5rem;
+  padding: 0 0.85rem;
+  margin-bottom: 0.45rem;
 }
 
 /* A linha completa */
@@ -230,7 +230,7 @@
   display: flex;
   align-items: stretch;
   height: 28px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
   width: 100%;
   gap: 0.3rem;
 }
@@ -250,20 +250,22 @@
   border-color: #c15a01;
 }
 
-/* A barra cinza com a / - SEM BORDAS PROPRIAS, SÓ O FUNDO */
 .folderContextLabel {
   display: flex;
   align-items: center;
   font-size: 0.75rem;
   color: #a39581;
   background: #f0e6d2;
-  padding: 0 0.5rem;
+  height: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px 0 0 4px;
+  border: 1px solid #f0e6d2;
+  border-right: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 90px;
+  max-width: 100px;
   flex-shrink: 0;
-  border: none; /* REMOVIDO PARA NÃO DUPLICAR COM O WRAPPER */
 }
 
 /* O campo de digitar dentro do Wrapper */
@@ -273,9 +275,9 @@
   padding: 0 0.5rem;
   font-size: 0.8rem;
   color: #5c4b37;
-  border: none !important; /* Sem bordas! */
+  border: none !important;
   background: transparent;
-  outline: none; /* Sem foco azul */
+  outline: none;
 }
 
 /* O botão Add */
@@ -305,29 +307,43 @@
   flex-shrink: 0;
 }
 
-/* Para o New Task (que NÃO usa inputWrapper) ter borda normal e ficar igualzinho a altura do wrapper: */
+/* Para o New Task ter borda normal */
 .newFolderRow > .newFolderInput {
   border: 1px solid #f0e6d2 !important;
   border-radius: 4px;
   background: #fff;
 }
+
 .newFolderRow > .newFolderInput:focus {
   border-color: #c15a01 !important;
 }
 
-
 /* Widget Pomodoro */
 .pomodoroWidget {
-  padding: 1rem;
+  padding: 0.75rem 0.85rem;
   border-top: 1px solid #f0e6d2;
   background: #FDF9F4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 0 0 auto;
+}
+
+.trackerCard {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+.trackerActions,
+.secondaryActions {
+  display: flex;
+  gap: 0.4rem;
+}
+
 .pomodoroTime {
-  font-size: 1.8rem;
+  font-size: 2rem;
+  line-height: 1;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: center;
@@ -338,59 +354,6 @@
   color: #059669;
 }
 
-/* Configuração do timer */
-.timerConfig {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.timerConfigRow {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.timerConfigLabel {
-  font-size: 0.75rem;
-  color: #a39581;
-  white-space: nowrap;
-}
-
-.timerConfigInput {
-  width: 3rem;
-  padding: 0.25rem 0.35rem;
-  font-size: 0.85rem;
-  border: 1px solid #e6d8c0;
-  border-radius: 4px;
-  background: #fff;
-  color: #5c4b37;
-}
-
-.timerConfigInput:focus {
-  outline: none;
-  border-color: #c15a01;
-}
-
-.timerConfigInput:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.timerConfigCheck {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  color: #5c4b37;
-  cursor: pointer;
-}
-
-.timerConfigCheck input {
-  accent-color: #c15a01;
-}
-
 /* Seletor de fase (Foco / Pausa) */
 .phaseSwitcher {
   display: flex;
@@ -399,11 +362,11 @@
 
 .phaseBtn {
   flex: 1;
-  padding: 0.35rem 0.5rem;
+  padding: 0.38rem 0.5rem;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid #e6d8c0;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fff;
   color: #a39581;
   cursor: pointer;
@@ -429,8 +392,8 @@
 
 .taskSelect {
   width: 100%;
-  padding: 0.4rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.45rem 0.5rem;
+  border-radius: 6px;
   border: 1px solid #e6d8c0;
   background: #ffffff;
   color: #5c4b37;
@@ -449,7 +412,7 @@
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 0.5rem;
+  padding: 0.52rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -478,12 +441,29 @@
 
 /* Container de Estatísticas */
 .statsContainer {
-  margin-top: 0.5rem;
-  padding-top: 0.8rem;
+  margin-top: 0;
+  padding-top: 0.5rem;
   border-top: 1px dashed #e6d8c0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  height: min(28vh, 160px);
+  overflow: hidden;
+}
+
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.totalTime {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c15a01;
+  white-space: nowrap;
 }
 
 .statsList {
@@ -493,10 +473,11 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  max-height: 150px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: none;
+  padding-right: 0.2rem;
 }
 
 .statItem {
@@ -507,7 +488,7 @@
   color: #5c4b37;
   background: #ffffff;
   padding: 0.35rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #f0e6d2;
   gap: 0.4rem;
   position: relative;
@@ -548,7 +529,7 @@
 }
 
 .statTaskActions {
-  position: relative; /* âncora do dropdown */
+  position: relative;
   display: inline-flex;
   align-items: center;
 }
@@ -576,7 +557,7 @@
 
 .taskMenu {
   position: absolute;
-  top: calc(100% + 6px); /* abaixo do botão ⋯ */
+  top: calc(100% + 6px);
   right: 0;
   min-width: 160px;
   background: #f0e6d2;
@@ -589,7 +570,7 @@
 
 .taskMenuFixed {
   position: fixed;
-  transform: translateX(-100%); /* ancora no canto direito do botão */
+  transform: translateX(-100%);
   min-width: 160px;
   background: #f0e6d2;
   border: 1px solid #c15a01;
@@ -622,7 +603,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px; /* Impede o texto de empurrar os tomates pra fora */
+  max-width: 180px;
   font-weight: 500;
 }
 
@@ -757,7 +738,7 @@
   flex-direction: column;
   background: #ffffff;
   position: relative;
-  min-height: 0; /* Crítico para o Flexbox habilitar o Scroll interno */
+  min-height: 0;
 }
 
 /* Nova classe que criamos para gerenciar o scroll no modo leitura */
@@ -768,7 +749,7 @@
 .mdEditor {
   flex: 1;
   width: 100%;
-  height: 100%; /* Removemos position absolute para parar de bugar o flex */
+  height: 100%;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -801,7 +782,7 @@
 .mdEditor :global(.w-md-editor-content) {
   flex: 1 !important;
   height: 100% !important;
-  overflow-y: auto !important; /* Aqui fica o scroll do modo de edição! */
+  overflow-y: auto !important;
   padding: 1rem 2rem 1rem 3rem !important;
 }
 
@@ -832,26 +813,23 @@
   line-height: 1.7 !important;
   color: #374151 !important;
   background-color: transparent !important;
-  /* IMPORTANTE: Aqui NÃO colocamos overflow-y: auto, deixamos o pai .editorScroll rolar! */
   height: auto !important;
   min-height: 100% !important;
   box-sizing: border-box !important;
   display: block !important;
 }
 
-
 /* --- CUSTOMIZAÇÃO DE CASE STUDIES E CALLOUTS --- */
 .mdEditor :global(.wmde-markdown blockquote) {
   margin: 1.5rem 0;
   padding: 1rem 1.5rem;
-  background-color: rgba(193, 90, 1, 0.05) !important; /* Fundo laranjinha bem leve */
-  border-left: 4px solid #c15a01 !important; /* Linha de destaque */
+  background-color: rgba(193, 90, 1, 0.05) !important;
+  border-left: 4px solid #c15a01 !important;
   border-radius: 0 8px 8px 0;
   color: #5c4b37 !important;
   font-style: normal !important;
 }
 
-/* Opcional: Para dar um título de "CASE STUDY" dentro do bloco usando negrito no início */
 .mdEditor :global(.wmde-markdown blockquote strong:first-child) {
   display: block;
   font-size: 1.1rem;
@@ -862,8 +840,6 @@
 }
 
 /* --- FIX QUADRANTE PRETO (UIW VAZANDO TEMA) --- */
-
-/* Força todas as variáveis de fundo do pacote UIW a ficarem brancas/transparentes */
 .mdEditor :global(.wmde-markdown-var),
 .mdEditor :global(.clean-md-editor) {
   --color-canvas-default: transparent !important;
@@ -871,13 +847,11 @@
   background-color: transparent !important;
 }
 
-/* Remove a sombra e a borda preta que a biblioteca tenta aplicar no footer/dragbar */
 .mdEditor :global(.w-md-editor-bar) {
   display: none !important;
   background: transparent !important;
 }
 
-/* FORÇA BRUTO CONTRA O FUNDO ESCURO */
 .w-md-editor,
 .w-md-editor-content,
 .wmde-markdown,
@@ -891,14 +865,12 @@
 }
 
 /* ---------------- PAINEL DIREITO (PDF) ---------------- */
-/* ---------------- PAINEL DIREITO (PDF) ---------------- */
 .rightPanel {
   flex: 1;
   display: flex;
   flex-direction: column;
   background: #FDF9F4;
   min-width: 0;
-  /* Cria o border-left só se for necessário separar melhor */
   border-left: 1px solid #f0e6d2;
 }
 
@@ -907,7 +879,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Crucial para o PDF não vazar a tela */
+  min-height: 0;
 }
 
 /* O visualizador nativo de PDF */
@@ -1003,12 +975,10 @@
   border: 1px solid #c15a01;
   border-radius: 4px;
   font-size: 0.85rem;
-  background-color: #cbd5e1;
+  background-color: #fff;
 }
 
 /* --- ADIÇÕES PARA HIERARQUIA DE PASTAS --- */
-
-/* Mostra o "+" apenas quando houver hover na pasta */
 .folderHeader .addSubFolderIcon {
   opacity: 0;
   background: transparent;
@@ -1031,7 +1001,6 @@
   color: #c15a01;
 }
 
-/* Alça de arraste da pasta — área maior e cursor grab */
 .folderDragHandle {
   display: inline-flex;
   align-items: center;
@@ -1044,11 +1013,11 @@
   flex-shrink: 0;
   padding: 0 2px;
 }
+
 .folderDragHandle:active {
   cursor: grabbing;
 }
 
-/* Largura fixa pro ícone de abrir/fechar pra alinhar melhor o texto */
 .folderToggleIcon {
   display: inline-block;
   width: 14px;
@@ -1056,24 +1025,6 @@
   text-align: center;
 }
 
-/* Estilo visual no input mostrando em qual sub-pasta ele está criando */
-.folderContextLabel {
-  font-size: 0.75rem;
-  color: #a39581;
-  background: #f0e6d2;
-  padding: 0 0.5rem; /* Ajustado para melhor alinhamento vertical */
-  height: 100%; /* Força a ter a mesma altura do input */
-  padding: 0.35rem;
-  border-radius: 4px 0 0 4px;
-  border: 1px solid #f0e6d2;
-  border-right: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100px;
-}
-
-/* Ajusta o input se tiver o label ao lado */
 .newFolderRow .newFolderInput {
   border-radius: 0 4px 4px 0;
 }
@@ -1085,10 +1036,115 @@
   padding: 0.4rem 0.6rem;
   cursor: pointer;
   font-size: 1rem;
-  transition: color 0.15s;
+  transition: color 0.15s, background 0.15s;
   border-radius: 4px;
 }
-.exportPdfIconBtn:hover { 
+
+.exportPdfIconBtn:hover {
   background: #c15a01;
   color: white;
 }
+
+.timerEditRow {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.timerMiniField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #a39581;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.timerMiniInput {
+  width: 100%;
+  padding: 0.38rem 0.45rem;
+  font-size: 0.82rem;
+  border: 1px solid #e6d8c0;
+  border-radius: 6px;
+  background: #fff;
+  color: #5c4b37;
+}
+
+.timerMiniInput:focus {
+  outline: none;
+  border-color: #c15a01;
+}
+
+.timerMiniInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Configuração do timer */
+.timerConfig {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timerConfigRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.timerConfigLabel {
+  font-size: 0.75rem;
+  color: #a39581;
+  white-space: nowrap;
+}
+
+.timerConfigInput {
+  width: 3rem;
+  padding: 0.25rem 0.35rem;
+  font-size: 0.85rem;
+  border: 1px solid #e6d8c0;
+  border-radius: 4px;
+  background: #fff;
+  color: #5c4b37;
+}
+
+.timerConfigInput:focus {
+  outline: none;
+  border-color: #c15a01;
+}
+
+.timerConfigInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.timerConfigCheck {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #5c4b37;
+  cursor: pointer;
+}
+
+.timerConfigCheck input {
+  accent-color: #c15a01;
+}
+
+.autoSaveIndicator {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.autoSaveIndicator[data-status="idle"]    { color: transparent; }
+.autoSaveIndicator[data-status="pending"] { color: #a39581; }
+.autoSaveIndicator[data-status="saving"]  { color: #c15a01; }
+.autoSaveIndicator[data-status="saved"]   { color: #059669; background: rgba(5, 150, 105, 0.08); }
+.autoSaveIndicator[data-status="error"]   { color: #dc2626; background: rgba(220, 38, 38, 0.08); }
