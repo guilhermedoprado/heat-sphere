@@ -4,11 +4,13 @@ import { BlockMath } from "react-katex";
 type SolverWrapperProps = {
     title: string;
     equationLatex?: string; // Equação principal para mostrar em cima
+    /** Restrições / domínio ao lado da equação */
+    equationAside?: React.ReactNode;
     children: React.ReactNode; // Os inputs
     result: React.ReactNode; // A caixa de resultado
 };
 
-export function SolverWrapper({ title, equationLatex, children, result }: SolverWrapperProps) {
+export function SolverWrapper({ title, equationLatex, equationAside, children, result }: SolverWrapperProps) {
     return (
         <div style={{
             background: "#FDF9F4",
@@ -24,8 +26,35 @@ export function SolverWrapper({ title, equationLatex, children, result }: Solver
 
             {/* Renderiza a equação principal bonita acima dos inputs se houver */}
             {equationLatex && (
-                <div style={{ marginBottom: "1.5rem", background: "#fff", padding: "0.5rem", borderRadius: "6px" }}>
-                    <BlockMath math={equationLatex} />
+                <div
+                    style={{
+                        marginBottom: "1.5rem",
+                        background: "#fff",
+                        padding: "0.75rem",
+                        borderRadius: "6px",
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "1rem",
+                        alignItems: "flex-start",
+                    }}
+                >
+                    <div style={{ flex: "1 1 220px", minWidth: 0, overflowX: "auto" }}>
+                        <BlockMath math={equationLatex} />
+                    </div>
+                    {equationAside && (
+                        <div
+                            style={{
+                                flex: "0 1 200px",
+                                fontSize: "0.78rem",
+                                lineHeight: 1.45,
+                                color: "#5c4b37",
+                                borderLeft: "3px solid #e6d8c0",
+                                paddingLeft: "0.75rem",
+                            }}
+                        >
+                            {equationAside}
+                        </div>
+                    )}
                 </div>
             )}
 

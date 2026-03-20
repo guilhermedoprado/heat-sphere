@@ -3,7 +3,8 @@ import { visit } from "unist-util-visit";
 import type { Plugin } from "unified";
 import type { Root, Text, Parent, Code } from "mdast";
 
-const SOLVER_REGEX = /\\([\w-]+)/g;
+// Permite chaves como \7.19, \7.70-7.72 (números de equação Incropera)
+const SOLVER_REGEX = /\\([\w.-]+)/g;
 
 const remarkSolvers: Plugin<[], Root> = () => (tree) => {
     visit(tree, "text", (node: Text, index, parent: Parent | null) => {

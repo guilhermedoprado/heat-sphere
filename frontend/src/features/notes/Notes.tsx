@@ -11,6 +11,12 @@ import { MarkdownEditor } from "../../components/markdown/MarkdownEditor";
 import type { WikiNoteInfo } from "../../components/markdown/WikiLink";
 import { PdfSlot } from "./PdfSlot";
 import styles from "./Notes.module.css";
+import {
+    applyOrderingToTree,
+    parentFolderPath,
+    collectImmediateChildPaths,
+    getFolderMarkerSortOrder,
+} from "./notesTreeOrder";
 import { Link } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
 import remarkMath from "remark-math";
@@ -107,6 +113,12 @@ export default function Notes() {
 
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
   const draggedFolderRef = useRef<string | null>(null);
+  const draggedNoteRef = useRef<string | null>(null);
+  /** Indicador visual ao reordenar nota sobre outra (mesma pasta). */
+  const [noteDropIndicator, setNoteDropIndicator] = useState<{
+    targetId: string;
+    before: boolean;
+  } | null>(null);
 
   const [folderContextMenu, setFolderContextMenu] = useState<{ path: string; x: number; y: number } | null>(null);
   const [renamingFolder, setRenamingFolder] = useState<string | null>(null);
@@ -478,12 +490,22 @@ export default function Notes() {
     setSaving(true);
     setError("");
 
+    let effectiveSortOrder = sortOrder;
+    if (!selected) {
+      const sameSubject = notes.filter(
+          (n) => n.title !== ".sys_folder_marker" && (n.subject || "") === (subject || "")
+      );
+      const maxSo = sameSubject.reduce((m, n) => Math.max(m, n.sortOrder ?? 0), Number.NEGATIVE_INFINITY);
+      effectiveSortOrder = maxSo === Number.NEGATIVE_INFINITY ? 0 : maxSo + 10;
+      setSortOrder(effectiveSortOrder);
+    }
+
     const body = {
       title,
       subject,
       contentMarkdown: content,
       briefDefinition,
-      sortOrder,
+      sortOrder: effectiveSortOrder,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
     };
 
@@ -625,7 +647,125 @@ export default function Notes() {
 
   const FOLDER_DRAG_TYPE = "application/x-folder-path";
 
+  const reorderNotesWithinSubject = useCallback(
+      async (draggedId: string, targetId: string, insertBefore: boolean) => {
+        const dragNote = notes.find((n) => n.id === draggedId);
+        const targetNote = notes.find((n) => n.id === targetId);
+        if (!dragNote || !targetNote) return;
+        const subj = dragNote.subject || "";
+        if ((targetNote.subject || "") !== subj) return;
+        if (dragNote.title === ".sys_folder_marker" || targetNote.title === ".sys_folder_marker") return;
+
+        const group = notes
+            .filter(
+                (n) =>
+                    n.title !== ".sys_folder_marker" && (n.subject || "") === subj
+            )
+            .sort(
+                (a, b) =>
+                    (a.sortOrder ?? 0) - (b.sortOrder ?? 0) ||
+                    a.title.localeCompare(b.title)
+            );
+
+        const ids = group.map((n) => n.id);
+        const from = ids.indexOf(draggedId);
+        const to = ids.indexOf(targetId);
+        if (from < 0 || to < 0) return;
+
+        const reordered = [...ids];
+        reordered.splice(from, 1);
+        const idxTarget = reordered.indexOf(targetId);
+        const insertIdx = insertBefore ? idxTarget : idxTarget + 1;
+        reordered.splice(insertIdx, 0, draggedId);
+
+        const idToNewOrder = new Map(reordered.map((id, i) => [id, i * 10]));
+        const needsWrite = reordered.some((id) => {
+          const n = notes.find((x) => x.id === id);
+          return n && idToNewOrder.get(id) !== (n.sortOrder ?? 0);
+        });
+        if (!needsWrite) return;
+
+        try {
+          for (const id of reordered) {
+            const n = notes.find((x) => x.id === id);
+            if (!n) continue;
+            const so = idToNewOrder.get(id)!;
+            if ((n.sortOrder ?? 0) === so) continue;
+            await api.put(`/api/notes/${id}`, { ...n, sortOrder: so });
+          }
+          const { data } = await api.get<Note[]>("/api/notes");
+          setNotes(data);
+          setFolders(Array.from(new Set(data.map((n) => n.subject).filter(Boolean))));
+          if (selected && idToNewOrder.has(selected.id)) {
+            const so = idToNewOrder.get(selected.id)!;
+            setSortOrder(so);
+            lastSavedRef.current = { ...lastSavedRef.current, sortOrder: so };
+          }
+        } catch {
+          setError("Falha ao reordenar notas.");
+        }
+      },
+      [notes, selected]
+  );
+
+  const reorderSiblingFolders = useCallback(
+      async (draggedPath: string, targetPath: string, insertBefore: boolean) => {
+        const parent = parentFolderPath(draggedPath);
+        if (parent !== parentFolderPath(targetPath) || draggedPath === targetPath) return;
+
+        const subjects = notes.map((n) => n.subject).filter(Boolean) as string[];
+        const siblingPaths = collectImmediateChildPaths(parent, folders, subjects).sort((a, b) => {
+          const oa = getFolderMarkerSortOrder(notes, a);
+          const ob = getFolderMarkerSortOrder(notes, b);
+          if (oa !== ob) return oa - ob;
+          const na = a.split("/").pop() ?? a;
+          const nb = b.split("/").pop() ?? b;
+          return na.localeCompare(nb);
+        });
+
+        const si = siblingPaths.indexOf(draggedPath);
+        const ti = siblingPaths.indexOf(targetPath);
+        if (si < 0 || ti < 0) return;
+
+        const reordered = [...siblingPaths];
+        reordered.splice(si, 1);
+        const idxTarget = reordered.indexOf(targetPath);
+        const insertIdx = insertBefore ? idxTarget : idxTarget + 1;
+        reordered.splice(insertIdx, 0, draggedPath);
+
+        try {
+          for (let i = 0; i < reordered.length; i++) {
+            const path = reordered[i];
+            const so = i * 10;
+            const marker = notes.find(
+                (n) => n.title === ".sys_folder_marker" && n.subject === path
+            );
+            if (!marker) {
+              await api.post("/api/notes", {
+                title: ".sys_folder_marker",
+                subject: path,
+                contentMarkdown: " ",
+                briefDefinition: "Marcador de pasta (ordem na sidebar)",
+                sortOrder: so,
+                tags: ["system_marker"],
+              });
+            } else if ((marker.sortOrder ?? 0) !== so) {
+              await api.put(`/api/notes/${marker.id}`, { ...marker, sortOrder: so });
+            }
+          }
+          const { data } = await api.get<Note[]>("/api/notes");
+          setNotes(data);
+          setFolders(Array.from(new Set(data.map((n) => n.subject).filter(Boolean))));
+        } catch {
+          setError("Falha ao reordenar pastas.");
+        }
+      },
+      [notes, folders]
+  );
+
   function handleDragStart(e: ReactDragEvent, noteId: string) {
+    draggedNoteRef.current = noteId;
+    draggedFolderRef.current = null;
     e.dataTransfer.setData("text/plain", noteId);
     e.dataTransfer.effectAllowed = "move";
     setTimeout(() => {
@@ -636,6 +776,7 @@ export default function Notes() {
 
   function handleFolderDragStart(e: ReactDragEvent, folderPath: string) {
     draggedFolderRef.current = folderPath;
+    draggedNoteRef.current = null;
     e.dataTransfer.setData(FOLDER_DRAG_TYPE, folderPath);
     e.dataTransfer.setData("text/plain", ""); // evita conflito com note
     e.dataTransfer.effectAllowed = "move";
@@ -650,12 +791,50 @@ export default function Notes() {
     const target = e.target as HTMLElement;
     if (target?.style) target.style.opacity = "1";
     draggedFolderRef.current = null;
+    draggedNoteRef.current = null;
     setDragOverFolder(null);
+    setNoteDropIndicator(null);
+  }
+
+  function handleNoteDragOver(e: ReactDragEvent, targetNoteId: string) {
+    const dragId = draggedNoteRef.current;
+    if (!dragId || dragId === targetNoteId) {
+      setNoteDropIndicator(null);
+      return;
+    }
+    const dragNote = notes.find((x) => x.id === dragId);
+    const targetNote = notes.find((x) => x.id === targetNoteId);
+    if (!dragNote || !targetNote) return;
+    if ((dragNote.subject || "") !== (targetNote.subject || "")) return;
+    if (dragNote.title === ".sys_folder_marker" || targetNote.title === ".sys_folder_marker") return;
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const before = e.clientY < rect.top + rect.height / 2;
+    setNoteDropIndicator({ targetId: targetNoteId, before });
+  }
+
+  function handleNoteDragLeave(e: ReactDragEvent) {
+    const related = e.relatedTarget as Node | null;
+    if (related && (e.currentTarget as HTMLElement).contains(related)) return;
+    setNoteDropIndicator(null);
+  }
+
+  function handleNoteDrop(e: ReactDragEvent, targetNoteId: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    setNoteDropIndicator(null);
+    const dragId = draggedNoteRef.current;
+    if (!dragId || dragId === targetNoteId) return;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const before = e.clientY < rect.top + rect.height / 2;
+    void reorderNotesWithinSubject(dragId, targetNoteId, before);
   }
 
   function handleDragOver(e: ReactDragEvent, folderPath: string) {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    if (draggedNoteRef.current) setNoteDropIndicator(null);
     const draggedFolder = draggedFolderRef.current;
     if (draggedFolder && (folderPath === draggedFolder || folderPath.startsWith(draggedFolder + "/"))) {
       setDragOverFolder(null);
@@ -719,6 +898,23 @@ export default function Notes() {
     setDragOverFolder(null);
     const folderPathDragged = e.dataTransfer.getData(FOLDER_DRAG_TYPE);
     if (folderPathDragged) {
+      const parentDrag = parentFolderPath(folderPathDragged);
+      const parentDrop = parentFolderPath(folderPath);
+      const subjectsForSiblings = notes.map((n) => n.subject).filter(Boolean) as string[];
+      const siblingsHere = collectImmediateChildPaths(parentDrag, folders, subjectsForSiblings);
+      const sameParent =
+          parentDrag === parentDrop &&
+          folderPathDragged !== folderPath &&
+          !folderPath.startsWith(folderPathDragged + "/") &&
+          siblingsHere.includes(folderPath) &&
+          siblingsHere.includes(folderPathDragged);
+      // Sem Alt: entre irmãos reais = reordenar. Com Alt = mover para dentro (como antes).
+      if (sameParent && !e.altKey) {
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        const before = e.clientY < rect.top + rect.height / 2;
+        void reorderSiblingFolders(folderPathDragged, folderPath, before);
+        return;
+      }
       const leaf = folderPathDragged.split("/").pop() ?? folderPathDragged;
       const newPath = folderPath ? `${folderPath}/${leaf}` : leaf;
       confirmFolderMove(folderPathDragged, newPath);
@@ -813,6 +1009,12 @@ export default function Notes() {
       if (targetNode) targetNode.notes.push(note);
     }
 
+    applyOrderingToTree(root, notes);
+    ungroupedList.sort(
+        (a, b) =>
+            (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.title.localeCompare(b.title)
+    );
+
     return { tree: root, ungrouped: ungroupedList };
   }, [notes, folders]);
 
@@ -841,7 +1043,7 @@ export default function Notes() {
           >
             <span
                 className={styles.folderDragHandle}
-                title="Arrastar pasta"
+                title="Arrastar pasta: soltar sobre irmã = reordenar · Alt+soltar = mover para dentro"
                 onClick={(e) => e.stopPropagation()}
             >
               ⋮⋮
@@ -885,13 +1087,24 @@ export default function Notes() {
                 {node.notes.map((n) => (
                     <li
                         key={n.id}
-                        className={`${styles.item} ${selected?.id === n.id ? styles.active : ""}`}
+                        className={`${styles.item} ${selected?.id === n.id ? styles.active : ""} ${
+                            noteDropIndicator?.targetId === n.id && noteDropIndicator.before
+                                ? styles.noteReorderBefore
+                                : ""
+                        } ${
+                            noteDropIndicator?.targetId === n.id && !noteDropIndicator.before
+                                ? styles.noteReorderAfter
+                                : ""
+                        }`}
                         style={{ paddingLeft: `${2.2 + level * 1.2}rem` }}
                         onClick={() => selectNote(n)}
                         onContextMenu={(e) => handleContextMenu(e, n.id)}
                         draggable
                         onDragStart={(e) => handleDragStart(e, n.id)}
                         onDragEnd={handleDragEnd}
+                        onDragOver={(e) => handleNoteDragOver(e, n.id)}
+                        onDragLeave={handleNoteDragLeave}
+                        onDrop={(e) => handleNoteDrop(e, n.id)}
                     >
                       {renamingNoteId === n.id ? (
                           <input
@@ -1001,7 +1214,7 @@ export default function Notes() {
         setNotes((prev) =>
           prev.map((n) =>
             n.id === selected.id
-              ? { ...n, title, subject, contentMarkdown: content }
+              ? { ...n, title, subject, contentMarkdown: content, sortOrder }
               : n
           )
         );
@@ -1161,13 +1374,24 @@ export default function Notes() {
                         {ungrouped.map((n: Note) => (
                             <li
                                 key={n.id}
-                                className={`${styles.item} ${selected?.id === n.id ? styles.active : ""}`}
+                                className={`${styles.item} ${selected?.id === n.id ? styles.active : ""} ${
+                                    noteDropIndicator?.targetId === n.id && noteDropIndicator.before
+                                        ? styles.noteReorderBefore
+                                        : ""
+                                } ${
+                                    noteDropIndicator?.targetId === n.id && !noteDropIndicator.before
+                                        ? styles.noteReorderAfter
+                                        : ""
+                                }`}
                                 style={{ paddingLeft: `2.2rem` }}
                                 onClick={() => selectNote(n)}
                                 onContextMenu={(e) => handleContextMenu(e, n.id)}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, n.id)}
                                 onDragEnd={handleDragEnd}
+                                onDragOver={(e) => handleNoteDragOver(e, n.id)}
+                                onDragLeave={handleNoteDragLeave}
+                                onDrop={(e) => handleNoteDrop(e, n.id)}
                             >
                               {renamingNoteId === n.id ? (
                                   <input

@@ -73,7 +73,7 @@ export function MarkdownEditor({ value, onChange, notes = [], onNavigate, previe
 
         code: (props: any) => {
             const { inline, className, children } = props;
-            const match = /language-solver:([\w-]+)/.exec(className || "");
+            const match = /language-solver:([\w.-]+)/.exec(className || "");
 
             const extractText = (node: any): string => {
                 if (typeof node === "string") return node;
